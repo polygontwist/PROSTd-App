@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>PROSTd</title>
+	<link type="text/css" rel="stylesheet" href="style.css" />  
+  </head>
+  <body class="main">
+     <!-- 
+	 <script>
+		document.write(process.versions.node)
+		document.write(process.versions.chrome)
+		document.write(process.versions.electron)
+	</script>
+	
+	npm start
+	-->
+	
+	<nav>
+		 <div class="logo">PROSTd</div>
+		 <!--<a href="index.php" class="icon_logout" title="logout"></a>
+		 <h1>Hallo</h1>-->
+		 <div id="tabnav"></div>
+	</nav>
+	<script>
+		var globaldata={
+			"user":"lokal",
+			"modus":"app"
+		}
+		
+	</script>
+	<script src='js/electron.js'></script>
+	<script src='js/sprache.js'></script>
+	<script src='js/system.js'></script>
+	<noscript>Das Projekt benötigt Javascript</noscript>
+	
+  </body>
+
+  <script>
+    // You can also require other files to run in this process
+    //require('./renderer.js')
+    //require('./sprache.js')
+    //require('./system.js')
+  </script>
+</html>

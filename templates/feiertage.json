@@ -1,0 +1,18 @@
+{"id":"feiertage",
+"titel":"Feiertage",
+"info":
+	{"land":"DE, MV",
+	"startdatum":"2016-01-01",
+	"enddatum":"2017-12-31"},
+"stunden":[
+	{"dat":"2017-01-01","stunden":0,"typ":"F","kommentar":"Neujahrstag"},
+	{"dat":"2017-04-14","stunden":0,"typ":"F","kommentar":"Karfreitag"},
+	{"dat":"2017-04-17","stunden":0,"typ":"F","kommentar":"Ostern (Ostermontag)"},
+	{"dat":"2017-05-01","stunden":0,"typ":"F","kommentar":"1. Mai / Tag der Arbeit"},
+	{"dat":"2017-05-25","stunden":0,"typ":"F","kommentar":"Christi Himmelfahrt"},
+	{"dat":"2017-06-05","stunden":0,"typ":"F","kommentar":"Pfingsten (Pfingstmontag)"},
+	{"dat":"2017-10-03","stunden":0,"typ":"F","kommentar":"Tag der Deutschen Einheit"},
+	{"dat":"2017-10-31","stunden":0,"typ":"F","kommentar":"Reformationstag"},
+	{"dat":"2017-12-25","stunden":0,"typ":"F","kommentar":"1. Weihnachtstag"},
+	{"dat":"2017-12-26","stunden":0,"typ":"F","kommentar":"2. Weihnachtstag"}
+]}

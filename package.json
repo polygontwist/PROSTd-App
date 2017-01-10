@@ -1,0 +1,31 @@
+{
+  "name": "PROSTd",
+  "productName": "PROSTd",
+  "description": "Projektstundenverwaltung",
+  "version": "0.1.5",
+  "author": "Andreas Kosmehl (ak@a-d-k.de)",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "pack": "build --dir",
+    "dist": "build"
+  },
+  "keywords": [
+    "Electron",
+    "projektverwaltung",
+    "stundenverwaltung",	"PROSTd"
+  ],
+  "homepage": "http://www.a-d-k.de",
+  "devDependencies": {
+    "electron-prebuilt": "^1.2.0"
+  },
+  "build": {
+    "appId": "de.adk.PROSTd",
+    "mac": {
+		"category": "public.app-category.utilities"
+    },
+    "win": {
+		"icon": "build/PROSTd.ico"
+    }
+  }
+}

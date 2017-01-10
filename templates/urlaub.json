@@ -1,0 +1,13 @@
+{
+	"id":"urlaub",
+	"titel":"Urlaub",
+	"info":{
+		"startdatum":"2017-01-01",
+		"enddatum":"2017-12-31",
+		"tage":26,
+		"gruppe":["andreas"]
+	},
+	"stunden":[
+		
+	]
+}

@@ -1,0 +1,14 @@
+"allProjektsloaded" Array+Meta // {"projekte":projekte,"meta":jahrdata}
+ 
+"selectFilterJahr",string|int
+"scramble" HTMLNode
+
+"addTag" Objekt	//Tag & Projekt sind ausgewählt
+"selectTag" //Tag ausgewählt
+"deselect"  //Projektdatenangekommen, Selection im Kalender/Liste aufheben
+"reloadprojektlist"	//Projektliste neu aufbauen
+"addProjekt"
+"selectProjekt"
+"createnewprojekt",data=id
+
+getDataTyp(o)//String:'[object Array]' '[object String]'  '[object Number]' '[object 

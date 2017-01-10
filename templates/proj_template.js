@@ -1,0 +1,16 @@
+{
+	"id":"$ID",
+	"titel":"$TITEL",
+	"isnew":true,
+	"info":{
+		"isended":false,
+		"auftraggeber":"",
+		"projektleiter":"",
+		"startdatum":"$HEUTE",
+		"enddatum":"",
+		"status":"",
+		"projektart":[],
+		"gruppe":[]
+	},
+	"stunden":[]
+}
