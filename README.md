@@ -13,7 +13,7 @@ U = Urlaub<br>
 B = Besprechnung<br>
 
 #Projekt bearbeiten#
-Für die Bearbeitung diese Projektes benütigt man:<br>
+Für die Bearbeitung diese Projektes benötigt man:<br>
 https://nodejs.org dabei ist der nmp-Packetmanager<br>
 mit<br>
 > npm install --global electron
