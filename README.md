@@ -11,3 +11,24 @@ K = Konzeption<br>
 Z = Reisezeit<br>
 U = Urlaub<br>
 B = Besprechnung<br>
+
+#Projekt bearbeiten#
+Für die Bearbeitung diese Projektes benütigt man:<br>
+https://nodejs.org dabei ist der nmp-Packetmanager<br>
+mit<br>
+> npm install --global electron
+
+wird electron global installiert.
+mit<br>
+> npm install electron-builder
+
+kommt noch der builder zum packen des Projektes hinzu.
+
+In der Eingabeaufforderung kann, im Verzeichnis des Projektes mit<br>
+> electron .
+
+das Programm gestartet werden (Entwicklungsversion).<br>
+Mit<br>
+> build
+
+kann ein Packet zur Installation erzeugt werden. Das kann dann wie jedes normnale Programm von Nutzern installiert werden.
