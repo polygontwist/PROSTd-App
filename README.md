@@ -31,4 +31,6 @@ das Programm gestartet werden (Entwicklungsversion).<br>
 Mit<br>
 > build
 
-kann ein Packet zur Installation erzeugt werden. Das kann dann wie jedes normnale Programm von Nutzern installiert werden.
+kann ein Packet zur Installation erzeugt werden.
+Das kann dann wie jedes normale Programm von Nutzern installiert werden. 
+Das Installationsprogramm ist dann im Verzeichnis `dist` zu finden.
