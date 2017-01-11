@@ -14,7 +14,7 @@ B = Besprechnung<br>
 
 #Projekt bearbeiten#
 Für die Bearbeitung diese Projektes benötigt man:<br>
-https://nodejs.org dabei ist der nmp-Packetmanager<br>
+https://nodejs.org dabei ist der npm-Packetmanager<br>
 mit<br>
 > npm install --global electron
 
