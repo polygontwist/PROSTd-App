@@ -30,11 +30,12 @@ var pro_stunden_app=function(){
 //TODO:	
 //		-Ausertung: "alle" canvas +ber alle Jahre
 //				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttiitel)
-//		-Monat: scrollTo aktuellen Tag? (filter/tabs 'nach jahr')
+//		-[OK]Monat: scrollTo aktuellen Tag? (filter/tabs 'nach jahr')
 //		-Filter Projektlist? ('nach jahr'[ok],'Name','Datum') oder als Icon in Liste
 //		-Passwort: new (www)
 //		-user css[prog:ok]
 //		Monatsauswertung
+//		-Projektdatum von letzten Stunden-Item nehmen
 	
 	//--"const"--
 	var msg_nouser="404:no user",
@@ -414,7 +415,10 @@ var pro_stunden_app=function(){
 			re.setSeconds(0);
 			
 		if(s.length==2){//tt.mm.yyyy hh:mm:ss 
-			dat=s[0].split('.');
+			if(s[0].indexOf(".")>0)
+				dat=s[0].split('.');
+				else
+				dat=s[0].split('-');
 			tim=s[1].split(':');
 			re.setFullYear(parseInt(dat[2]));
 			re.setMonth( parseInt(dat[1])-1);
@@ -616,7 +620,7 @@ console.log("MESSAGE",s,data);
 				for( property in jahrdata.jahre ) {
 					jahreliste.push(jahrdata.jahre[property]);
 				}
-				jahreliste.sort();
+				jahreliste=jahreliste.sort();
 				
 				oselect.innerHTML="";
 				HTMLnode=cE(oselect,"option");
@@ -728,11 +732,11 @@ console.log("MESSAGE",s,data);
 				return;
 			}			
 			//sort by datum
-			data.dat.sort(sortliste);		
+			var sortliste=data.dat.sort(sortliste);		
 			
 			projekte=[];
-			for(i=0;i<data.dat.length;i++){
-				o=data.dat[i];
+			for(i=0;i<sortliste.length;i++){
+				o=sortliste[i];
 				o.date=getdatumsObj(o.dat);
 				onew={id:o.name,pro:o,data:undefined}
 				projekte.push(onew);
@@ -1045,7 +1049,7 @@ console.log("MESSAGE",s,data);
 			HTMLnode.innerHTML=encodeString(dat.data.titel);
 			
 			//sort Stunden by datum
-			dat.data.stunden.sort(sortstdliste);
+			dat.data.stunden=dat.data.stunden.sort(sortstdliste);
 			
 			maxstunden=8;
 			stundenliste=[];
@@ -1054,7 +1058,7 @@ console.log("MESSAGE",s,data);
 			//xPosition im canvas
 			for(i=0;i<dat.data.stunden.length;i++){
 				datumstd=getdatumsObj(dat.data.stunden[i].dat);		//convert to date
-				if(datumstd.getFullYear()==zeigezeit.getFullYear()){//Stunden im BEreich vom aktuellen Jahr?
+				if(datumstd.getFullYear()==zeigezeit.getFullYear()){//Stunden im Bereich vom aktuellen Jahr?
 					posX=(datumstd.getTime()-zeigezeit.getTime())/1000/60/60/24;//Tag im Jahr
 					stundenliste.push( {
 						"x":posX,
@@ -1155,7 +1159,7 @@ console.log("MESSAGE",s,data);
 				//projekte[i].stundenimJahr=stundenproproj;
 				if(maxstd<stundenproproj)maxstd=stundenproproj;
 			}
-			projekte.sort(sortlistebyhour); //ist=by last change Date
+			projekte=projekte.sort(sortlistebyhour); //ist=by last change Date
 			
 			tabelle=cE(projekteliste2,"table");
 			for(i=0;i<projekte.length;i++){
@@ -1665,12 +1669,20 @@ console.log("MESSAGE",s,data);
 			deselect();
 		}
 		
+		var sortbydatum=function(a,b){
+			var ad=getdatumsObj(a.pro.dat);
+			var bd=getdatumsObj(b.pro.dat);			
+			return ad.getTime()<bd.getTime();
+		}		
 		var parsedata=function(data,jahrfilter){
 			var i,t,o,p,a,htmlNode,table,tr,td,th,eintragen,std;
 			
 			basis.innerHTML="";
 			projekte=data;
 			if(data==undefined)return;
+			
+			//data-sort
+			var sortliste=data.sort(sortbydatum);
 			
 			optionsplane=cE(basis,"div");
 			showoptions();
@@ -1681,8 +1693,8 @@ console.log("MESSAGE",s,data);
 			th.innerHTML=getWort('projekte');
 			th=cE(tr,"th",undefined,"plistdat");
 			th.innerHTML=getWort('datum');
-			for(i=0;i<data.length;i++){
-				o=data[i];
+			for(i=0;i<sortliste.length;i++){
+				o=sortliste[i];
 				o.date=getdatumsObj(o.pro.dat);
 				eintragen=!isinfilter(o);//Filter by Art
 				if(eintragen && jahrfilter!=undefined && jahrfilter!="alle"){
@@ -1753,11 +1765,13 @@ console.log("MESSAGE",s,data);
 		
 		var projektedata=undefined;
 		var lastfilter=undefined;
-		
+		var scrolltoday=false;
 		
 		this.ini=function(){//create
 			tabellendata=[];
+			scrolltoday=true;
 			basis=cE(ziel,"div",undefined,"monatsliste");
+			
 		}
 		this.destroy=function(){
 			
@@ -2174,12 +2188,19 @@ console.log("MESSAGE",s,data);
 		var refreshTab=function(){
 			//Stunden zählen
 			var i,itd,t,tr,td,HTMLnode,std,gesstd,stundensoll;
-			
+			var scrolltoPos=0;
+			var getScrollToNode=true;
+			var scrolltoviewNode=undefined;
 			for(itd=0;itd<tabellendata.length;itd++){
 				gesstd=0;
 				stundensoll=0;
 				for(i=0;i<tabellendata[itd].tabtrtage.length;i++){
 					tr=tabellendata[itd].tabtrtage[i];
+					if(istClass(tr,"heute")){
+						getScrollToNode=false;
+						if(getScrollToNode==undefined)scrolltoviewNode=tr;
+						}
+					if(getScrollToNode){scrolltoviewNode=tr;}
 					if(!istClass(tr,"wochenende") && !istClass(tr,"urlaub") && !istClass(tr,"feiertag"))
 							stundensoll+=stundenprotag;
 					std=0;
@@ -2201,6 +2222,11 @@ console.log("MESSAGE",s,data);
 				if(tabellendata[itd].node_geammt!=undefined){
 					tabellendata[itd].node_geammt.innerHTML=getWort("stundengesammt")+gesstd+getWort("stundengesammt2")+stundensoll;
 				}
+			}
+			
+			if(scrolltoday){
+				if(scrolltoviewNode!=undefined)scrolltoviewNode.scrollIntoView({ behavior: 'smooth' });//behavior bisher nur im FF
+				scrolltoday=false;
 			}
 		}
 		

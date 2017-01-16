@@ -508,7 +508,7 @@ nav #tabnav a.tabaktiv:after{
 	border: 7px solid transparent;
 	border-left-color: #000;
 	left: -1px;
-	top: 7px;
+	top: calc(50% - 7px);
 	display: block;
 }
 
