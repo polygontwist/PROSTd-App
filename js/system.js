@@ -30,7 +30,7 @@ var pro_stunden_app=function(){
 //TODO:	
 //		-Ausertung: "alle" canvas +ber alle Jahre
 //				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttiitel)
-//		-Monat: scrollTo aktuellen Tag? (filter/tabs 'nach jahr')
+//		-[OK]Monat: scrollTo aktuellen Tag? (filter/tabs 'nach jahr')
 //		-Filter Projektlist? ('nach jahr'[ok],'Name','Datum') oder als Icon in Liste
 //		-Passwort: new (www)
 //		-user css[prog:ok]
@@ -1753,11 +1753,13 @@ console.log("MESSAGE",s,data);
 		
 		var projektedata=undefined;
 		var lastfilter=undefined;
-		
+		var scrolltoday=false;
 		
 		this.ini=function(){//create
 			tabellendata=[];
+			scrolltoday=true;
 			basis=cE(ziel,"div",undefined,"monatsliste");
+			
 		}
 		this.destroy=function(){
 			
@@ -2174,12 +2176,19 @@ console.log("MESSAGE",s,data);
 		var refreshTab=function(){
 			//Stunden zählen
 			var i,itd,t,tr,td,HTMLnode,std,gesstd,stundensoll;
-			
+			var scrolltoPos=0;
+			var getScrollToNode=true;
+			var scrolltoviewNode=undefined;
 			for(itd=0;itd<tabellendata.length;itd++){
 				gesstd=0;
 				stundensoll=0;
 				for(i=0;i<tabellendata[itd].tabtrtage.length;i++){
 					tr=tabellendata[itd].tabtrtage[i];
+					if(istClass(tr,"heute")){
+						getScrollToNode=false;
+						if(getScrollToNode==undefined)scrolltoviewNode=tr;
+						}
+					if(getScrollToNode){scrolltoviewNode=tr;}
 					if(!istClass(tr,"wochenende") && !istClass(tr,"urlaub") && !istClass(tr,"feiertag"))
 							stundensoll+=stundenprotag;
 					std=0;
@@ -2201,6 +2210,11 @@ console.log("MESSAGE",s,data);
 				if(tabellendata[itd].node_geammt!=undefined){
 					tabellendata[itd].node_geammt.innerHTML=getWort("stundengesammt")+gesstd+getWort("stundengesammt2")+stundensoll;
 				}
+			}
+			
+			if(scrolltoday){
+				if(scrolltoviewNode!=undefined)scrolltoviewNode.scrollIntoView({ behavior: 'smooth' });//behavior bisher nur im FF
+				scrolltoday=false;
 			}
 		}
 		
