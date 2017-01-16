@@ -49,3 +49,4 @@ dist/win-unpacked/*
 *.pak
 dist/PROSTd Setup 0.1.2.exe
 dist/PROSTd Setup 0.1.4.exe
+dist/latest.yml
