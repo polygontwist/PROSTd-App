@@ -34,3 +34,5 @@ Mit<br>
 kann ein Packet zur Installation erzeugt werden.
 Das kann dann wie jedes normale Programm von Nutzern installiert werden. 
 Das Installationsprogramm ist dann im Verzeichnis `dist` zu finden.
+
+siehe auch https://github.com/polygontwist/PROSTd/
