@@ -64,8 +64,12 @@ body.main{
 	width: 270px;
 	display: block;
 }
-
-
+.center{
+	text-align:center;
+}
+.relativ{
+	position:relative;
+}
 /*spezial*/
 
 .login{
@@ -586,6 +590,54 @@ nav #tabnav a.tabaktiv:after{
 	display:none;
 }
 
+.monatsliste .divmonauswert{
+	float:left;
+	position:relative;
+	width: 100%;
+}
+.monatsliste  .divmonauswert .aktiv{
+	color:#fff;
+	background-color:#77CE75;
+	-webkit-border-radius: 0 0 5px 5px;
+	-moz-border-radius:  0 0 5px 5px;
+	border-radius:  0 0 5px 5px;
+}
+
+.monatsliste .moninfos{
+	position: absolute;
+	left: 2%;
+	bottom: 0;
+	background-color: rgba(255, 255, 255, 0.94);
+	background-color:#77CE75;
+	width: 96%;
+	text-align:left;
+	padding: 10px;
+	
+	-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.5);
+	-moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.5);
+	box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.5);
+
+}
+.monatsliste .off{
+	display:none;
+}
+
+.monatsliste .monauswert{
+	margin:0 10px;
+	margin-left:31px;
+	float: left;
+}
+.monatsliste .moninfotext{
+	/*font-size:10pt;*/
+}
+.monatsliste .monproausw{
+	background-color:#fff;
+}
+.monatsliste .monproausw th{
+	background-color:#565656;
+	color:#ffffff;
+	text-align:center;
+}
 /*---Projektliste---*/
 
 .projektliste{
@@ -806,6 +858,9 @@ nav #tabnav a.tabaktiv:after{
 	margin-left:10px;
 	margin-bottom:10px;
 }
+/*.clickcanvasJahr{
+	cursor:pointer;
+}*/
 
 .projektueberblick table{border-collapse: collapse;width:100%;}
 .projektueberblick tr,

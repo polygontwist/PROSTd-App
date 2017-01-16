@@ -54,6 +54,7 @@ var sprachen=[
 		 "Kommentar":"Kommentar",
 		 "worktyp":"Typ",
 		 "Stunden":"Stunden",
+		 "monatsauswertung":"Monatsauswertung",
 		 "stundengesammt":"Arbeitsstunden im Monat: ",
 		 "stundengesammt2":" von ",
 		 "urlaub":"Urlaub",
