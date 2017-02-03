@@ -161,6 +161,15 @@ var pro_stunden_app=function(){
 		return s;
 	}
 	
+	var convertToDatum=function(s){//String:"YYYY-mm-dd" convert to "dd.mm.jjjj"
+		var ar=s.split('-');
+		if(ar.length==3){
+			return ar[2]+'.'+ar[1]+'.'+ar[0];
+		}
+		else
+			return s;
+	}
+	
 	var loadData=function(url, auswertfunc,getorpost,daten){
 		
 		if(typeof(globaldata)!="undefined")
@@ -1688,7 +1697,8 @@ console.log("MESSAGE",s,data);
 			return ad.getTime()<bd.getTime();
 		}		
 		var parsedata=function(data,jahrfilter){
-			var i,t,o,p,a,htmlNode,table,tr,td,th,eintragen,std;
+			var i,t,o,p,a,htmlNode,table,tr,td,th,eintragen,std
+				,thead,tbody;
 			
 			basis.innerHTML="";
 			projekte=data;
@@ -1701,11 +1711,15 @@ console.log("MESSAGE",s,data);
 			showoptions();
 			//Ergebnis
 			table=cE(basis,"table");
-			tr=cE(table,"tr");
-			th=cE(tr,"th");
+			addClass(table,"sortierbar");
+			thead=cE(table,"thead");
+			tr=cE(thead,"tr");
+			th=cE(tr,"th",undefined,"vorsortiert");//
 			th.innerHTML=getWort('projekte');
-			th=cE(tr,"th",undefined,"plistdat");
+			th=cE(tr,"th",undefined,"plistdat sortiere-");
 			th.innerHTML=getWort('datum');
+			
+			tbody=cE(table,"tbody");
 			for(i=0;i<sortliste.length;i++){
 				o=sortliste[i];
 				o.date=getdatumsObj(o.pro.dat);
@@ -1724,7 +1738,7 @@ console.log("MESSAGE",s,data);
 				if(o.data.stunden.length==0)eintragen=true;
 				
 				if(eintragen){
-					tr=cE(table,"tr");
+					tr=cE(tbody,"tr");
 					tr.data=o;			//für Filter
 					td=cE(tr,"td");				
 					a=cE(td,"a");
@@ -1738,9 +1752,10 @@ console.log("MESSAGE",s,data);
 					
 					td=cE(tr,"td");	
 					htmlNode=cE(td,"span");
-					htmlNode.innerHTML=encodeString(o.pro.dat.split(' ')[0]);
+					htmlNode.innerHTML=convertToDatum(encodeString(o.pro.dat.split(' ')[0]));
 				}
 			}
+			new JB_Table(table);
 		}
 		
 		var deselect=function(){

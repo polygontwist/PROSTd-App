@@ -28,6 +28,11 @@ body.main{
 
 
 /*allgemein*/
+
+button.sortbut{
+	/*border:0;*/
+}
+
 .button{
 	color:#000;
 	text-decoration:none;
