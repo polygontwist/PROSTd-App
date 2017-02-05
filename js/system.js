@@ -528,17 +528,19 @@ var pro_stunden_app=function(){
 		}
 		
 		var changeInput=function(e){
-			//aktiv=this.checked;
-			//mainWindow.webContents.openDevTools()
-			
+			var isApp=false;
 			if(typeof(globaldata)!="undefined")
-			if(globaldata.modus!=undefined){
-				if(globaldata.modus=="app"){
-					if(typeof(AppBridge)!="undefined"){
-						var AB=new AppBridge();
-						AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
+				if(globaldata.modus!=undefined){
+					if(globaldata.modus=="app"){
+						if(typeof(AppBridge)!="undefined"){
+							var AB=new AppBridge();
+							AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
+							isApp=true;
+						}
 					}
 				}
+			if(!isApp){
+				aktiv=this.checked;
 			}
 		}
 		
@@ -568,8 +570,13 @@ var pro_stunden_app=function(){
 		}
 		
 		this.Message=function(s,data){
+			var isApp=false;
+			if(typeof(globaldata)!="undefined" && typeof(AppBridge)!="undefined")
+				if(globaldata.modus=="app") isApp=true;
+			
+			
 			if(s=="scramble"){
-				//if(data!=undefined)goscrambeln(data);
+				if(!isApp && data!=undefined)goscrambeln(data);
 			}
 			else
 				console.log("MESSAGE",s,data);
