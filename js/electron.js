@@ -500,6 +500,19 @@ var AppBridge=function(){
 			alert("load\n"+globaldata.user+'\n'+url+'\n'+getorpost+'\n'+daten);
 	}
 
+	this.Message=function(s,data){
+		if(s=="changeInputSwitch"){
+			var win=remote.getCurrentWindow();
+			//console.log(win.webContents);
+			if(data.id=="cbb_scramble"){
+				if(data.aktiv)
+					win.webContents.openDevTools();
+					else
+					win.webContents.closeDevTools();
+			}
+		};		
+	};
+	
 }
 
 
@@ -586,6 +599,7 @@ var AppeleWin=function(){
 		console.log(":Directory:",fs.readdirSync(basepathDATA));
 		//console.log(":Directory:",fs.readdirSync(basepath+'/userData'));
 		
+		//http://electron.atom.io/docs/api/web-contents/
 		
 		/*console.log("##",app);
 		app.app.on('move',resizer);
@@ -606,7 +620,7 @@ var AppeleWin=function(){
 			//app.BrowserWindow
 			var win=remote.getCurrentWindow();
 			var bereich=win.getBounds();// x: 279, y: 84, width: 1250, height: 640
-			//console.log(bereich);
+			console.log(bereich);
 	}
 	
 

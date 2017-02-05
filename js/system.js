@@ -528,7 +528,18 @@ var pro_stunden_app=function(){
 		}
 		
 		var changeInput=function(e){
-			aktiv=this.checked;
+			//aktiv=this.checked;
+			//mainWindow.webContents.openDevTools()
+			
+			if(typeof(globaldata)!="undefined")
+			if(globaldata.modus!=undefined){
+				if(globaldata.modus=="app"){
+					if(typeof(AppBridge)!="undefined"){
+						var AB=new AppBridge();
+						AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
+					}
+				}
+			}
 		}
 		
 		var goscrambeln=function(node){
@@ -558,10 +569,10 @@ var pro_stunden_app=function(){
 		
 		this.Message=function(s,data){
 			if(s=="scramble"){
-				if(data!=undefined)goscrambeln(data);
+				//if(data!=undefined)goscrambeln(data);
 			}
 			else
-console.log("MESSAGE",s,data);
+				console.log("MESSAGE",s,data);
 		}
 		
 		var sendMSG=function(s,data){
