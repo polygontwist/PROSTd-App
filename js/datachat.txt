@@ -11,4 +11,5 @@
 "selectProjekt"
 "createnewprojekt",data=id
 
+
 getDataTyp(o)//String:'[object Array]' '[object String]'  '[object Number]' '[object 

@@ -1012,7 +1012,7 @@ console.log("MESSAGE",s,data);
 					//gucken ob Stunden passend zum Filter da sind, dann Eintrag zeigen
 					for(t=0;t<o.data.stunden.length;t++){
 						std=o.data.stunden[t];						
-						a=parseInt(std.dat.split('-')[0]);						
+						a=parseInt(std.dat.split('-')[0]);		
 						if(!isNaN(a)){
 							if(jahrfilter==a)eintragen=true;
 						}
@@ -2394,6 +2394,9 @@ console.log("MESSAGE",s,data);
 				//HTMLNode löschen
 				var parentnode=this.parentNode;
 				parentnode.parentNode.removeChild(parentnode);
+				
+				//daten aktualisieren
+				refreshTab();
 			};
 			return false;
 		}
