@@ -9,6 +9,7 @@
 		"startdatum":"$HEUTE",
 		"enddatum":"",
 		"status":"",
+		"defaulttyp":"R",
 		"projektart":[],
 		"gruppe":[]
 	},

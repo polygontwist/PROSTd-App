@@ -95,8 +95,11 @@ var sprachen=[
 		 
 		 "getnewProName":"Wie soll das neue Projekt heißen?",
 		 "mesage_inputnamekurz":"Leider zu kurz, gebe bitte mindestens 3 Zeichen ein!",
-		 "mesage_inputnamenoinput":"Ohne Name kann ich kein neues Projekt anlegen."
+		 "mesage_inputnamenoinput":"Ohne Name kann ich kein neues Projekt anlegen.",
 		 
+		 "datdefaulttyp":"Defaultstundentyp",
+		 "datshowscramblebutt":"Developertoolbutton anzeigen",
+		 "datstundenproArbeitstag":"Stunden pro Arbeitstag"
 		 
 		}
 	},

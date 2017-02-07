@@ -368,12 +368,16 @@ nav #tabnav a.tabaktiv:after{
 	padding-top: 6px;
 }
 
-.tab_editTag,.tab_editUeberblick,.tab_editProj{
+.tab_editTag,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen{
 	position:absolute;
 	top:54px;
 	width:100%;
 	height:calc(100% - 54px);
 	overflow:hidden;
+}
+.tab_editEinstellungen{
+	top:0px;
+	height:100%;
 }
 /*--Monatsliste--*/
 
@@ -1027,6 +1031,22 @@ input.booleanswitch:checked ~ label:after{
 .scramblebutt input.booleanswitch:checked ~ label:after{content:"";}
 
 
+/*-------------progeinstellungen-------------*/
+.progeinstellungen{
+	border: 0px solid #000;
+	position:relative;
+	width:99%;
+	height:100%;
+	overflow:auto;
+	margin-left:1%;
+}
+
+.progeinstellungen input[type=number] {
+    width: 70px;
+	text-align:center;
+}
+
+
 /*-------------MSG-Dialog-------------*/
 #statusMSG{
 	display:inline-block;
@@ -1075,7 +1095,7 @@ input.booleanswitch:checked ~ label:after{
 }
 
 /* responsive */
-@media screen and (max-width: 566px) {
+@media screen and (max-width: 650px) {
 	nav .logo{display:none;}
 }
 @media screen and (max-width: 700px) {

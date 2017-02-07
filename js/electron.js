@@ -518,8 +518,6 @@ var AppBridge=function(){
 
 var AppeleWin=function(){
 	var win=remote.getCurrentWindow();
-	//console.log(win.getBounds());
-	//win.setSize(900,900);
 	
 	var ini=function(){
 		
@@ -538,9 +536,6 @@ var AppeleWin=function(){
 		
 		console.log(":documents:",app.app.getPath('documents'));
 		*/
-		//var r=fs.openSync(basepathDATA+"optionen.txt","a");
-		//console.log(r);
-		//fs.closeSync(r);
 		
 		var userdokumente=app.app.getPath('documents');// C:\Users\andreas\Documents !
 		var tmp;
@@ -599,15 +594,22 @@ var AppeleWin=function(){
 		console.log(":Directory:",fs.readdirSync(basepathDATA));
 		//console.log(":Directory:",fs.readdirSync(basepath+'/userData'));
 		
-		//http://electron.atom.io/docs/api/web-contents/
+		//SetWindowSize
 		
-		/*console.log("##",app);
-		app.app.on('move',resizer);
-		app.app.on('moved',resizer);
-		app.app.on('resize',resizer);
-		*/
-		//window.addEventListener('move',resizer );	
-		//window.addEventListener('moved',resizer );	
+		if(fs.existsSync(basepathDATA+"optionen.txt")){
+			var r=fs.readFileSync(basepathDATA+"optionen.txt",'utf-8',"a");
+			if(r!=""){
+				var optionen=JSON.parse(r);
+				if(optionen.windowsize!=undefined){
+					win.setPosition(optionen.windowsize.x,optionen.windowsize.y);
+					if(optionen.windowsize.width>0 && optionen.windowsize.height>0)
+						win.setSize(optionen.windowsize.width,optionen.windowsize.height);
+				}
+			}
+		}
+		//console.log("##",win);
+		win.on('move',resizer);//OK
+		//http://electron.atom.io/docs/api/web-contents/
 		window.addEventListener('resize',resizer );
 		
 		if(firststart)
@@ -615,15 +617,15 @@ var AppeleWin=function(){
 	}
 	
 	var resizer=function(event){
-		//console.log(">>",globaldata);
-			//mainWindow.webContents.openDevTools()
-			//app.BrowserWindow
-			var win=remote.getCurrentWindow();
-			var bereich=win.getBounds();// x: 279, y: 84, width: 1250, height: 640
-			console.log(bereich);
+		//var win=remote.getCurrentWindow();
+		var bereich=win.getBounds();// x: 279, y: 84, width: 1250, height: 640
+		
+		if(typeof(o_sysPROST)!="undefined")
+			if(o_sysPROST!=undefined){
+				o_sysPROST.Message("resize",bereich)
+			}
 	}
 	
-
 	ini();
 }
 
