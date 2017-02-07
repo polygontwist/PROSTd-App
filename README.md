@@ -9,8 +9,9 @@ Auf dem Screenshot sieht man ein Feld mit einem "R", hier trage ich die Art der 
 R = Realisation<br>
 K = Konzeption<br>
 Z = Reisezeit<br>
-U = Urlaub<br>
 B = Besprechnung<br>
+U = Urlaub<br>
+F = Feiertag<br>
 
 #Projekt bearbeiten#
 Für die Bearbeitung diese Projektes benötigt man:<br>
