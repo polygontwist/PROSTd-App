@@ -6,6 +6,7 @@ var pro_stunden_app=function(){
 	var optionsleiste=undefined;
 	var scramble=undefined;
 	var geladeneprojekte=undefined;
+	var _appthis=this;
 
 	var loadDataURL="getdata.php";
 	
@@ -13,7 +14,7 @@ var pro_stunden_app=function(){
 		{"id":"tab_editTag" ,"butttitel":"meinTag" ,aktiv:false, d_objekt:undefined}
 		,{"id":"tab_editProj","butttitel":"meinProj",aktiv:false, d_objekt:undefined}
 		,{"id":"tab_editUeberblick","butttitel":"ueberblick",aktiv:false, d_objekt:undefined}
-		//,{"id":"tab_editEinstellungen","butttitel":"einstellungen",aktiv:false, d_objekt:undefined}
+		,{"id":"tab_editEinstellungen","butttitel":"einstellungen",aktiv:false, d_objekt:undefined}
 	];
 	
 	//ids siehe Sprache
@@ -24,8 +25,11 @@ var pro_stunden_app=function(){
 	var lokalData={//als Einstellungen gespeichert
 		//projektlistfilter:undefined,
 		tabaktiv:0,
-		showscramblebutt:true
+		showscramblebutt:true,
+		stundenproArbeitstag:8,
+		windowsize:{x:0,y:0,width:0,height:0}
 	};
+	
 	
 //TODO:	
 //		-Ausertung: "alle" canvas +ber alle Jahre
@@ -336,7 +340,9 @@ var pro_stunden_app=function(){
 	this.ini=function(id){
 		var i,e,o;
 		basis=gE(id);
+		basis.innerHTML="";
 		tabnav=gE("tabnav");
+		tabnav.innerHTML="";
 		for(i=0;i<tabs.length;i++){
 			tabs[i].d_objekt=new createTab(basis,tabnav,tabs[i]);
 			tabs[i].d_objekt.ini();
@@ -351,6 +357,15 @@ var pro_stunden_app=function(){
 		
 		var ses=new sessionaliver();
 	}
+	
+	this.Message=function(s,data){
+		//console.log(s,data);
+		if(s=="resize"){
+			lokalData.windowsize=data;
+			saveOptionen(lokalData,false);
+		}
+	}
+	
 	
 	var parseoptiondata=function(data){
 		data=data.split("%7B").join("{");
@@ -454,7 +469,6 @@ var pro_stunden_app=function(){
 		}
 		var sdata="id="				+globaldata.user
 				+"&data="+JSON.stringify(lokalData);
-//console.log(sdata,lokalData);
 		loadData("setoptionen",parseSEToptiondata,"POST",encodeURI(sdata));//befehl="projektstundenlisteupdate"
 	}
 	var parseSEToptiondata=function(data){
@@ -681,6 +695,13 @@ var pro_stunden_app=function(){
 			sendMSG("selectFilterJahr",v);
 		}
 		
+		this.anzeigen=function(an){
+			if(an)
+				obasis.style.display="block";
+			else
+				obasis.style.display="none";
+		}
+		
 		create();
 	}
 	
@@ -890,7 +911,10 @@ var pro_stunden_app=function(){
 				odata.inhalte[i].destroy();
 			}
 			odata.inhalte=[];
-			if(optionsleiste!=undefined)odata.inhalte.push(optionsleiste);
+			if(optionsleiste!=undefined){
+				odata.inhalte.push(optionsleiste);
+				optionsleiste.anzeigen(true);
+				}
 			if(scramble!=undefined)odata.inhalte.push(scramble);
 			if(geladeneprojekte!=undefined)odata.inhalte.push(geladeneprojekte);
 						
@@ -931,10 +955,11 @@ var pro_stunden_app=function(){
 			if(id=="tab_editEinstellungen"){
 				//Einstellungen
 				//user css, hilfstexte an/aus (Anzeigedauer)
-//TODO
+				inhaltsobjekt=new Progeinstellungen(odata.content);
+				odata.inhalte.push(inhaltsobjekt);
 				
-				//...
 				document.title=getWort("einstellungen");
+				if(optionsleiste!=undefined)optionsleiste.anzeigen(false);
 			}
 			
 			
@@ -1804,6 +1829,8 @@ var pro_stunden_app=function(){
 		var projekte=[];
 		var projektepointer=-1;
 		var stundenprotag=8;
+		if(lokalData.stundenproArbeitstag!=undefined)
+				stundenprotag=lokalData.stundenproArbeitstag;
 		
 		var _this=this;
 		var connects=[];
@@ -1869,14 +1896,19 @@ var pro_stunden_app=function(){
 				if(trselect.data.tag<10)thetag+="0";
 				thetag+=trselect.data.tag;
 				
-			var a,inp,selectlist,slistopt;
+			var a,inp,selectlist,slistopt,defaulttyp="R";
 			var HTMLnode=gE(id);
 			if(HTMLnode==undefined && data.data!=undefined){
+				
+				if(data.data.info!=undefined && data.data.info.defaulttyp!=undefined){
+					defaulttyp=data.data.info.defaulttyp;
+				}
+				
 				var stagstundeneintrag={
 					"dat":thetag,
 					"kommentar":"",
 					"stunden":0,
-					"typ":"R",
+					"typ":defaulttyp,					
 					"user":globaldata.user
 				};
 				
@@ -1913,7 +1945,8 @@ var pro_stunden_app=function(){
 			
 			var isturlaub=data.datstd.typ.indexOf("U")>-1;
 			var istfeiertag=data.datstd.typ.indexOf("F")>-1;
-						
+			
+			//css auf tr
 			if(isturlaub)
 				addClass(ziel.parentNode,"urlaub");
 				else
@@ -1921,6 +1954,9 @@ var pro_stunden_app=function(){
 				addClass(ziel.parentNode,"feiertag");
 				else
 				addClass(ziel.parentNode,"hatdata");
+			
+			addClass(ziel.parentNode,"tr_"+data.data.projektdata.id);
+			
 			
 			var o_sibling={
 					timer:undefined,
@@ -2392,11 +2428,12 @@ var pro_stunden_app=function(){
 			e.stopPropagation();
 			return false;}
 		var klickProjektInListe=function(e){
-			var i;
+			var i,delid,lasttyp;
 			//dialog zum löschen?
 			if(confirm(getWort("deleteeintrag"))){
 				this.data.datstunde.deleting=true;
-				
+				delid=this.data.projektdata.id;
+				lasttyp=this.data.datstunde.typ;
 				postNewStundenData({"typ":"del","projektdata": this.data.projektdata, "datstunde": this.data.datstunde });
 				
 				//Listenelement löschen
@@ -2411,7 +2448,14 @@ var pro_stunden_app=function(){
 				
 				//HTMLNode löschen
 				var parentnode=this.parentNode;
+				var tr=parentnode.parentNode.parentNode;
 				parentnode.parentNode.removeChild(parentnode);
+				
+				//CSS im TR zurücksetzen
+				subClass(tr,delid);
+				subClass(tr,"tr_"+delid);
+				if(lasttyp=="U")subClass(tr,"urlaub");
+				if(lasttyp=="F")subClass(tr,"feiertag");
 				
 				//daten aktualisieren
 				refreshTab();
@@ -2497,14 +2541,225 @@ var pro_stunden_app=function(){
 		
 	}
 
+	var Progeinstellungen=function(zielnode){
+		var ziel=zielnode;
+		var basis=undefined;
+		var _this=this;
+		var connects=[];
+		var optionen;
+		
+		this.ini=function(){//create
+			basis=cE(ziel,"div",undefined,"progeinstellungen");
+		}
+		this.destroy=function(){}
+		this.connect=function(objekt){
+			if(objekt!=undefined)
+				connects.push(objekt);
+			return _this;
+		}
+		
+		this.Message=function(s,data){console.log(s,data);
+			if(s=="allProjektsloaded"){
+				loadData("getoptionen",parseoptiondata,"GET");//
+			}
+		}
+		var sendMSG=function(s,data){
+			var i;
+			for(i=0;i<connects.length;i++){
+				connects[i].Message(s,data);
+			}
+		}
+		
+		var parseoptiondata=function(data){
+			//basis
+			data=data.split("%7B").join("{");
+			data=data.split("%7D").join("}");
+			data=data.split("%22").join('"');
+			data=JSON.parse(data);
+			//check error
+			if(data.status!=undefined){
+					if(data.status!=msg_OK)
+						handleError(data.status);
+					else{
+						showOptionen(data)
+					}
+				}	
+		}
+		
+		//{"user":"lokal","dat":{"tabaktiv":3,"showscramblebutt":true},"lastaction":"getoptionen","status":"OK"}
+		var showOptionen=function(data){
+			var i,tab,th,tr,td,anzeigen,inp;
+			var speichern=false;
+			var o_sibling={
+					timer:undefined,
+					elemente:[]
+				};
+				
+			//wenn es die noch nicht gibt, erzeugen:
+			if(data.dat.stundenproArbeitstag==undefined){
+				data.dat.stundenproArbeitstag=8;
+				speichern=true;
+			}
+			if(typeof(globaldata)!="undefined")
+			if(globaldata.modus!=undefined){
+				if(globaldata.modus=="app"){
+					if(data.dat.windowsize==undefined){
+						data.dat.windowsize={x:0,y:0,width:0,height:0};
+					}
+				}
+			}
+			
+			optionen=data.dat;
+			
+			var proginputs=[];
+			basis.innerHTML="";
+			
+			tab=cE(basis,"table");
+			for( property in optionen ) {
+				anzeigen=true;
+				
+				//auslassen:
+				if(property=="tabaktiv")anzeigen=false;
+				if(property=="windowsize")anzeigen=false;
+				//console.log(">>",property);
+				
+				if(anzeigen){
+					tr=cE(tab,"tr");
+					td=cE(tr,"td");
+					td.innerHTML=getWort("dat"+property)+':';
+					td=cE(tr,"td");
+					inp=cE(td,"input");
+					inp.value=encodeString(optionen[property]);
+					inp.data={"property":property,"node":optionen ,"nodeid":property,"o_sibling":o_sibling};
 
+					if(getDataTyp(optionen[property])=='[object Boolean]'){
+						inp.type="checkbox";
+						inp.id='cb_'+property;
+						inp.checked=optionen[property];
+						addClass(inp,"booleanswitch");
+						label=cE(td,"label");
+						label.htmlFor=inp.id;					
+					}
+					if(getDataTyp(optionen[property])=='[object Number]'){
+						inp.type="number";
+						inp.step=1;
+					}
+					proginputs.push(inp);
+				}
+				
+			}
+			
+			for(i=0;i<proginputs.length;i++){
+				if(proginputs[i].readOnly!=true){
+					proginputs[i].addEventListener('keyup' ,changeActivityInput);
+					proginputs[i].addEventListener('change',changeActivityInput);
+					//console.log(proginputs[i].type);//number,text,checkbox
+				}
+			}
+			
+			
+			if(speichern)saveOptionen(optionen,true);
+		}
+		var changeActivityInput=function(e){//'keyup'/'change'
+			var val=this.value;
+			if(this.type=="checkbox")val=this.checked;
+			
+			//test ob sich der Wert geändert hat (sonst wurde er schon gespeichert)
+			var istanders=!((this.data.node[this.data.nodeid]+'')==(val+''));
+			if(this.type=="checkbox")istanders=true;
+			if(e.type=="keyup" && e.keyCode==13)istanders=true;
+			if(!istanders)return;
+			
+			//'[object Array]' '[object String]'  '[object Number]' 
+			//neu abspeichern
+			var dtyp=getDataTyp(this.data.node[this.data.nodeid]);
+			if( dtyp=== '[object Array]'){
+				this.data.node[this.data.nodeid]=val.split(',');//in Array wandeln, Trenner ist ein Komma
+			}
+			else
+			if( dtyp=== '[object Number]'){
+				if(isNaN(parseFloat(val)))val=0;
+				this.data.node[this.data.nodeid]=parseFloat(val); //Number
+			}
+			else
+			if( dtyp=== '[object Boolean]'){					//boolean
+				this.data.node[this.data.nodeid]=val;
+			}
+			else{
+				this.data.node[this.data.nodeid]=decodeString(val); //String
+			}
+			
+			if(this.data.o_sibling.timer!=undefined){
+				clearTimeout(this.data.o_sibling.timer);
+				this.data.o_sibling.timer=undefined;
+			}
+			addClass(this,"isedit");
+			
+			if(dtyp!= '[object Boolean]'){
+				if(e.type=="keyup" && e.keyCode==13){
+					senddatatimer(this);				
+				}
+				else{
+					//sonst etwas warten ob noch weitere Eingaben kommen
+					this.data.o_sibling.timer=setTimeout(senddatatimer,2000,this);//2 sec warten, dann senden, es sei vorher kommen neue daten
+				}
+			}else{
+				senddatatimer(this);
+			}
+		}
+		
+		var senddatatimer=function(input){
+			var i;
+			//editmarker entfernen
+			for(i=0;i<input.data.o_sibling.elemente.length;i++){
+				subClass(input.data.o_sibling.elemente[i],"isedit");
+			}
+			saveOptionen(optionen,true);
+		}
+	}
+	
+	var saveOptionen=function(optionen,sysreload){
+		var sdata="id="+globaldata.user
+				+"&data="+JSON.stringify(optionen);
+		lokalData=optionen;
+		if(sysreload)
+			loadData("setoptionen",parseOptionenSaved,"POST",encodeURI(sdata));
+			else
+			loadData("setoptionen",parseOptionenSavedNORL,"POST",encodeURI(sdata));
+	}
+	var parseOptionenSaved=function(data){
+		data=JSON.parse(data);
+		//check error
+		if(data.status!=undefined){
+			if(data.status!=msg_OK)
+				handleError(data.status);
+			else{
+				statusDlg.show("",getWort("aenderungsaved"),"statok");
+				ProgReload();
+			}
+		}
+	}
+	var parseOptionenSavedNORL=function(data){
+		data=JSON.parse(data);
+		//check error
+		if(data.status!=undefined){
+			if(data.status!=msg_OK)
+				handleError(data.status);
+			else{
+				
+			}
+		}
+	}
+	var ProgReload=function(){
+		_appthis.ini(basis.id);
+	}
 }
 
 //Maincontainer
 document.write("<div id='app_psa'></div>");
-
+var o_sysPROST;
 //Start nach dem Laden
 window.addEventListener('load', function (event) {
-		var o_sys=new pro_stunden_app();
-		o_sys.ini("app_psa");
+		o_sysPROST=new pro_stunden_app();
+		o_sysPROST.ini("app_psa");
 	});
