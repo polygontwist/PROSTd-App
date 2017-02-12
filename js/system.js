@@ -2588,7 +2588,7 @@ var pro_stunden_app=function(){
 		
 		//{"user":"lokal","dat":{"tabaktiv":3,"showscramblebutt":true},"lastaction":"getoptionen","status":"OK"}
 		var showOptionen=function(data){
-			var i,tab,th,tr,td,anzeigen,inp;
+			var i,tab,th,tr,td,anzeigen,inp,property,label;
 			var speichern=false;
 			var o_sibling={
 					timer:undefined,
