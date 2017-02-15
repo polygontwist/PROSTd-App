@@ -86,6 +86,10 @@ var sprachen=[
 		 "datkommentar":"Kommentar",
 		 "datuser":"Benutzer",
 		 
+		 "version":"Version",
+		 "projektpage":"die Projektpage liegt auf",
+		 "speicherort":"Deine Daten liegen in",
+		 
 		 "wahleprojekt":"Wähle das zu bearbeitende Projekt aus!",
 		 "buttdel":"löschen",
 		 "inp_newProj":"Projektname",
