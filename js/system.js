@@ -1780,10 +1780,10 @@ var pro_stunden_app=function(){
 				if(o.data.stunden.length==0)eintragen=true;
 				
 				if(eintragen){
-					tr=cE(tbody,"tr",undefined,"tr_"+o.id);
+					tr=cE(tbody,"tr",undefined,"pltr_"+o.id);
 					tr.data=o;			
-					td=cE(tr,"td",undefined,"td_"+o.id);				
-					a=cE(td,"a",undefined,"a_"+o.id);
+					td=cE(tr,"td",undefined,"pltd_"+o.id);				
+					a=cE(td,"a",undefined,"pla_"+o.id);
 					a.data=o;
 					a.innerHTML=encodeString(o.data.titel);
 					a.href="#";
