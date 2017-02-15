@@ -34,12 +34,7 @@ var pro_stunden_app=function(){
 //TODO:	
 //		-Ausertung: "alle" canvas +ber alle Jahre
 //				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttiitel)
-//		-[OK]Monat: scrollTo aktuellen Tag? (filter/tabs 'nach jahr')
-//		-Filter Projektlist? ('nach jahr'[ok],'Name','Datum') oder als Icon in Liste
-//		-Passwort: new (www)
-//		-user css[prog:ok]
-//		Monatsauswertung
-//		-Projektdatum von letzten Stunden-Item nehmen
+//		Passwort: new (www)
 	
 	//--"const"--
 	var msg_nouser="404:no user",
@@ -174,18 +169,27 @@ var pro_stunden_app=function(){
 			return s;
 	}
 	
-	var loadData=function(url, auswertfunc,getorpost,daten){
-		
+	var isAppBridge=function(){
 		if(typeof(globaldata)!="undefined")
 		if(globaldata.modus!=undefined){
 			if(globaldata.modus=="app"){
 				if(typeof(AppBridge)!="undefined"){
-					var AB=new AppBridge();
-					AB.DataIO(url, auswertfunc,getorpost,daten);
+					return true;
 				}
-				return;
 			}
 		}
+		return false;
+	}
+	
+	
+	var loadData=function(url, auswertfunc,getorpost,daten){
+		
+		if(isAppBridge()){
+			var AB=new AppBridge();
+			AB.DataIO(url, auswertfunc,getorpost,daten);
+			return;
+		}
+		
 		
 		var loObj=new Object();
 		loObj.url=url;    
@@ -543,16 +547,13 @@ var pro_stunden_app=function(){
 		
 		var changeInput=function(e){
 			var isApp=false;
-			if(typeof(globaldata)!="undefined")
-				if(globaldata.modus!=undefined){
-					if(globaldata.modus=="app"){
-						if(typeof(AppBridge)!="undefined"){
-							var AB=new AppBridge();
-							AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
-							isApp=true;
-						}
-					}
-				}
+			
+			if(isAppBridge()){
+				var AB=new AppBridge();
+				AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
+				isApp=true;
+			}
+				
 			if(!isApp){
 				aktiv=this.checked;
 			}
@@ -584,9 +585,7 @@ var pro_stunden_app=function(){
 		}
 		
 		this.Message=function(s,data){
-			var isApp=false;
-			if(typeof(globaldata)!="undefined" && typeof(AppBridge)!="undefined")
-				if(globaldata.modus=="app") isApp=true;
+			var isApp=isAppBridge();
 			
 			
 			if(s=="scramble"){
@@ -1783,8 +1782,8 @@ var pro_stunden_app=function(){
 				if(eintragen){
 					tr=cE(tbody,"tr");
 					tr.data=o;			//für Filter
-					td=cE(tr,"td");				
-					a=cE(td,"a");
+					td=cE(tr,"td",undefined,"td_"+o.id);				
+					a=cE(td,"a",undefined,"p_"+o.id);
 					a.data=o;
 					a.innerHTML=encodeString(o.data.titel);
 					a.href="#";
@@ -2588,7 +2587,7 @@ var pro_stunden_app=function(){
 		
 		//{"user":"lokal","dat":{"tabaktiv":3,"showscramblebutt":true},"lastaction":"getoptionen","status":"OK"}
 		var showOptionen=function(data){
-			var i,tab,th,tr,td,anzeigen,inp,property,label;
+			var i,tab,th,tr,td,anzeigen,inp,property,label,a;
 			var speichern=false;
 			var o_sibling={
 					timer:undefined,
@@ -2615,6 +2614,53 @@ var pro_stunden_app=function(){
 			basis.innerHTML="";
 			
 			tab=cE(basis,"table");
+			
+			if(isAppBridge()){
+				var app=remote.app;
+				tr=cE(tab,"tr");
+				td=cE(tr,"td");
+				td.innerHTML=getWort("version")+':';
+				td=cE(tr,"td");
+				td.innerHTML=app.getVersion();	
+				
+				tr=cE(tab,"tr");
+				td=cE(tr,"td");
+				td.innerHTML=getWort("projektpage")+':';
+				td=cE(tr,"td");
+				a=cE(td,"a");
+				a.href="#";
+				a.innerHTML="github.com/polygontwist/PROSTd-App";
+				a.target="_blank";	
+				a.onclick=function(e){
+					var shell = remote.shell;
+					shell.openExternal("https://github.com/polygontwist/PROSTd-App");
+					return false;
+				}
+				
+				
+				var userdokumente=app.getPath('documents');
+				tr=cE(tab,"tr");
+				td=cE(tr,"td");
+				td.innerHTML=getWort("speicherort")+':';
+				td=cE(tr,"td");
+				
+				a=cE(td,"a");
+				a.href="#";
+				a.innerHTML=userdokumente+"\\PROSTd\\userData";
+				a.target="_blank";	
+				a.onclick=function(e){
+					var shell = remote.shell;
+					shell.showItemInFolder(userdokumente+"\\PROSTd\\userData\\");
+					return false
+				}
+				
+				tr=cE(tab,"tr");
+				td=cE(tr,"td");
+				td.innerHTML='<br>';
+				td=cE(tr,"td");
+			}
+			
+			
 			for( property in optionen ) {
 				anzeigen=true;
 				
