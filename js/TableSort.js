@@ -2,16 +2,59 @@
 // Jürgen Berkemeier, 7. 7. 2016
 // www.j-berkemeier.de
 
+/*
+	ak:todo:
+	-icons umstellen auf :after
+	-sortierung von 01.12.2013 nicht imer richtig?
+	
+*/
 	
 
 	"use strict";
-
+/*
 	var JB_sortbutStyle = document.createElement('style'); // Stylesheet für Button im TH
 	JB_sortbutStyle.innerText = 'button.sortbut { width:100%; height:100%; border: none; background-color: transparent; font: inherit; color: inherit; text-align: inherit; padding: 0; cursor: pointer; } button.sortbut::-moz-focus-inner { margin: -1px; border-width: 1px; padding: 0; }';
 	document.head.appendChild(JB_sortbutStyle);
-
+*/
 	var JB_Table = function(tab) {
+	//ak:helper
+		var istClass=function(htmlNode,Classe){
+			if(htmlNode!=undefined && htmlNode.className){
+				var i,aClass=htmlNode.className.split(' ');
+				for(i=0;i<aClass.length;i++){
+						if(aClass[i]==Classe)return true;
+				}	
+			}		
+			return false;
+		}
+		var addClass=function(htmlNode,Classe){	
+			var newClass;
+			if(htmlNode!=undefined){
+				newClass=htmlNode.className;
+				if(newClass==undefined || newClass=="")newClass=Classe;
+				else
+				if(!istClass(htmlNode,Classe))newClass+=' '+Classe;			
+				htmlNode.className=newClass;
+			}			
+		}
+		var subClass=function(htmlNode,Classe){
+			var aClass,i;
+			if(htmlNode!=undefined && htmlNode.className!=undefined){
+				aClass=htmlNode.className.split(" ");	
+				var newClass="";
+				for(i=0;i<aClass.length;i++){
+					if(aClass[i]!=Classe){
+						if(newClass!="")newClass+=" ";
+						newClass+=aClass[i];
+						}
+				}
+				htmlNode.className=newClass;
+			}
+		}
+
 	
+	
+	//sortTab
 		var up 		=String.fromCharCode(9650);
 		var down 	=String.fromCharCode(9660);
 		// var up = String.fromCharCode(8593);
@@ -68,23 +111,34 @@
 			init: function(t,s) {
 				var tt = t.querySelector("button");
 				var sp = tt.getElementsByTagName("span");
+				var tn;
 				for(var i=0;i<sp.length;i++) {
 					if(!sp[i].hasChildNodes()) {
-						
-						t.sym = sp[i].appendChild(document.createTextNode(s));
-						//t.sym = sp[i].appendChild(document.createElement("span"));
-						//t.sym.innerHTML=s;
+						tn=document.createTextNode(s);
+						t.sym = tn;//sp[i].appendChild(tn);
+						//console.log("add1",tn,t.sym);
 						break;
 					}
 				}
 				if(typeof(t.sym)=="undefined") {
-						t.sym = tt.appendChild(document.createTextNode(s));
-						//t.sym = tt.appendChild(document.createElement("span"));
-						//t.sym.innerHTML=s;					
+						tn=document.createTextNode(s);
+						t.sym = tn;//tt.appendChild(tn);
+						//console.log("add2",tn,t.sym);
 					}
 			},
 			set: function(t,s) {
-				t.sym.data = s;
+				t.sym.data = s;				
+				
+				var butt=t.querySelector("button");
+				subClass(butt,"sortsym_up");
+				subClass(butt,"sortsym_down");
+				if(s==up){
+					addClass(butt,"sortsym_up");
+				}
+				if(s==down){
+					addClass(butt,"sortsym_down");
+				}
+				//console.log("::",t.sym,t.sym.data);
 			},
 			get: function(t) {
 				return t.sym.data;

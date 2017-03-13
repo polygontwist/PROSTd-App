@@ -27,6 +27,34 @@ body.main{
 
 
 
+/*Tabellensortierungsbutton*/
+
+button.sortbut 
+	{ 
+	width:100%; 
+	height:100%; 
+	border: none; 
+	background-color: transparent; 
+	font: inherit; 
+	color: inherit; 
+	text-align: inherit; 
+	padding: 0; 
+	cursor: pointer; 
+	} 
+button.sortbut::-moz-focus-inner {
+	margin: -1px; 
+	border-width: 1px; 
+	padding: 0; 
+}
+
+button.sortbut:after{
+	content:"";
+	width:13px;/*min 11px*/
+	display:inline-block;
+}
+button.sortsym_up:after{content:"▲"}
+button.sortsym_down:after{content:"▼"}
+
 /*allgemein*/
 
 button.sortbut{
@@ -359,7 +387,7 @@ nav #tabnav a.tabaktiv:after{
 .pannel{display:block;}
 .panelinaktiv{display:none;}
 
-/*-------------Tabs-------------*/
+/*-------------Optionsleiste-------------*/
 #optionsleiste{
 	position:absolute;
 	top:0;left:0;
@@ -367,6 +395,23 @@ nav #tabnav a.tabaktiv:after{
 	width:100%;
 	padding-top: 6px;
 }
+
+#optionsleiste table td{
+	padding-right:10px;
+	vertical-align:top;
+}
+
+#optionsleiste span{
+	vertical-align:top;
+}
+
+#cb_filter_zeigebeendete ~ label{
+	margin-left:10px;
+}
+
+/*------------- s-------------*/
+
+
 
 .tab_editTag,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen{
 	position:absolute;
@@ -695,6 +740,17 @@ nav #tabnav a.tabaktiv:after{
 	color:#000;
 	margin-left:10px;
 	position:relative;
+}
+
+.projektliste a.projektistbeendet:before{
+	content:"";
+	border-left:2px solid #409c45;
+	border-bottom:2px solid #409c45;
+	transform:rotate(-45deg);
+	display:inline-block;
+	width:10px;
+	height:6px;
+	margin-right:5px;
 }
 
 .projektliste .plistdat{

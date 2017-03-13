@@ -8,6 +8,7 @@
 		"projektleiter":"",
 		"startdatum":"$HEUTE",
 		"enddatum":"",
+		"geplantestunden":0,
 		"status":"",
 		"defaulttyp":"R",
 		"projektart":[],
