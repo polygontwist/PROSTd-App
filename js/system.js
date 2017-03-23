@@ -2759,7 +2759,7 @@ var pro_stunden_app=function(){
 				td.innerHTML=getWort("version")+':';
 				td=cE(tr,"td");
 				td.innerHTML=app.getVersion();	
-				
+			}
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
 				td.innerHTML=getWort("projektpage")+':';
@@ -2767,14 +2767,21 @@ var pro_stunden_app=function(){
 				a=cE(td,"a");
 				a.href="#";
 				a.innerHTML="github.com/polygontwist/PROSTd-App";
-				a.target="_blank";	
-				a.onclick=function(e){
-					var shell = remote.shell;
-					shell.openExternal("https://github.com/polygontwist/PROSTd-App");
-					return false;
+				a.target="_blank";
+			if(isAppBridge()){
+					a.onclick=function(e){
+						var shell = remote.shell;
+						shell.openExternal("https://github.com/polygontwist/PROSTd-App");
+						return false;
+					}
+				}
+				else{
+					a.href="https://github.com/polygontwist/PROSTd-App";
+					a.target="_blank";
 				}
 				
 				
+			if(isAppBridge()){
 				var userdokumente=app.getPath('documents');
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
