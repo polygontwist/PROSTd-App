@@ -12,6 +12,7 @@ var pro_stunden_app=function(){
 	
 	var tabs=[
 		{"id":"tab_editTag" ,"butttitel":"meinTag" ,aktiv:false, d_objekt:undefined}
+		,{"id":"tab_editTodolist","butttitel":"todo",aktiv:false, d_objekt:undefined}
 		,{"id":"tab_editProj","butttitel":"meinProj",aktiv:false, d_objekt:undefined}
 		,{"id":"tab_editUeberblick","butttitel":"ueberblick",aktiv:false, d_objekt:undefined}
 		,{"id":"tab_editEinstellungen","butttitel":"einstellungen",aktiv:false, d_objekt:undefined}
@@ -870,7 +871,10 @@ var pro_stunden_app=function(){
 			jahrdata={min:d.getFullYear(),max:d.getFullYear(),jahre:{}};
 			for(i=0;i<projekte.length;i++){
 				proj=projekte[i];
-				//console.log("#>",proj);
+
+				if(proj!=undefined)
+				if(proj.data!=undefined)
+				if(proj.data.stunden!=undefined)
 				for(t=0;t<proj.data.stunden.length;t++){
 					std=proj.data.stunden[t];
 					jahr=parseInt(std.dat.split("-")[0]);//"2016-12-26"
@@ -968,6 +972,20 @@ var pro_stunden_app=function(){
 				inhaltsobjekt.showactions(false);
 				document.title=getWort("meinTag");
 			}
+			
+			if(id=="tab_editTodolist"){
+				//Projekte,TODO-Liste
+				//editorProjekt
+				inhaltsobjekt=new editorTODO(odata.content);
+				odata.inhalte.push(inhaltsobjekt);
+				//div->Projektliste
+				inhaltsobjekt=new Projektliste(odata.content);
+				odata.inhalte.push(inhaltsobjekt);
+				inhaltsobjekt.showactions(true);
+				document.title=getWort("meinProj");
+				
+			}
+			
 			if(id=="tab_editProj"){
 				//Projekte, neu, edit
 				//editorProjekt
@@ -1312,6 +1330,291 @@ var pro_stunden_app=function(){
 		}
 	}
 	
+	var editorTODO=function(zielnode){
+		/*
+			TODO-Liste von Projekten
+			Projekteigenschaften:
+			.intodo=true //"isended":true
+			.todotext=""
+		*/
+		var ziel=zielnode;
+		var _this=this;
+		var connects=[];
+		var projektaktiv=undefined;
+		var projinputs=[];
+		
+		var todoliste=[];
+		var tab=undefined;
+		var tbody;
+		
+		this.ini=function(){
+			//create
+			basis=cE(ziel,"div",undefined,"editorTODO");
+			basis.innerHTML="";
+			tab=cE(basis,"table");
+		}
+		this.destroy=function(){
+			
+		}
+		this.connect=function(objekt){
+			if(objekt!=undefined)
+				connects.push(objekt);
+			return _this;
+		}
+		
+		this.Message=function(s,data){
+			if(s=="allProjektsloaded"){
+				showTODOdata(data);
+			}
+			if(s=="selectProjekt"){
+				addProjectToTODO(data);
+				sendMSG("deselect",undefined);
+			}
+		}
+		
+		var sendMSG=function(s,data){
+			var i;
+			for(i=0;i<connects.length;i++){
+				connects[i].Message(s,data);
+			}
+		}
+		
+		
+		var sortbynr=function(a,b){
+			var ad=a.data.info.todonr;
+			var bd=b.data.info.todonr;	
+			return ad>bd;
+		}		
+		
+		var showTODOdata=function(data){
+			var i,o,
+				liste=data.projekte;
+				
+			basis.innerHTML="";
+			todoliste=[];
+			
+			for(i=0;i<liste.length;i++){
+				o=liste[i];
+				if(o.data!=undefined)
+				if(o.data.info!=undefined)
+				if(o.data.info.intodo!=undefined)
+				if(o.data.info.intodo===true){
+					//anzeigen
+					if(o.data.info.todonr==undefined){
+						o.data.info.todonr=todoliste.length;				
+					}					
+					todoliste.push(o);
+				}
+			}
+			
+			todoliste=todoliste.sort(sortbynr);
+			
+			tab=cE(basis,"table");
+			tbody=cE(tab,"tbody");
+			
+			
+			var newnum=false;
+			for(i=0;i<todoliste.length;i++){
+				o=todoliste[i];
+				addItem(o,i);
+				if(o.data.info.todonr!=i){
+					o.data.info.todonr=i;
+					postNewData("projektinfoupdate",{"projektdata": o, "daten": o.data.info,"noreload":true });
+					newnum=true;
+				}
+			}
+			if(newnum){
+				//MESSAGE reloadprojektlist undefined
+				sendMSG("reloadprojektlist",undefined);
+			}
+		}
+		
+		
+		var addProjectToTODO=function(projekt){//von Projektliste übernehmen
+			projekt.data.info.intodo=true;
+			if(projekt.data.info.todotext==undefined){
+				projekt.data.info.todotext="";				
+			}
+			
+			projekt.data.info.todonr=todoliste.length;				
+			
+			
+			addItem(projekt,todoliste.length);
+			todoliste.push(projekt);
+			
+			//save Data
+			//sendMSG("addProjekt",projekt.dat);
+			
+			//console.log("projekt",projekt);
+			postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info });
+		}
+		
+		var addItem=function(projekt,nr){
+			var tr,td,input,saving=false;
+			if(tab==undefined)return;
+			if(projekt.data.info.todotext==undefined){
+				projekt.data.info.todotext="";				
+			}
+			
+			tr=cE(tbody,"tr");
+			
+			td=cE(tr,"td",undefined,"todoNR");
+			td.innerHTML="#"+projekt.data.info.todonr;
+			
+			td=cE(tr,"td");
+			if(nr>0){
+				input=cE(td,"input");
+				input.className="button buttUP";
+				input.type="button";
+				input.value=getWort("butt_up");
+				input.data={"projektdata":projekt};
+				input.addEventListener('click' ,listeUP);
+			}
+		
+			td=cE(tr,"td");
+			if(nr<todoliste.length-1){
+				input=cE(td,"input");
+				input.className="button buttDOWN";
+				input.type="button";
+				input.value=getWort("butt_down");
+				input.data={"projektdata":projekt};
+				input.addEventListener('click' ,listeDOWN);
+			}
+			
+			td=cE(tr,"td");
+			td.innerHTML=projekt.data.titel;
+			
+			td=cE(tr,"td");
+			input=cE(td,"input",undefined,"todoText");
+			input.type="text";
+			input.data={"projektdata":projekt,"node":projekt.data.info.todotext,"timer":undefined};
+			input.value=projekt.data.info.todotext;
+					
+			input.addEventListener('keyup' ,changeTextInput);
+			input.addEventListener('change',changeTextInput);
+			
+			td=cE(tr,"td");
+			input=cE(td,"input");
+			input.className="button buttdel";
+			input.type="button";
+			input.value=getWort("butt_entfernen");
+			input.data={"projektdata":projekt};
+			input.addEventListener('click' ,delfromlist);
+			
+			
+		}
+		
+		var listeUP=function(e){//console.log(this.data.projektdata.data.info);
+			var projekt=this.data.projektdata;
+			var idat=projekt.data.info;  
+			var nr=idat.todonr;
+			var newnr=nr-1;
+			if(newnr<0){
+				console.log(":-/");
+				return;
+				}
+			
+			var pn=getProjNr(newnr);
+			if(pn!=undefined){
+				pn.data.info.todonr=nr;
+				projekt.data.info.todonr=newnr;
+				//save
+				postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info ,"noreload":true});
+				postNewData("projektinfoupdate",{"projektdata": pn, "daten": pn.data.info });
+			}
+		}
+		var listeDOWN=function(e){//console.log(this.data);
+			var projekt=this.data.projektdata;
+			var idat=projekt.data.info;  
+			var nr=idat.todonr;
+			var newnr=nr+1;
+			
+			var pn=getProjNr(newnr);
+			if(pn!=undefined){
+				pn.data.info.todonr=nr;
+				projekt.data.info.todonr=newnr;
+				//save
+				postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info,"noreload":true });
+				postNewData("projektinfoupdate",{"projektdata": pn, "daten": pn.data.info });
+			}
+		}
+		
+		var getProjNr=function(nr){
+			var i,o;			
+			for(i=0;i<todoliste.length;i++){
+				o=todoliste[i];
+				if(o.data.info.todonr==nr){
+					return o;
+				}
+			}
+			return undefined;
+		}
+		
+		var delfromlist=function(s){
+			this.data.projektdata.data.info.intodo=false;
+			sendtiteldatatimer(this);
+		}
+		
+		var changeTextInput=function(e){//'keyup'/'change'
+			var val=decodeString(this.value);//string
+			
+			//test ob sich der Wert geändert hat (sonst wurde er schon gespeichert)
+			var istanders=!((this.data.node+'')==(val+''));
+			if(e.type=="keyup" && e.keyCode==13)istanders=true;
+			if(!istanders)return;
+			
+			this.data.projektdata.data.info.todotext=this.value;
+			this.data.node=this.value;
+			
+			//neuer Titel
+			if(e.type=="keyup" && e.keyCode==13){
+				sendtiteldatatimer(this);				
+			}
+			else{
+				this.data.timer=setTimeout(sendtiteldatatimer,2000,this);//2 sec warten, dann senden, es sei vorher kommen neue daten
+			}
+		}
+		
+		var sendtiteldatatimer=function(node){
+			//console.log(node.data);
+			postNewData("projektinfoupdate",{"projektdata": node.data.projektdata, "daten": node.data.projektdata.data.info });
+		}		
+				
+		
+		var postNewData=function(befehl,data){
+			//"projektinfoupdate", (.projektdata,.daten)
+			//daten			-> projekt.info
+			//projektdata 	-> projekt
+			
+			//console.log("postNewData:",befehl,data);//.typ .data .id
+			var sdata="id="					+data.projektdata.id
+					+"&data="+JSON.stringify(data.daten);
+
+			if(data.noreload!=undefined &&
+				data.noreload===true)
+				loadData(befehl,function(d){},"POST",encodeURI(sdata));//befehl="projektstundenlisteupdate"
+				else
+				loadData(befehl,parseNewdataRE,"POST",encodeURI(sdata));//befehl="projektstundenlisteupdate"
+		};		
+		
+		var parseNewdataRE=function(data){
+			data=JSON.parse(data);
+			//check error
+			if(data.status!=undefined){
+				if(data.status!=msg_OK)
+					handleError(data.status);
+				else{
+					statusDlg.show("",getWort("aenderungsaved"),"statok");
+					if(data.lastaction!=undefined && data.lastaction=="projektinfoupdate")
+						sendMSG("reloadprojektlist",undefined);
+				}
+			}
+			//OK
+		}
+		
+	}
+	
+	
 	var editorProjekt=function(zielnode){
 		var ziel=zielnode;
 		var _this=this;
@@ -1423,7 +1726,7 @@ var pro_stunden_app=function(){
 				}
 			for( property in projekt.info ) { 		
 				//console.log(property,"=", projekt.info[property]);
-				tr=cE(tab,"tr",undefined,"infoth");
+				tr=cE(tab,"tr",undefined,"infoth tr"+property);
 				td=cE(tr,"th");
 				td.innerHTML=getWort("dat"+property)+':';//getWort("projtitel")
 				td=cE(tr,"td");

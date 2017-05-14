@@ -61,7 +61,7 @@ button.sortbut{
 	/*border:0;*/
 }
 
-.button{
+.button,input[type=button]{
 	color:#000;
 	text-decoration:none;
 	background-color:#ccc;
@@ -84,6 +84,8 @@ button.sortbut{
 .button:hover{
 	background-color:#eee;
 }
+
+
 
 .buttdel{
 	
@@ -413,7 +415,7 @@ nav #tabnav a.tabaktiv:after{
 
 
 
-.tab_editTag,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen{
+.tab_editTag,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen,.tab_editTodolist{
 	position:absolute;
 	top:54px;
 	width:100%;
@@ -692,6 +694,45 @@ nav #tabnav a.tabaktiv:after{
 	color:#ffffff;
 	text-align:center;
 }
+
+
+/*---TODOListe---*/
+.editorTODO table{
+	border-collapse:collapse;
+	width:100%;
+}
+.editorTODO table td{
+	padding:5px 1px;
+	vertical-align: baseline;
+}
+
+input[type=button].button{
+	border: 0;
+	padding: 5px 8p
+}
+
+input[type=button].buttUP,input[type=button].buttDOWN{
+	padding: 5px 10px;
+}
+
+.todoNR{
+	font-style:italic;
+}
+.todoText{
+	width: 100%;
+}
+.editorTODO tr:nth-child(2n) {
+    background-color: #eee;
+}
+.trtodonr,.trtodotext{
+	display:none;
+}
+
+
+.tab_editTodolist .listactions{
+	display:none;
+}
+
 /*---Projektliste---*/
 
 .projektliste{
@@ -779,6 +820,7 @@ nav #tabnav a.tabaktiv:after{
 }
 
 
+
 .tab_editProj .projektliste .p_aktiv{
 	-webkit-animation-name: none;
 	animation-name: none;
@@ -846,7 +888,7 @@ nav #tabnav a.tabaktiv:after{
 }
 
 /*--Projektdaten--*/
-.editorProjekt{
+.editorProjekt,.editorTODO{
 	border: 1px solid #000;
 	position:relative;
 	width:66%;
@@ -1151,7 +1193,7 @@ input.booleanswitch:checked ~ label:after{
 }
 
 /* responsive */
-@media screen and (max-width: 650px) {
+@media screen and (max-width: 770px) {
 	nav .logo{display:none;}
 }
 @media screen and (max-width: 700px) {

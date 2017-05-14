@@ -6,6 +6,7 @@ var sprachen=[
 		 "loading":"lade daten...",
 		 "meinTag":"mein Tag",
 		 "meinProj":"meine Projekte",
+		 "todo":"TODO",
 		 "ueberblick":"Überblick",
 		 "einstellungen":"Einstellungen",
 		 "projekt":"Projekt",
@@ -86,6 +87,10 @@ var sprachen=[
 		 "datland":"Land",
 		 "datgeplantestunden":"geplante Stunden",
 		 
+		 "dattodotext":"TODO-Listentext",
+		 "datintodo":"in TODO-Liste?",
+		 "dattodonr":"TODO-Listenposition",
+		 
 		 "datdat":"Datum",
 		 "datstunden":"Stunden",
 		 "dattyp":"Typ",
@@ -102,6 +107,10 @@ var sprachen=[
 		 "butt_newProj":"neues Projekt",
 		 "butt_viewpreMon":"zeige",
 		 "butt_viewnexMon":"zeige",
+		 
+		 "butt_entfernen":"von Liste entfernen",
+		 "butt_up":"▲",
+		 "butt_down":"▼",
 		 
 		 "getnewProName":"Wie soll das neue Projekt heißen?",
 		 "mesage_inputnamekurz":"Leider zu kurz, gebe bitte mindestens 3 Zeichen ein!",
