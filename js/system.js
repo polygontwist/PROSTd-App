@@ -1498,7 +1498,7 @@ var pro_stunden_app=function(){
 			input.className="button buttdel";
 			input.type="button";
 			input.value=getWort("butt_entfernen");
-			input.data={"projektdata":projekt};
+			input.data={"projektdata":projekt,timer:undefined};
 			input.addEventListener('click' ,delfromlist);
 			
 			
@@ -1563,14 +1563,22 @@ var pro_stunden_app=function(){
 			if(e.type=="keyup" && e.keyCode==13)istanders=true;
 			if(!istanders)return;
 			
+			//Timer ggf. löschen
+			if(this.data.timer!=undefined){
+				clearTimeout(this.data.timer);
+				this.data.timer=undefined;
+			}
+			
+			//Daten zuweisen
 			this.data.projektdata.data.info.todotext=this.value;
 			this.data.node=this.value;
 			
-			//neuer Titel
+			//neuer Text
 			if(e.type=="keyup" && e.keyCode==13){
 				sendtiteldatatimer(this);				
 			}
 			else{
+				
 				this.data.timer=setTimeout(sendtiteldatatimer,2000,this);//2 sec warten, dann senden, es sei vorher kommen neue daten
 			}
 		}
@@ -3039,11 +3047,13 @@ var pro_stunden_app=function(){
 				data.dat.stundenproArbeitstag=8;
 				speichern=true;
 			}
+			
+			//app oder web
 			if(typeof(globaldata)!="undefined")
 			if(globaldata.modus!=undefined){
-				if(globaldata.modus=="app"){
-					if(data.dat.windowsize==undefined){
-						data.dat.windowsize={x:0,y:0,width:0,height:0};
+				if(globaldata.modus=="app"){							//wenn app
+					if(data.dat.windowsize==undefined){					//Datenobjekt nicht existent
+						data.dat.windowsize={x:0,y:0,width:0,height:0};	//Datenobjekt erzeugen
 					}
 				}
 			}
@@ -3061,7 +3071,11 @@ var pro_stunden_app=function(){
 				td=cE(tr,"td");
 				td.innerHTML=getWort("version")+':';
 				td=cE(tr,"td");
-				td.innerHTML=app.getVersion();	
+				td.innerHTML=app.getVersion();				
+				
+				//todo: check new Version
+				//https://raw.githubusercontent.com/polygontwist/PROSTd-App/master/package.json
+				
 			}
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
