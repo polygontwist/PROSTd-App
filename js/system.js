@@ -1629,6 +1629,7 @@ var pro_stunden_app=function(){
 		var connects=[];
 		var projektaktiv=undefined;
 		var projinputs=[];
+		var newprojektadded=undefined;
 		
 		this.ini=function(){
 			//create
@@ -1665,6 +1666,23 @@ var pro_stunden_app=function(){
 				//console.log(">>>",s,data);
 				showProjektdata(data.data);
 				sendMSG("deselect",undefined);
+			}
+			if(s=="createnewprojekt"){
+				newprojektadded=data;//ein neues Projekt wurde erzeugt
+			}
+			if(s=="allProjektsloaded"){
+				if(newprojektadded!=undefined){//neues Projekt anzeigen
+					var name=newprojektadded.split("=")[1];
+					var i,p;
+					for(i=0;i<data.projekte.length;i++){
+						p=data.projekte[i];
+						if(p.data.titel==name){
+							showProjektdata(p.data);							
+							return;
+						}
+					}
+					newprojektadded=undefined;
+				}
 			}
 			
 		}
