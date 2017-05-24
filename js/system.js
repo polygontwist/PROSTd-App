@@ -1030,6 +1030,11 @@ var pro_stunden_app=function(){
 			for(i=0;i<odata.inhalte.length;i++){
 				odata.inhalte[i].Message("starttabs");
 			}
+			
+			if(isAppBridge()){
+				var app=remote.app;
+				document.title = document.title+' - PROSTd '+app.getVersion();
+			}
 		}
 		
 	}
