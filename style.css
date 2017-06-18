@@ -1176,6 +1176,10 @@ input.booleanswitch:checked ~ label:after{
 #statusMSG.statok{
 	background-color:#DDFFA0;
 }
+#statusMSG.statneueVers{
+	background-color:#10af2e;
+	color:#ffffff;
+}
 #statusMSG h1{
 	font-size:12px;
 	margin:0;

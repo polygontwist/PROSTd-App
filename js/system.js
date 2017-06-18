@@ -7,6 +7,7 @@ var pro_stunden_app=function(){
 	var scramble=undefined;
 	var geladeneprojekte=undefined;
 	var _appthis=this;
+	var versionsinfos=undefined;
 
 	var loadDataURL="getdata.php";
 	
@@ -372,7 +373,9 @@ var pro_stunden_app=function(){
 
 		loadData("getoptionen",parseoptiondata,"GET");
 		
-		var ses=new sessionaliver();
+		versionsinfos=new versionscheck();
+		
+		var ses=new sessionaliver();		
 	}
 	
 	this.Message=function(s,data){
@@ -895,6 +898,121 @@ var pro_stunden_app=function(){
 	}
 	
 	
+	//--Versionscheck--
+	var versionscheck=function(){
+		var url="https://raw.githubusercontent.com/polygontwist/PROSTd-App/master/package.json";
+		var data_versionsinfos={version:"0.0.0"};
+		var _this=this;
+		//-----
+		var ladeSeiteO={
+			url:""
+		};	
+		var letzteAnfrage=undefined;
+		
+		var ladeData=function(url){
+			if(url=="")return;
+			ladeSeiteO.url=url;		
+			
+			if(letzteAnfrage!=undefined){
+				letzteAnfrage.abort();				
+			}
+
+			url=url+"?"+Date.parse(new Date());
+			
+			letzteAnfrage=new Object();
+			letzteAnfrage.url=url;    
+			try {
+				// Mozilla, Opera, Safari sowie Internet Explorer (ab v7)
+				letzteAnfrage.xmlloader = new XMLHttpRequest();			
+				} 
+				catch(e) 
+				{
+					   try {                        
+							 letzteAnfrage.xmlloader  = new ActiveXObject("Microsoft.XMLHTTP");// MS Internet Explorer (ab v6)
+							} catch(e) {
+									try {                                
+											letzteAnfrage.xmlloader  = new ActiveXObject("Msxml2.XMLHTTP");// MS Internet Explorer (ab v5)
+									} catch(e) {
+											letzteAnfrage.xmlloader  = null;
+									}
+							}
+				}	
+				if(!letzteAnfrage.xmlloader){console.log('XMLHttp nicht möglich.');return;}
+				if (letzteAnfrage.overrideMimeType) {
+					letzteAnfrage.overrideMimeType('text/xml');
+					// zu dieser Zeile siehe weiter unten
+				}
+			 
+				letzteAnfrage.load=function(url){	
+					var loader=this.xmlloader;		
+					loader.parserfunc=letzteAnfrage.parseFunc;
+					loader.open('GET',url,true);//open(method, url, async, user, password)
+					loader.responseType='text'; //!                
+					loader.setRequestHeader('Content-Type', 'text/plain'); 
+					loader.setRequestHeader('Cache-Control', 'no-cache'); 
+					
+					loader.onreadystatechange = function(){                
+						if (this.readyState == 4) { 
+							this.parserfunc(this.responseText);
+						}
+					};
+					// loader.timeout=  //ms
+					loader.send(null);
+					return false;
+				}
+			 
+			letzteAnfrage.parseFunc = parseData;    
+			letzteAnfrage.load(url); 
+			
+		}	
+
+		var ladeError=function(xOptions, error){
+			if(error!="abort"){
+				/*var s="<h1 style='color:#f62;'>Entschuldigung ein Fehler ist aufgetreten</h1>";
+				s+="<p>Die Daten ";
+				s+='"'+ladeSeiteO.url+'"';
+				s+=" konnte nicht geladen werden ("+xOptions.status+" "+xOptions.statusText+").</p>";
+				s+="<p>Bitte Informieren Sie Ihren zuständigen Admin oder Kursleiter.</p>";*/
+				console.log("err",xOptions.status,xOptions.statusText);
+			}
+		}
+		
+		var parseData=function(data){	
+			data_versionsinfos=JSON.parse(data);
+			
+			var app=remote.app;
+			if(vergleiche(app.getVersion())){
+				statusDlg.show("",getWort("neueVersion"),"statneueVers");
+			}
+		}		
+		//-----
+		var holeInfos=function(){
+			ladeData(url);
+		}
+		
+		var vergleiche=function(version){
+			if(!isAppBridge())return false;
+			//0.1.15
+			var i,numA=0,numG=0;
+			var aktuell= version.split('.');
+			var aufgit=	data_versionsinfos.version.split('.');
+			console.log(aktuell,aufgit);
+			if(parseInt(aktuell[0])<parseInt(aufgit[0]))return true;
+			if(parseInt(aktuell[1])<parseInt(aufgit[1]))return true;
+			if(parseInt(aktuell[2])<parseInt(aufgit[2]))return true;
+			return false;			
+		}
+		
+		//--API---
+		this.getVersion=function(){return data_versionsinfos.version}
+		
+		this.gibtsneue=function(version){			
+			return vergleiche(version);			
+		}
+		
+		if(isAppBridge())holeInfos();
+	}
+	
 	//--innerfunObjekts--
 	var createTab=function(contentziel,tabbuttziel,data){
 		var tab,tr,td;
@@ -1034,6 +1152,12 @@ var pro_stunden_app=function(){
 			if(isAppBridge()){
 				var app=remote.app;
 				document.title = document.title+' - PROSTd '+app.getVersion();
+				if(versionsinfos!=undefined)
+				if(versionsinfos.getVersion()!=undefined)
+				{
+					if(versionsinfos.gibtsneue( app.getVersion() ) )
+						document.title +=' ('+versionsinfos.getVersion()+')'
+				}
 			}
 		}
 		
@@ -3120,6 +3244,14 @@ var pro_stunden_app=function(){
 				td.innerHTML=getWort("version")+':';
 				td=cE(tr,"td");
 				td.innerHTML=app.getVersion();				
+				
+				console.log(">>>",versionsinfos.getVersion(),app.getVersion())
+				
+				if(versionsinfos!=undefined)
+				if(versionsinfos.getVersion()!=undefined)
+				if(versionsinfos.gibtsneue( app.getVersion() ) ){
+					td.innerHTML+=" (neue Version verfügbar: "+versionsinfos.getVersion()+")";
+				}
 				
 				//todo: check new Version
 				//https://raw.githubusercontent.com/polygontwist/PROSTd-App/master/package.json

@@ -118,8 +118,9 @@ var sprachen=[
 		 
 		 "datdefaulttyp":"Defaultstundentyp",
 		 "datshowscramblebutt":"Developertoolbutton anzeigen",
-		 "datstundenproArbeitstag":"Stunden pro Arbeitstag"
+		 "datstundenproArbeitstag":"Stunden pro Arbeitstag",
 		 
+		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
 	},
 	{"language":"EN",
