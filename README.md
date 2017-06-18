@@ -2,7 +2,23 @@ Offline Version von PROSTd - ein Tool zum einfachen erfassen von Projektstunden.
 Erstellt mit elektron.
 Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://electron.atom.io/
 
-Ab Verison 0.1.14 gibt es eine Projektbasierende TODO-Liste.
+
+#### release notes ####
+
+* 0.1.6 Sort by Date; scroll to aktuellen Tag
+* 0.1.7 add Monatsauswertung
+* 0.1.8 openDevTool per klick; Tabelle sortierbar (add TableSort.js)
+* 0.1.9 Einstellungen, Fensterpos, Developerbutton 
+* 0.1.10 Projektinfos ("Einstellungen")
+* 0.1.12 Gesammtstunden; Einstellungen:Links zu GitHub
+* 0.1.13 TODO-Liste
+* 0.1.15 Versionsnummer im Titel; "neues Projekt" wird gleich in Editor geladen
+* 0.1.16 TODO-Liste fix; online check auf updates
+
+
+#### allgemeine Infos ####
+
+Ab Verison 0.1.14 gibt es eine Projektbasierende TODO-Liste (ab Version 0.1.16 Sortierung gefixt).
 
 <img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-14.png" width="593" alt="Screenshot TODO">
 
@@ -41,3 +57,4 @@ Das kann dann wie jedes normale Programm von Nutzern installiert werden.
 Das Installationsprogramm ist dann im Verzeichnis `dist` zu finden.
 
 siehe auch https://github.com/polygontwist/PROSTd/
+
