@@ -1387,28 +1387,53 @@ var pro_stunden_app=function(){
 		
 		var sortbynr=function(a,b){
 			var ad=a.data.info.todonr;
-			var bd=b.data.info.todonr;	
-			return ad>bd;
+			var bd=b.data.info.todonr;
+			if(ad>bd)
+				return 1;
+			else
+			if(ad==bd)
+				return 0;
+			else
+				return -1;
 		}		
 		
 		var showTODOdata=function(data){
-			var i,o,
+			var i,o,nummer,
 				liste=data.projekte;
 				
 			basis.innerHTML="";
 			todoliste=[];
+			todoliste2=[];
+			var gesetztenummern=[];
+			var nummervergeben=function(nr){
+				var i,re=false;
+				for(i=0;i<gesetztenummern.length;i++){
+					if(nr==gesetztenummern[i])re=true;
+				}
+				return re;
+			}
 			
 			for(i=0;i<liste.length;i++){
 				o=liste[i];
 				if(o.data!=undefined)
 				if(o.data.info!=undefined)
-				if(o.data.info.intodo!=undefined)
-				if(o.data.info.intodo===true){
-					//anzeigen
-					if(o.data.info.todonr==undefined){
-						o.data.info.todonr=todoliste.length;				
-					}					
-					todoliste.push(o);
+				if(o.data.info.intodo!=undefined){						
+					if(o.data.info.intodo===true){
+						
+						if(o.data.info.todonr==undefined){
+							nummer=todoliste.length;			
+						}else{
+							nummer=o.data.info.todonr;
+						}
+						
+						while(nummervergeben(nummer)){
+							nummer++
+						}
+						o.data.info.todonr=nummer;
+						
+						//anzeigen											
+						todoliste.push(o);
+					}
 				}
 			}
 			
