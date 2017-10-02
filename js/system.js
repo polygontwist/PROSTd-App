@@ -173,6 +173,13 @@ var pro_stunden_app=function(){
 		return s;
 	}
 	
+	var clearNewDateiname=function(s){
+		s=s.split('.').join('-'); //keine Punkte im Dateinamen
+		s=s.split(',').join('-'); //keine Kommas im Dateinamen
+		s=s.split(' ').join('-');
+		s=s.toLowerCase();					
+		return s;
+	}
 	var convertToDatum=function(s){//String:"YYYY-mm-dd" convert to "dd.mm.jjjj"
 		var ar=s.split('-');
 		if(ar.length==3){
@@ -1527,7 +1534,7 @@ var pro_stunden_app=function(){
 				
 			basis.innerHTML="";
 			todoliste=[];
-			todoliste2=[];
+			
 			var gesetztenummern=[];
 			var nummervergeben=function(nr){
 				var i,re=false;
@@ -2280,6 +2287,7 @@ var pro_stunden_app=function(){
 							alert(getWort("mesage_inputnamekurz"));
 						}
 						else{
+							name=clearNewDateiname(name);
 							console.log("create",name);
 							sendMSG("createnewprojekt","newdata="+name);
 						}
