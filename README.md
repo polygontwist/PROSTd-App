@@ -14,6 +14,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.13 TODO-Liste
 * 0.1.15 Versionsnummer im Titel; "neues Projekt" wird gleich in Editor geladen
 * 0.1.16 TODO-Liste fix; online check auf updates
+* 0.1.17 Dateinamen fix ('.', ',' oder Leerzeichen werden zu '-')
 
 
 #### allgemeine Infos ####
