@@ -2,7 +2,7 @@
   "name": "PROSTd",
   "productName": "PROSTd",
   "description": "Projektstundenverwaltung",
-  "version": "0.1.16",
+  "version": "0.1.17",
   "author": "Andreas Kosmehl (ak@a-d-k.de)",
   "main": "main.js",
   "scripts": {
