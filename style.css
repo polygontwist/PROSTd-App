@@ -794,8 +794,8 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	margin-right:5px;
 }
 
-.projektliste .plistdat{
-	width:100px;
+.projektliste .sortierbar{
+	min-width:62px;
 }
 
 .projektliste .p_aktiv{

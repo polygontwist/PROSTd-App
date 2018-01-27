@@ -30,7 +30,8 @@ var pro_stunden_app=function(){
 		showscramblebutt:true,
 		stundenproArbeitstag:8,
 		windowsize:{x:0,y:0,width:0,height:0},
-		zeigebeendete:false
+		zeigebeendete:false,
+		settings_projektliste:{sortby:"projekte", updown:"up"}		
 	};
 	
 	
@@ -2182,7 +2183,7 @@ var pro_stunden_app=function(){
 		
 	}
 	
-	var Projektliste=function(zielnode){
+	var Projektliste=function(zielnode){//Liste der Projekte
 		var ziel=zielnode;
 		var basis=undefined;
 		var selectedProjekt=undefined;
@@ -2345,14 +2346,9 @@ var pro_stunden_app=function(){
 			sendMSG("deselect",undefined);
 			deselect();
 		}
-		
-		var sortbydatum=function(a,b){
-			var ad=getdatumsObj(a.pro.dat);
-			var bd=getdatumsObj(b.pro.dat);			
-			return ad.getTime()<bd.getTime();
-		}		
+				
 		var parsedata=function(data,jahrfilter){
-			var i,t,o,p,a,htmlNode,table,tr,td,th,eintragen,std
+			var i,t,o,p,a,htmlNode,table,tr,td,th1,th2,th3,eintragen,std
 				,thead,tbody;
 			
 			basis.innerHTML="";
@@ -2360,7 +2356,34 @@ var pro_stunden_app=function(){
 			if(data==undefined)return;
 			
 			//data-sort
-			var sortliste=data.sort(sortbydatum);
+			var sortliste=data;;
+			
+			var c1="";
+			var c2="";
+			var c3="";
+			var sortrichtung="";
+			if(lokalData.settings_projektliste.updown=="up"){
+				sortrichtung="sortiere+"
+			}else{
+				sortrichtung="sortiere-"
+			}
+			
+			if(lokalData.settings_projektliste.sortby=="projekte"){
+				c1+="sortierbar"+sortrichtung;
+				c2+="sortierbar";
+				c3+="sortierbar";
+				//c3+="plistdat "+sortrichtung;
+			}else
+			if(lokalData.settings_projektliste.sortby=="kunde"){
+				c1+="sortierbar";
+				c2+="sortierbar "+sortrichtung;
+				c3+="sortierbar ";
+			}
+			else{
+				c1+="sortierbar";
+				c2+="sortierbar";
+				c3+="sortierbar"+sortrichtung;
+			}
 			
 			optionsplane=cE(basis,"div");
 			showoptions();
@@ -2369,10 +2392,12 @@ var pro_stunden_app=function(){
 			addClass(table,"sortierbar");
 			thead=cE(table,"thead");
 			tr=cE(thead,"tr");
-			th=cE(tr,"th",undefined,"vorsortiert");//
-			th.innerHTML=getWort('projekte');
-			th=cE(tr,"th",undefined,"plistdat sortiere-");
-			th.innerHTML=getWort('datum');
+			th1=cE(tr,"th",undefined,c1);//
+			th1.innerHTML=getWort('projekte');
+			th2=cE(tr,"th",undefined,c2);
+			th2.innerHTML=getWort('kunde');
+			th3=cE(tr,"th",undefined,c3);
+			th3.innerHTML=getWort('datum');
 			
 			tbody=cE(table,"tbody");
 			for(i=0;i<sortliste.length;i++){
@@ -2393,8 +2418,12 @@ var pro_stunden_app=function(){
 				if(o.data.stunden.length==0)eintragen=true;
 				
 				if(eintragen){
+					if(o.data.info.auftraggeber==undefined)o.data.info.auftraggeber="";
+					
 					tr=cE(tbody,"tr",undefined,"pltr_"+o.id);
-					tr.data=o;			
+					tr.data=o;		
+					addClass(tr,o.data.info.auftraggeber);
+					
 					td=cE(tr,"td",undefined,"pltd_"+o.id);				
 					a=cE(td,"a",undefined,"pla_"+o.id);
 					a.data=o;
@@ -2416,12 +2445,36 @@ var pro_stunden_app=function(){
 					o.anode=a;
 					o.trnode=tr;
 					
+					td=cE(tr,"td");
+					td.innerHTML=o.data.info.auftraggeber;//console.log(">",o);
+					
 					td=cE(tr,"td");	
 					htmlNode=cE(td,"span");
 					htmlNode.innerHTML=convertToDatum(encodeString(o.pro.dat.split(' ')[0]));
 				}
 			}
 			new JB_Table(table);
+			
+			htmlNode=th1.getElementsByTagName('button')[0];
+			htmlNode.addEventListener('click',clicksortButt);
+			htmlNode.id="sort_projekte";
+			htmlNode=th2.getElementsByTagName('button')[0];
+			htmlNode.addEventListener('click',clicksortButt);
+			htmlNode.id="sort_kunde";
+			htmlNode=th3.getElementsByTagName('button')[0];
+			htmlNode.addEventListener('click',clicksortButt);
+			htmlNode.id="sort_datum";
+		}
+		
+		var clicksortButt=function(e){
+			var name=this.id;
+				name=name.split('_')[1];//"sort_projekte" -> "projekte"
+			var isup=istClass(this,'sortsym_up');
+			var updown="down";
+			if(isup)updown="up";
+			
+			lokalData.settings_projektliste={sortby:name, updown:updown};
+			saveOptionen(lokalData,false);
 		}
 		
 		var deselect=function(){
@@ -2591,6 +2644,8 @@ var pro_stunden_app=function(){
 				}
 			
 			HTMLnode=cE(ziel,"div",data.id, "projektitem");
+			addClass(HTMLnode,data.data.projektdata.info.auftraggeber);
+
 			if(isturlaub)addClass(HTMLnode,"urlaubtext");
 			if(istfeiertag)addClass(HTMLnode,"feiertagtext");
 			

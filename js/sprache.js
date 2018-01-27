@@ -11,6 +11,7 @@ var sprachen=[
 		 "einstellungen":"Einstellungen",
 		 "projekt":"Projekt",
 		 "projekte":"Projekte",
+		 "kunde":"Kunde",
 		 "datum":"Datum",
 		 "Tag":"Tag",
 		 "Monat":"Monat",
