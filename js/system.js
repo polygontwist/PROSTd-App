@@ -2362,6 +2362,9 @@ var pro_stunden_app=function(){
 			var c2="";
 			var c3="";
 			var sortrichtung="";
+			if(lokalData.settings_projektliste==undefined){
+				lokalData.settings_projektliste={updown:"up",sortby:"projekte"}
+			}
 			if(lokalData.settings_projektliste.updown=="up"){
 				sortrichtung="sortiere+"
 			}else{
