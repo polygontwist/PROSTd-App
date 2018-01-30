@@ -4,7 +4,6 @@ var pro_stunden_app=function(){
 	var tabnav=undefined;
 	var statusDlg=undefined;
 	var optionsleiste=undefined;
-	var scramble=undefined;
 	var geladeneprojekte=undefined;
 	var _appthis=this;
 	var versionsinfos=undefined;
@@ -27,7 +26,6 @@ var pro_stunden_app=function(){
 	var lokalData={//als Einstellungen gespeichert
 		//projektlistfilter:undefined,
 		tabaktiv:0,
-		showscramblebutt:true,
 		stundenproArbeitstag:8,
 		windowsize:{x:0,y:0,width:0,height:0},
 		zeigebeendete:false,
@@ -178,6 +176,7 @@ var pro_stunden_app=function(){
 		s=s.split('.').join('-'); //keine Punkte im Dateinamen
 		s=s.split(',').join('-'); //keine Kommas im Dateinamen
 		s=s.split(' ').join('-');
+		s=s.split(';').join('-');
 		s=s.toLowerCase();					
 		return s;
 	}
@@ -373,8 +372,7 @@ var pro_stunden_app=function(){
 			tabs[i].d_objekt=new createTab(basis,tabnav,tabs[i]);
 			tabs[i].d_objekt.ini();
 		}
-		if(lokalData.showscramblebutt)
-			scramble=new scrambleTextNodes(tabnav);	
+		
 		optionsleiste=new o_optionsleiste(basis);
 		statusDlg=new o_statusDialog(basis);
 		geladeneprojekte=new o_ProjektDataIOHandler(basis);
@@ -383,7 +381,26 @@ var pro_stunden_app=function(){
 		
 		versionsinfos=new versionscheck();
 		
-		var ses=new sessionaliver();		
+		var ses=new sessionaliver();	
+
+		if(isAppBridge())
+			window.addEventListener('keydown',winkeydown );		
+	}
+	
+	var isdevtool=false;
+	var winkeydown=function(e){
+		if(e.keyCode==68 && e.ctrlKey){//strg+d
+			showDevTools(!isdevtool);
+			e.preventDefault(); 
+		}
+	}
+	var showDevTools=function(b){
+		var win=remote.getCurrentWindow();
+		if(b===true)				
+			win.webContents.openDevTools();
+			else
+			win.webContents.closeDevTools();
+		isdevtool=b;
 	}
 	
 	this.Message=function(s,data){
@@ -405,8 +422,6 @@ var pro_stunden_app=function(){
 			if(data.status!=msg_OK)
 				handleError(data.status);
 			else{
-				//
-				//console.log("<<",data.dat);
 				lokalData=data.dat;
 				
 				if(data.dat.tabaktiv!=undefined && !isNaN(data.dat.tabaktiv) ){
@@ -416,13 +431,6 @@ var pro_stunden_app=function(){
 				else{
 					setTabaktiv(tabs[lokalData.tabaktiv].id);
 				}
-				
-				if(lokalData.showscramblebutt!=undefined)
-						scramble.show(lokalData.showscramblebutt);
-					else{
-						lokalData.showscramblebutt=false;
-						scramble.show(false);
-						}
 			}
 		}		
 	}
@@ -509,125 +517,7 @@ var pro_stunden_app=function(){
 	}
 	
 	//------------------------------------
-	var scrambleTextNodes=function(ziel){
-		var _this=this;
-		var connects=[];
-		
-		var scrambleziel=ziel;
-		var scbasis=undefined;
-		var aktiv=false;
-		var scrambleDB={};
-		
-		var create=function(){
-			scbasis=cE(scrambleziel,"div",undefined,"scramblebutt");
-			var inp=cE(scbasis,"input")
-			inp.type="checkbox";
-			inp.id='cbb_scramble';
-			inp.checked=false;
-			addClass(inp,"booleanswitch");
-			var label=cE(scbasis,"label");
-			label.htmlFor=inp.id;
-			inp.addEventListener('change',changeInput);
-		}
-		this.ini=function(){
-			connects=[];
-		}
-		this.show=function(an){
-			if(an){
-				
-			}else{
-				scbasis.style.display="none";
-			}
-			
-		};
-		
-		var getScrambleString=function(s){
-			var i,z,
-				arr=s.split(''),
-				dbtag=s.split(' ').join('');
-			
-			//scrambleDB[] -> gescrambledtes Wort hier ablegen, falls es nochmal vorkommt, dieses nehmen
-			if(isNaN(s)){	
-				if(scrambleDB[dbtag]==undefined){
-					for(i=0;i<arr.length;i++){
-						z=Math.floor(Math.random()*25);
-						if(arr[i]!=" "){
-							if(i==0)
-								arr[i]=String.fromCharCode(65+z);
-								else
-								arr[i]=String.fromCharCode(97+z);
-						}
-					}
-					s=arr.join('');
-					scrambleDB[dbtag]=s;
-				}
-				else{
-					s=scrambleDB[dbtag];
-				}
-			}
-			//s="fu bar";
-			return s;
-		}
-		
-		var changeInput=function(e){
-			var isApp=false;
-			
-			if(isAppBridge()){
-				var AB=new AppBridge();
-				AB.Message("changeInputSwitch",{aktiv:this.checked,id:this.id});
-				isApp=true;
-			}
-				
-			if(!isApp){
-				aktiv=this.checked;
-			}
-		}
-		
-		var goscrambeln=function(node){
-			var i,cn,
-				childnodes=node.childNodes;
-			for(i=0;i<childnodes.length;i++){
-				cn=childnodes[i];
-				if(cn.nodeName=="#text"){
-					if(aktiv)cn.nodeValue=getScrambleString(cn.nodeValue);
-				}
-					
-				if(cn.childNodes.length>0)goscrambeln(cn);
-			};
-			if(node.nodeName=="INPUT"){
-				if(node.type=="text"){
-					if(aktiv)node.style.color="transparent";//or addclass scramble
-				}
-			}
-		}
-		
-		this.destroy=function(){}
-		this.connect=function(objekt){
-			if(objekt!=undefined)
-				connects.push(objekt);
-			return _this;
-		}
-		
-		this.Message=function(s,data){
-			var isApp=isAppBridge();
-			
-			
-			if(s=="scramble"){
-				if(!isApp && data!=undefined)goscrambeln(data);
-			}
-			else
-				console.log("MESSAGE",s,data);
-		}
-		
-		var sendMSG=function(s,data){
-			var i;
-			for(i=0;i<connects.length;i++){
-				connects[i].Message(s,data);
-			}
-		}		
-		create();
-	}	
-
+	
 	var o_optionsleiste=function(ziel){
 		var _this=this;
 		var connects=[];
@@ -1081,7 +971,7 @@ var pro_stunden_app=function(){
 				odata.inhalte.push(optionsleiste);
 				optionsleiste.anzeigen(true);
 				}
-			if(scramble!=undefined)odata.inhalte.push(scramble);
+			
 			if(geladeneprojekte!=undefined)odata.inhalte.push(geladeneprojekte);
 						
 			odata.content.innerHTML="";
@@ -2425,7 +2315,7 @@ var pro_stunden_app=function(){
 					
 					tr=cE(tbody,"tr",undefined,"pltr_"+o.id);
 					tr.data=o;		
-					addClass(tr,o.data.info.auftraggeber);
+					addClass(tr,clearNewDateiname(o.data.info.auftraggeber));
 					
 					td=cE(tr,"td",undefined,"pltd_"+o.id);				
 					a=cE(td,"a",undefined,"pla_"+o.id);
@@ -3271,7 +3161,7 @@ var pro_stunden_app=function(){
 				}	
 		}
 		
-		//{"user":"lokal","dat":{"tabaktiv":3,"showscramblebutt":true},"lastaction":"getoptionen","status":"OK"}
+		//{"user":"lokal","dat":{"tabaktiv":3},"lastaction":"getoptionen","status":"OK"}
 		var showOptionen=function(data){
 			var i,tab,th,tr,td,anzeigen,inp,property,label,a;
 			var speichern=false;
