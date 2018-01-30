@@ -16,7 +16,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.16 TODO-Liste fix; online check auf updates
 * 0.1.17 Dateinamen fix ('.', ',' oder Leerzeichen werden zu '-')
 * 0.1.18 Projektliste: Speicherung der Sortierungsauswahl, +Spalte Kunde; MonatsprojektitemCSS + Kundenname (Farbe je Kunde möglich)
-
+* 0.1.19 fix: MonatsprojektitemCSS mit Kundenname (jetzt ohne Leerzeichen, Komma, Simikolon und Punkt und immer kleingeschrieben); Developertools per STRG + d aufrufbar; etwas aufgeräumt; Feiertage bis 2021 erfasst (dazu feiertage.json vor start löschen)
 
 #### allgemeine Infos ####
 
