@@ -3229,7 +3229,7 @@ var pro_stunden_app=function(){
 					}
 				}
 				else{
-					a.href="https://github.com/polygontwist/PROSTd-App";
+					a.href="https://github.com/polygontwist/PROSTd";
 					a.target="_blank";
 				}
 				
@@ -3264,7 +3264,9 @@ var pro_stunden_app=function(){
 				//auslassen:
 				if(property=="tabaktiv")anzeigen=false;
 				if(property=="windowsize")anzeigen=false;
-				//console.log(">>",property);
+				if(property=="showscramblebutt")anzeigen=false;
+				if(property=="settings_projektliste")anzeigen=false;
+				console.log(">>",property);
 				
 				if(anzeigen){
 					tr=cE(tab,"tr");
