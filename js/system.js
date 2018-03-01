@@ -34,7 +34,7 @@ var pro_stunden_app=function(){
 	
 	
 //TODO:	
-//		-Ausertung: "alle" canvas +ber alle Jahre
+//		-Ausertung: "alle" canvas über alle Jahre
 //				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttiitel)
 //		Passwort: new (www)
 	
@@ -1061,7 +1061,7 @@ var pro_stunden_app=function(){
 		
 	}
 	
-	var ueberblickProjekte=function(zielnode){
+	var ueberblickProjekte=function(zielnode){//Balken etc.
 		//Statistik
 		var ziel=zielnode;
 		var basis=undefined;
@@ -1357,7 +1357,7 @@ var pro_stunden_app=function(){
 		}
 	}
 	
-	var editorTODO=function(zielnode){
+	var editorTODO=function(zielnode){//TODO-Liste
 		/*
 			TODO-Liste von Projekten
 			Projekteigenschaften:
@@ -1675,7 +1675,7 @@ var pro_stunden_app=function(){
 	}
 	
 	
-	var editorProjekt=function(zielnode){
+	var editorProjekt=function(zielnode){//meine Projekte
 		var ziel=zielnode;
 		var _this=this;
 		var connects=[];
@@ -1744,6 +1744,14 @@ var pro_stunden_app=function(){
 			for(i=0;i<connects.length;i++){
 				connects[i].Message(s,data);
 			}
+		}
+		
+		var sortbydateliste=function(a,b){//nach datum, neuste oben
+			//"2002-09-17"
+			if(a.dat ==undefined || b.dat==undefined)return 0;		
+			var aa=getdatumsObj(a.dat);
+			var bb=getdatumsObj(b.dat);
+			return ( aa.getTime()-bb.getTime() );			
 		}
 		
 		var showProjektdata=function(projekt){
@@ -1846,8 +1854,11 @@ var pro_stunden_app=function(){
 				td.colSpan=2;
 			}
 			
-			for(i=0;i<projekt.stunden.length;i++){
-				std=projekt.stunden[i];
+			//sort by date
+			var templiste=projekt.stunden.sort(sortbydateliste);
+						
+			for(i=0;i<templiste.length;i++){
+				std=templiste[i];
 				
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
@@ -2246,7 +2257,7 @@ var pro_stunden_app=function(){
 			if(data==undefined)return;
 			
 			//data-sort
-			var sortliste=data;;
+			var sortliste=data;
 			
 			var c1="";
 			var c2="";

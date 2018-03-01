@@ -528,7 +528,10 @@ nav #tabnav a.tabaktiv:after{
 	border:1px solid #000;
 	line-height: 20px;
 	height:24px;
+    width: 95%;
 }
+
+
 .monatsliste .projektitem a{
 	text-decoration:none;
 	color:#fff;
