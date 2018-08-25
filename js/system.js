@@ -265,18 +265,18 @@ var pro_stunden_app=function(){
 		
 		
 	//--mouse--
-	getMouseP=function(e){
+	var getMouseP=function(e){
 			return{
 				x:document.all ? window.event.clientX : e.pageX,	//pageX
 				y:document.all ? window.event.clientY : e.pageY};
 		}
-	getBoundingCR=function(re,o){
+	var getBoundingCR=function(re,o){
 			var r=o.getBoundingClientRect();
 			re.x-=r.left;
 			re.y-=r.top;
 			return re;
 		}
-	relMouse=function(e,o){
+	var relMouse=function(e,o){
 			return getBoundingCR(getMouseP(e),o);
 	}	
 		
