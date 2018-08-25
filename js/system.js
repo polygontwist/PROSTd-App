@@ -263,6 +263,24 @@ var pro_stunden_app=function(){
 		}
 	}
 		
+		
+	//--mouse--
+	getMouseP=function(e){
+			return{
+				x:document.all ? window.event.clientX : e.pageX,	//pageX
+				y:document.all ? window.event.clientY : e.pageY};
+		}
+	getBoundingCR=function(re,o){
+			var r=o.getBoundingClientRect();
+			re.x-=r.left;
+			re.y-=r.top;
+			return re;
+		}
+	relMouse=function(e,o){
+			return getBoundingCR(getMouseP(e),o);
+	}	
+		
+		
 	//--canvas--
 	var drawLine=function(cancontex,x1,y1,x2,y2,size,color){
 		cancontex.lineWidth=size;
@@ -785,6 +803,7 @@ var pro_stunden_app=function(){
 					//jahreliste.push(jahr);
 				}
 			};
+			console.log(projekte);
 			/*jahreliste.sort();
 			for(i=0;i<jahreliste.length;i++){
 				jahrdata.jahre['j'+jahreliste[i]]=jahreliste[i];
@@ -1374,10 +1393,13 @@ var pro_stunden_app=function(){
 		var tab=undefined;
 		var tbody;
 		
+		var todlistdiv;
+		
 		this.ini=function(){
 			//create
 			basis=cE(ziel,"div",undefined,"editorTODO");
 			basis.innerHTML="";
+			todlistdiv=basis;
 			tab=cE(basis,"table");
 		}
 		this.destroy=function(){
@@ -1509,34 +1531,28 @@ var pro_stunden_app=function(){
 			}
 			
 			tr=cE(tbody,"tr");
+			tr.data={"projektdata":projekt};
 			
-			td=cE(tr,"td",undefined,"todoNR");
-			td.innerHTML="#"+projekt.data.info.todonr;
+			td=cE(tr,"td",undefined,"todoTDNR");
+			td.innerHTML=projekt.data.info.todonr+1;
 			
-			td=cE(tr,"td");
-			if(nr>0){
-				input=cE(td,"input");
-				input.className="button buttUP";
-				input.type="button";
-				input.value=getWort("butt_up");
-				input.data={"projektdata":projekt};
-				input.addEventListener('click' ,listeUP);
-			}
-		
-			td=cE(tr,"td");
-			if(nr<todoliste.length-1){
-				input=cE(td,"input");
-				input.className="button buttDOWN";
-				input.type="button";
-				input.value=getWort("butt_down");
-				input.data={"projektdata":projekt};
-				input.addEventListener('click' ,listeDOWN);
-			}
+			td=cE(tr,"td",undefined,"todoTDAktions");
 			
-			td=cE(tr,"td");
+			input=cE(td,"input");
+			input.className="button buttMove";
+			input.type="button";
+			input.value=getWort("butt_move");
+			input.data={"projektdata":projekt};
+			input.addEventListener('mousedown' ,listeMDown);
+			input.addEventListener('mouseup' ,listeMUP);
+			
+			todlistdiv.addEventListener('mousemove' ,listeDMove);
+			todlistdiv.addEventListener('mouseup' ,listeMUP);
+			
+			td=cE(tr,"td",undefined,"todoTDtitel");
 			td.innerHTML=projekt.data.titel;
 			
-			td=cE(tr,"td");
+			td=cE(tr,"td",undefined,"todoTDinputtext");
 			input=cE(td,"input",undefined,"todoText");
 			input.type="text";
 			input.data={"projektdata":projekt,"node":projekt.data.info.todotext,"timer":undefined};
@@ -1545,7 +1561,7 @@ var pro_stunden_app=function(){
 			input.addEventListener('keyup' ,changeTextInput);
 			input.addEventListener('change',changeTextInput);
 			
-			td=cE(tr,"td");
+			td=cE(tr,"td",undefined,"todoTDButtDel");
 			input=cE(td,"input");
 			input.className="button buttdel";
 			input.type="button";
@@ -1556,40 +1572,138 @@ var pro_stunden_app=function(){
 			
 		}
 		
-		var listeUP=function(e){//console.log(this.data.projektdata.data.info);
-			var projekt=this.data.projektdata;
-			var idat=projekt.data.info;  
-			var nr=idat.todonr;
-			var newnr=nr-1;
-			if(newnr<0){
-				console.log(":-/");
-				return;
+		
+		var getTR=function(e){
+			var i,trh,
+				py=0,
+				re={node:undefined,nr:-1},
+				scrollY=todlistdiv.scrollTop,
+				mxy=relMouse(e,todlistdiv),
+				ypos=mxy.y+scrollY,					
+				tabtr=tab.getElementsByTagName("tr");			
+			
+			for(i=0;i<tabtr.length;i++){
+					trh=tabtr[i].offsetHeight;
+					if(ypos>=py && ypos<=py+trh){
+						re.node=tabtr[i];
+						re.nr=i;
+					}
+					py+=trh;
+				}
+				
+			return re;
+		}
+		
+		var dragdrop={
+			aktiv:false,
+			quelle:undefined,
+			lastsetcss:[],
+			quellenr:-1,
+			zielvornr:-1
+			};
+			
+		var listeMDown=function(e){
+			dragdrop.aktiv=true;
+			var qtr=getTR(e);
+			dragdrop.quelle=qtr.node;
+			dragdrop.quellenr=qtr.nr;
+			if(dragdrop.quelle)addClass(dragdrop.quelle,"dragdropquelle");
+			}
+		var listeMUP=function(e){
+			var tabtr,i;
+			subClass(dragdrop.quelle,"dragdropquelle");
+			
+			if(dragdrop.aktiv && dragdrop.quelle!=undefined && dragdrop.lastsetcss.length>0){
+				if(dragdrop.quellenr!=dragdrop.zielvornr && dragdrop.quellenr+1!=dragdrop.zielvornr){
+					var qprojekt=dragdrop.quelle.data.projektdata;
+					var projekt;				
+					var laufnr=0;
+					var isset=false;
+					
+					tabtr=tab.getElementsByTagName("tr");
+					
+					for(i=0;i<tabtr.length;i++){
+						projekt=tabtr[i].data.projektdata;
+						if(i<dragdrop.zielvornr){
+							//bleibt so
+						}
+						else
+						if(i==dragdrop.zielvornr){
+							qprojekt.data.info.todonr=laufnr;
+							laufnr++;
+							projekt.data.info.todonr=laufnr;
+							postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info,"noreload":true });
+							isset=true;
+						}
+						else
+						if(i>dragdrop.zielvornr && i!=dragdrop.quellenr){
+							projekt.data.info.todonr=laufnr;
+							postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info,"noreload":true});
+						}
+						laufnr++;
+					}
+					if(!isset){
+						laufnr++;
+						qprojekt.data.info.todonr=laufnr;
+					}
+					
+					tab.style.opacity="0.5";
+					postNewData("projektinfoupdate",{"projektdata": qprojekt, "daten": qprojekt.data.info});//& reload
+				}
+				
+				dragdrop.quellenr=-1;
+				dragdrop.zielvornr=-1;
+			}
+			
+			dragdrop.aktiv=false;
+			dragdrop.quelle=undefined;
+		}
+		
+		var listeDMove=function(e){
+			var i,py,trh,
+				scrollY=todlistdiv.scrollTop,
+				mxy=relMouse(e,todlistdiv),
+				ypos=mxy.y+scrollY,					
+				tabtr=tab.getElementsByTagName("tr");
+			
+			if(dragdrop.lastsetcss.length>0){
+					for(i=0;i<dragdrop.lastsetcss.length;i++){
+						subClass(dragdrop.lastsetcss[i],"indavor");
+						subClass(dragdrop.lastsetcss[i],"indanach");
+					}
+					dragdrop.lastsetcss=[];
 				}
 			
-			var pn=getProjNr(newnr);
-			if(pn!=undefined){
-				pn.data.info.todonr=nr;
-				projekt.data.info.todonr=newnr;
-				//save
-				postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info ,"noreload":true});
-				postNewData("projektinfoupdate",{"projektdata": pn, "daten": pn.data.info });
+			if(e.buttons>0 && dragdrop.quellenr!=-1){//1: Left; 2:Right; 4 : middle;8 : Fourth; 16 : Fifth  3=1+2
+				py=0;
+				for(i=0;i<tabtr.length;i++){
+					trh=tabtr[i].offsetHeight;
+					if(ypos>=py && ypos<=py+trh){
+						if(ypos>py+trh*0.5){
+							//danach
+							if(i+1!=dragdrop.quellenr){
+								addClass(tabtr[i],"indanach");
+							}
+							dragdrop.zielvornr=i+1;
+						}
+						else{
+							//davor
+							if(i-1!=dragdrop.quellenr){
+								addClass(tabtr[i],"indavor");
+							}
+							dragdrop.zielvornr=i;
+						}
+						dragdrop.lastsetcss.push(tabtr[i]);
+						
+					}
+					py+=trh;
+				}
+				
+				e.stopPropagation();
+				e.preventDefault();
 			}
 		}
-		var listeDOWN=function(e){//console.log(this.data);
-			var projekt=this.data.projektdata;
-			var idat=projekt.data.info;  
-			var nr=idat.todonr;
-			var newnr=nr+1;
-			
-			var pn=getProjNr(newnr);
-			if(pn!=undefined){
-				pn.data.info.todonr=nr;
-				projekt.data.info.todonr=newnr;
-				//save
-				postNewData("projektinfoupdate",{"projektdata": projekt, "daten": projekt.data.info,"noreload":true });
-				postNewData("projektinfoupdate",{"projektdata": pn, "daten": pn.data.info });
-			}
-		}
+		
 		
 		var getProjNr=function(nr){
 			var i,o;			
@@ -2309,7 +2423,12 @@ var pro_stunden_app=function(){
 				o.date=getdatumsObj(o.pro.dat);
 				eintragen=!isinfilter(o);//Filter by Art
 				if(eintragen && jahrfilter!=undefined && jahrfilter!="alle"){
-					eintragen=o.data.stunden.length>0;
+					if(o.data.stunden==undefined)
+						{
+							console.log("keine Stunden",o);
+						}
+						else
+						eintragen=o.data.stunden.length>0;
 					//gucken ob Stunden passend zum Filter da sind, dann Eintrag zeigen
 					for(t=0;t<o.data.stunden.length;t++){
 						std=o.data.stunden[t];
@@ -3172,7 +3291,7 @@ var pro_stunden_app=function(){
 				}	
 		}
 		
-		//{"user":"lokal","dat":{"tabaktiv":3},"lastaction":"getoptionen","status":"OK"}
+		//"user":"lokal","dat":{"tabaktiv":3},"lastaction":"getoptionen","status":"OK"
 		var showOptionen=function(data){
 			var i,tab,th,tr,td,anzeigen,inp,property,label,a;
 			var speichern=false;
@@ -3408,6 +3527,14 @@ var pro_stunden_app=function(){
 	}
 	var ProgReload=function(){
 		_appthis.ini(basis.id);
+	}
+
+	var debugdiv;
+	var showdebugtext=function(s){
+		if(debugdiv==undefined){
+			debugdiv=cE(document.getElementsByTagName("body")[0],"div","debugdiv");console.log("create",debugdiv);
+		}
+		debugdiv.innerHTML=s;
 	}
 }
 

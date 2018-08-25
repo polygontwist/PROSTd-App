@@ -110,8 +110,9 @@ var sprachen=[
 		 "butt_viewnexMon":"zeige",
 		 
 		 "butt_entfernen":"von Liste entfernen",
-		 "butt_up":"▲",
-		 "butt_down":"▼",
+		// "butt_up":"▲",
+		// "butt_down":"▼",
+		 "butt_move":"▲▼",
 		 
 		 "getnewProName":"Wie soll das neue Projekt heißen?",
 		 "mesage_inputnamekurz":"Leider zu kurz, gebe bitte mindestens 3 Zeichen ein!",

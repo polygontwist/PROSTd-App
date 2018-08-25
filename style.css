@@ -704,6 +704,10 @@ nav #tabnav a.tabaktiv:after{
 	border-collapse:collapse;
 	width:100%;
 }
+.editorTODO table tr{
+	border:0;
+}
+
 .editorTODO table td{
 	padding:5px 1px;
 	vertical-align: baseline;
@@ -718,12 +722,28 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	padding: 5px 10px;
 }
 
-.todoNR{
+.todoTDNR{
 	font-style:italic;
+	font-size: 10pt;
+	text-align:center;
 }
+.todoTDAktions{
+	width:40px;
+}
+
 .todoText{
 	width: 100%;
 }
+
+.todoTDtitel{}
+.todoTDinputtext{
+	width:40%;
+}
+
+.todoTDButtDel{
+	width:115px;
+}
+
 .editorTODO tr:nth-child(2n) {
     background-color: #eee;
 }
@@ -735,6 +755,21 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .tab_editTodolist .listactions{
 	display:none;
 }
+
+.indavor{border-top:8px solid green !important;}
+.indanach{border-bottom:8px solid green !important;}
+.dragdropquelle{
+	opacity:0.25;
+	border:0 !important;
+}
+.buttMove{
+	cursor:ns-resize !important;
+	padding: 5px 4px !important;
+	padding-right: 10px !important;
+	letter-spacing: -5px;
+}
+
+
 
 /*---Projektliste---*/
 
@@ -1197,6 +1232,15 @@ input.booleanswitch:checked ~ label:after{
 	margin:0;
 	padding:5px;
 	font-size:13pt;	
+}
+
+#debugdiv{
+	position:absolute;
+	right:0;
+	top:0;
+	color:black;
+	background-color:rgba(255,255,255,0.8);
+	padding:3px;
 }
 
 /* responsive */
