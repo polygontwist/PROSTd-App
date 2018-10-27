@@ -2727,6 +2727,12 @@ var pro_stunden_app=function(){
 					tr.data=o;		
 					addClass(tr,clearNewDateiname(o.data.info.auftraggeber));
 					
+					if(o.data.info.farbe!=undefined){
+						var f=stringfarbeToRGB(o.data.info.farbe);
+						tr.style.backgroundColor="rgba("+f.r+","+f.g+","+f.b+",0.2)";
+					}
+					
+					
 					td=cE(tr,"td",undefined,"pltd_"+o.id);				
 					a=cE(td,"a",undefined,"pla_"+o.id);
 					a.data=o;
@@ -2956,12 +2962,19 @@ var pro_stunden_app=function(){
 			addClass(HTMLnode,tmp);//console.log("classe>",tmp);//projektitem
 			
 			a=cE(HTMLnode,"a");
-			a.innerHTML=encodeString(data.titel);//.titel	
+			a.innerHTML=encodeString(data.titel);//.titel			
 			
 			a.href="#";
 			a.data={"typ":"a","projektdata":data.data.projektdata,"datstunde":data.datstd};
 			a.onclick=klickProjektInListe;
 			a.addEventListener('click',blockclick);
+			
+			if(data.data.projektdata.info.farbe!=undefined){
+				var f=stringfarbeToRGB(data.data.projektdata.info.farbe);
+				a.style.backgroundColor="rgba("+f.r+","+f.g+","+f.b+",1)";
+				
+				HTMLnode.style.backgroundColor="rgba("+f.r+","+f.g+","+f.b+",0.2)";
+			}
 			
 			HTMLnode.data={
 				"item":data,
