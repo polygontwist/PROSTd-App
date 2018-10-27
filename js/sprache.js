@@ -21,6 +21,7 @@ var sprachen=[
 		 "datzeigebeendete":"zeige beendete Projekte",
 		 "reststunden":"geplante Reststunden",
 		 "circa":"ca.",
+		 "ok":"OK",
 		 
 		 "Januar":"Januar",
 		 "Februar":"Februar",
@@ -87,6 +88,7 @@ var sprachen=[
 		 "dattage":"Tage",
 		 "datland":"Land",
 		 "datgeplantestunden":"geplante Stunden",
+		 "datfarb":"Farbe",
 		 
 		 "dattodotext":"TODO-Listentext",
 		 "datintodo":"in TODO-Liste?",
@@ -108,6 +110,8 @@ var sprachen=[
 		 "butt_newProj":"neues Projekt",
 		 "butt_viewpreMon":"zeige",
 		 "butt_viewnexMon":"zeige",
+		 "farbwaehler":"Farbe wählen",
+		 "farbwaehlertitel":"Farbe wählen",
 		 
 		 "butt_entfernen":"von Liste entfernen",
 		// "butt_up":"▲",

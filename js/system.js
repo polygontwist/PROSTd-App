@@ -54,6 +54,9 @@ var pro_stunden_app=function(){
 			if(projekt.info.geplantestunden==undefined){//neue Option
 				projekt.info.geplantestunden=0;
 			}
+			if(projekt.info.farbe==undefined){//neue Option
+				projekt.info.farbe="";
+			}
 		}
 	}
 		
@@ -263,6 +266,77 @@ var pro_stunden_app=function(){
 		}
 	}
 		
+	var stringfarbeToRGB=function(s){
+		var re={r:0,g:0,b:0,a:1},tmp;
+		if(s.indexOf("#")==0){
+			if(s.length==7){
+				re.r=parseInt('0x'+s.substr(1,2));
+				re.g=parseInt('0x'+s.substr(3,2));
+				re.b=parseInt('0x'+s.substr(5,2));
+			}
+			else
+			if(s.length==4){
+				re.r=parseInt('0x'+s.substr(1,1))*16;
+				re.g=parseInt('0x'+s.substr(3,1))*16;
+				re.b=parseInt('0x'+s.substr(5,1))*16;
+			}
+		}
+		else
+		if(s.indexOf("rgb")==0){
+			s=s.split("(")[1];
+			s=s.split(")")[0];
+			s=s.split(",");
+			re.r=parseInt(s[0]);
+			re.g=parseInt(s[1]);
+			re.b=parseInt(s[2]);
+			if(s.length==4)
+				re.a=parseInt(s[3]);
+		}
+		else
+		if(s.indexOf("hsl")==0)
+		{
+			console.log(":-/");
+		}
+		
+		return re;
+	}
+	var RGBtoHSL=function(ir,ig,ib){
+		if(ir<0)ir=0;if(ir>255)ir=255;
+		if(ig<0)ig=0;if(ig>255)ig=255;
+		if(ib<0)ib=0;if(ib>255)ib=255;
+		var max = Math.max(Math.max(ir, ig), ib);
+		var min = Math.min(Math.min(ir, ig), ib);
+		var h,s,d; 
+		var l = (max + min) / 2;
+		if(max == min){
+				h = 0;
+				s = 0; // achromatic
+			}
+			else{
+				d = max - min;
+				s = (l > 0.5) ? d / (2 - max - min) : d / (max + min);
+				switch(max){
+					case ir: h = (ig - ib) / d + (ig < ib ? 6 : 0); break;
+					case ig: h = (ib - ir) / d + 2; break;
+					case ib: h = (ir - ig) / d + 4; break;
+				}
+				h = h/6;
+			}
+		return {"h":h, "s":s, "l":l};//Farbe°(0..360),Sättigung%(0..100),Hellwert(0..255)
+	}
+	var getPixelColor=function (canvas,pxy){
+		var cc=canvas.getContext("2d");
+		var p = cc.getImageData(pxy.x, pxy.y, 1, 1).data; 
+		return {"r":p[0],"g":p[1],"b":p[2]};
+	}
+	var getHexstrformRGB=function(r,g,b){
+		var farbe= r*256*256 + g*256 +b;
+		var f=farbe.toString(16);  
+		while(f.length<6){
+			f='0'+f;
+		}
+		return f;
+	}
 		
 	//--mouse--
 	var getMouseP=function(e){
@@ -814,6 +888,158 @@ var pro_stunden_app=function(){
 		create();
 	}
 	
+	
+	var o_Farbdialog=function(ziel,data,onchange){
+		var farbe=data.farbe;//"#rrggbb" "grb(r,g,b)"
+		var nodedialog=cE(ziel,"div",undefined,"farbdialoghidden");
+		var _this=this;
+		var canF1,canF2,canF2zeiger,divFold,divFnew;
+		nodedialog.FD=_this;
+		
+		
+		var closeclick=function(e){
+			_this.destroy();
+			e.preventDefault();
+		}
+		
+		var okclick=function(e){
+			if(onchange!=undefined){
+				var c=stringfarbeToRGB(farbe);
+				onchange("#"+getHexstrformRGB(c.r,c.g,c.b));
+			}
+			_this.destroy();
+			e.preventDefault();
+		}
+		
+		var mdCan1=function(e){canF1.mausdown=true;}
+		var mmCan1=function(e){
+			if(canF1.mausdown===true)clickCan1(e);
+		}
+		var muCan1=function(e){canF1.mausdown=false;}
+		
+		var clickCan1=function(e){//farbe+helligkeit
+			var p=relMouse(e,canF1);
+			var c=getPixelColor(canF1,p);
+			farbe="rgb("+c.r+","+c.g+","+c.b+")";
+			divFnew.style.backgroundColor=farbe;
+		}
+		
+		var mdCan2=function(e){canF2.mausdown=true;}
+		var mmCan2=function(e){
+			if(canF2.mausdown===true)clickCan2(e);
+		}
+		var muCan2=function(e){canF2.mausdown=false;}
+		var clickCan2=function(e){//farbe
+			var p=relMouse(e,canF2);
+			var c=getPixelColor(canF2,p);
+			farbe="rgb("+c.r+","+c.g+","+c.b+")";
+			drawColorWB(canF1);
+			divFnew.style.backgroundColor=farbe;
+			canF2zeiger.style.top=canF2.offsetTop+(p.y-5)+"px";
+		}
+		
+		
+		var drawRGBstripe=function(canvas){
+			var cc=canvas.getContext("2d");
+			var grad = cc.createLinearGradient(0, 0, canvas.width, canvas.height);
+			grad.addColorStop(0, 		"hsl(0 ,100%, 50%)");  		//rot
+			grad.addColorStop(0.125,	"hsl(60 ,100%, 50%)");  	//gelb (60)
+			grad.addColorStop(0.25, 	"hsl(120 ,100%, 50%)");   	//grün (120)
+			grad.addColorStop(0.5, 		"hsl(180 ,100%, 50%)");  	//türkies
+			grad.addColorStop(0.75, 	"hsl(240 ,100%, 50%)");   	//blau (240)
+			grad.addColorStop(0.875, 	"hsl(300 ,100%, 50%)");  	//lila (300)
+			grad.addColorStop(1, 		"hsl(360 ,100%, 50%)");   	//rot
+			cc.fillStyle = grad;
+			cc.fillRect( 0, 0,  canvas.width, canvas.height);
+			
+			//canF2zeiger
+			var f=stringfarbeToRGB(farbe);
+			var hsl=RGBtoHSL(f.r,f.g,f.b);
+			canF2zeiger.style.left=(canvas.offsetLeft+canvas.width)+'px';
+			canF2zeiger.style.top=(canvas.offsetTop+canvas.offsetHeight*hsl.h-5)+'px';			
+		}
+		
+		var drawColorWB=function(canvas){
+			var f=stringfarbeToRGB(farbe);
+			var hsl=RGBtoHSL(f.r,f.g,f.b);
+			//weiß.....farbe(hsl.h)
+			// ..       ..
+			//schwarz..schwarz
+			var cc=canvas.getContext("2d");
+			
+			var grd=cc.createLinearGradient(0,0,canvas.width,0);
+			grd.addColorStop(0,"white");
+			grd.addColorStop(1,"hsl("+360*hsl.h+" ,100%, 50%)");
+			cc.fillStyle=grd;
+			cc.fillRect( 0, 0,  canvas.width, canvas.height);
+			
+			grd=cc.createLinearGradient(0,0,0,canvas.height);
+			grd.addColorStop(0,"rgba(255,255,255,0)");
+			grd.addColorStop(1,"rgba(0,0,0,1");
+			cc.fillStyle=grd;
+			cc.fillRect( 0, 0,  canvas.width, canvas.height);
+		}
+		
+		this.show=function(){
+			subClass(nodedialog,"farbdialoghidden");
+			addClass(nodedialog,"farbdialog");
+			
+			var h1=cE(nodedialog,"h1");
+			h1.innerHTML=getWort("farbwaehlertitel");
+			
+			var a=cE(h1,"a");
+			a.innerHTML="X";
+			a.href="#";
+			a.addEventListener("click",closeclick);
+			
+			var divinhalt=cE(nodedialog,"div",undefined,"farbdialoginhalt");
+			
+			canF1=cE(divinhalt,"canvas",undefined,"farbdialogcan1");
+			canF1.width=256;
+			canF1.height=256;
+			canF1.addEventListener("click",clickCan1);
+			canF1.addEventListener("mousemove"	,mmCan1);
+			canF1.addEventListener("mousedown"	,mdCan1);
+			canF1.addEventListener("mouseup"	,muCan1);
+			canF1.addEventListener("mouseout"	,muCan1);
+			drawColorWB(canF1);
+						
+			canF2zeiger=cE(divinhalt,"canvas",undefined,"farbdialogcan2zeiger");
+			
+			canF2=cE(divinhalt,"canvas",undefined,"farbdialogcan2");
+			canF2.width=22;
+			canF2.height=256;
+			canF2.addEventListener("click",clickCan2);
+			canF2.addEventListener("mousemove"	,mmCan2);
+			canF2.addEventListener("mousedown"	,mdCan2);
+			canF2.addEventListener("mouseup"	,muCan2);
+			canF2.addEventListener("mouseout"	,muCan2);
+			drawRGBstripe(canF2);
+						
+			divFold=cE(divinhalt,"div",undefined,"farbdialogFold");
+			divFold.style.backgroundColor=farbe;
+			
+			divFnew=cE(divinhalt,"div",undefined,"farbdialogFnew");
+			divFnew.style.backgroundColor=farbe;
+			
+			a=cE(divinhalt,"a",undefined,"button buttok");
+			a.href="#";
+			a.innerHTML=getWort("ok");
+			a.addEventListener("click",okclick);
+		};
+		
+		this.destroy=function(){
+			nodedialog.innerHTML="";
+			addClass(nodedialog,"farbdialoghidden");
+			subClass(nodedialog,"farbdialog");
+		}
+		
+		var create=function(){
+			_this.show();
+		}
+		
+		create();
+	}
 	
 	//--Versionscheck--
 	var versionscheck=function(){
@@ -1868,10 +2094,46 @@ var pro_stunden_app=function(){
 			return ( aa.getTime()-bb.getTime() );			
 		}
 		
+		var getcolorButt=function(ziel,data){
+			var node;
+			var dialog=undefined;
+			
+			var onchangeFD=function(sfarbe){
+				data.inputnode.value=sfarbe;
+				data.inputnode.style.backgroundColor=sfarbe;
+				
+				//addClass(data.inputnode,"isedit");
+				//daten übernehmen
+				data.inputnode.data.node[data.inputnode.data.nodeid]=decodeString(sfarbe);
+				//speichern
+				sendinfodatatimer(data.inputnode);
+			}
+			
+			var click=function(e){
+				if(dialog!=undefined)
+					dialog.show();
+				else
+					dialog=new o_Farbdialog(basis,{"farbe":data.inputnode.value},onchangeFD);
+			}			
+			
+			var ini=function(){
+				node=cE(ziel,"button",undefined,"button inputtanbutt");
+				node.innerHTML=getWort("farbwaehler");
+				node.addEventListener("click",click);
+			}
+			
+			ini();
+		}
+		
+		var farbchage=function(e){
+			var f=this.value;
+			this.style.backgroundColor=f;
+		}
+		
 		var showProjektdata=function(projekt){
 			checkneueOptionen(projekt);
 			
-			var tab,tr,th,td,i,inp,label,std,property,h1,htmlNode,tmp;
+			var tab,tr,th,td,i,inp,label,std,property,h1,htmlNode,tmp,butt;
 			var tab2,tr2,td2,th2;
 			var o_sibling;
 			var stundengesammt=0;
@@ -1910,8 +2172,14 @@ var pro_stunden_app=function(){
 			td=cE(tr,"td");
 			inp=cE(td,"input");
 			inp.value=encodeString(projekt.titel);
-			inp.data={"property":"titel","typ":"titel","node":projekt ,"nodeid":"titel","projektdata":projekt,
-					  "o_sibling":{timer:undefined,elemente:[inp]}};
+			inp.data={
+					"property":"titel",
+					"typ":"titel",
+					"node":projekt ,
+					"nodeid":"titel",
+					"projektdata":projekt,
+					"o_sibling":{timer:undefined,elemente:[inp]}
+					};
 			projinputs.push(inp);
 			
 			//infos			
@@ -1932,7 +2200,13 @@ var pro_stunden_app=function(){
 				td=cE(tr,"td");
 				inp=cE(td,"input");
 				inp.value=encodeString(projekt.info[property]);
-				inp.data={"property":property,"typ":"info","node":projekt.info ,"nodeid":property,"projektdata":projekt,"o_sibling":o_sibling};
+				inp.data={
+						"property":property,
+						"typ":"info",
+						"node":projekt.info ,
+						"nodeid":property,
+						"projektdata":projekt,
+						"o_sibling":o_sibling};
 				projinputs.push(inp);
 				
 				//console.log(getDataTyp(projekt.info[property]));
@@ -1948,6 +2222,12 @@ var pro_stunden_app=function(){
 					inp.type="number";
 					inp.step=0.01;
 					//inp.min=0;
+				}
+				if(property=="farbe"){
+					butt=new getcolorButt(td,{"inputnode":inp});
+					if(inp.value.length>0)inp.style.backgroundColor=inp.value;
+					inp.addEventListener('keyup',farbchage);
+					inp.addEventListener('change',farbchage);
 				}
 				
 				o_sibling.elemente.push(inp);
