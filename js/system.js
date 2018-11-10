@@ -1513,7 +1513,7 @@ var pro_stunden_app=function(){
 			}
 			
 			var createMonat=function(Monat,Jahr,zielnode,tliste){
-				var i,node,table,tr,td,tagz=0,
+				var i,node,table,th,tr,td,tagz=0,
 					tageimMonat =getMonatstage(Monat+1,Jahr),
 					MzeigeZeit = new Date(Jahr,Monat,1);
 				
