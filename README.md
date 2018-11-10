@@ -42,7 +42,7 @@ F = Feiertag<br>
 <img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-23.png" width="593" alt="Screenshot Übersicht">
 
 
-#Projekt bearbeiten#
+#### Projekt bearbeiten ####
 Für die Bearbeitung diese Projektes benötigt man:<br>
 https://nodejs.org dabei ist der npm-Packetmanager<br>
 mit<br>
