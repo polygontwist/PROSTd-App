@@ -93,6 +93,7 @@ var sprachen=[
 		 "dattodotext":"TODO-Listentext",
 		 "datintodo":"in TODO-Liste?",
 		 "dattodonr":"TODO-Listenposition",
+		 "datfarbe":"Farbe",
 		 
 		 "datdat":"Datum",
 		 "datstunden":"Stunden",

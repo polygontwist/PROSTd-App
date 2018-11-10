@@ -20,6 +20,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.20 "mein Projekt" Stunden nach Datum sortiert; "mein Tag" CSS: Eintrag Standardbreite 95%
 * 0.1.21 die TODO-Liste ist nun per drag&drop zu sortieren, kleine CSS Optimierungen
 * 0.1.22 den Projekten kann eine Farbe zugewiesen werden, diese wird in der Monats- und Projektliste benutzt
+* 0.1.23 "mein Tag": Tag in der ganzen Zeile klickbar, direkter Link zum download-Ordner, bugfixes, Jahresübersicht in Überblick
 
 #### allgemeine Infos ####
 
@@ -37,6 +38,9 @@ Z = Reisezeit<br>
 B = Besprechnung<br>
 U = Urlaub<br>
 F = Feiertag<br>
+
+<img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-23.png" width="593" alt="Screenshot Übersicht">
+
 
 #Projekt bearbeiten#
 Für die Bearbeitung diese Projektes benötigt man:<br>

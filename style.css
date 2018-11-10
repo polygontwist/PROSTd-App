@@ -455,12 +455,9 @@ nav #tabnav a.tabaktiv:after{
 .monatsliste .tag,
 .monatsliste .monat,
 .monatsliste .stdTaggesamt{
-	cursor:default;
 	text-align:center;
 }
-.monatsliste .tddata{
-	cursor:pointer;
-}
+
 .monatsliste .aktiv .tddata{
 	background-color:#42B850;
 	-webkit-animation-duration: 1s;
@@ -713,6 +710,10 @@ nav #tabnav a.tabaktiv:after{
 	background-color:#565656;
 	color:#ffffff;
 	text-align:center;
+}
+
+.tag_Mo,.tag_Di,.tag_Mi,.tag_Do,.tag_Fr,.tag_Sa,.tag_So{
+	cursor:pointer;
 }
 
 
@@ -1009,7 +1010,11 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	display:block;
 	-webkit-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.5);
 	-moz-box-shadow: 10px 10px 5px 0px rgba(0,0,0,0.5);
-	box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.5);	
+	box-shadow: 3px 3px 5px 0px rgba(0,0,0,0.5);
+	
+	-ms-user-select: None;
+	-moz-user-select: None;
+	-webkit-user-select: None; 
 }
 .farbdialoghidden{
 	display:none;
@@ -1021,6 +1026,9 @@ input[type=button].buttUP,input[type=button].buttDOWN{
     line-height: 31px;
     padding: 0 5px;
     color: #ffffff;
+	-ms-user-select: None;
+	-moz-user-select: None;
+	-webkit-user-select: None; 
 }
 .farbdialog h1 a{
 	float:right;
@@ -1037,6 +1045,10 @@ input[type=button].buttUP,input[type=button].buttDOWN{
     text-align: center;
     line-height: 20px;
 	text-decoration:none;
+	
+	-ms-user-select: None;
+	-moz-user-select: None;
+	-webkit-user-select: None; 
 }
 .farbdialog .farbdialoginhalt{
 	position:relative;
@@ -1047,6 +1059,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	left:10px;
 	top:10px;
 	cursor:crosshair;
+	
 }
 .farbdialog .farbdialogcan1{
 }
@@ -1061,6 +1074,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
     position: absolute;
     width: 0;
     height: 0;
+	pointer-events: none;
 }
 
 
@@ -1194,6 +1208,61 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	top: 0;
 	background-color: rgba(0,0,0,0.125);
 }
+
+.monattabH{}
+.monattab {margin-bottom: 30px;}
+.monattab table{
+	display:inline-block; 
+	border-collapse: collapse;
+	width: auto;
+	vertical-align:top;
+	margin-right:5px;
+	margin-bottom:5px;
+	}
+.monattab tr,.monattab td,.monattab th{ 
+	border: 1px solid #ddd;
+    padding: 2px;
+	font-size: 10pt;
+}
+.monattab td{
+	text-align: right;
+	position:relative;
+}
+.monattab th{ 
+	text-align: center;
+    width: auto;
+}
+.monattab td.hatdaten{
+	background-color:rgba(234,79,198,0.1);
+}
+
+.monattab td.anzahlP1{background-color:rgba(234,79,198,0.125);}
+.monattab td.anzahlP2{background-color:rgba(234,79,198,0.25);}
+.monattab td.anzahlP3{background-color:rgba(234,79,198,0.375);}
+.monattab td.anzahlP4{background-color:rgba(234,79,198,0.5);}
+.monattab td.anzahlP5{background-color:rgba(234,79,198,0.625);}
+.monattab td.anzahlP6{background-color:rgba(234,79,198,0.75);}
+.monattab td.anzahlP7{background-color:rgba(234,79,198,0.875);}
+.monattab td.anzahlP8{background-color:rgba(234,79,198,1);}
+
+.monattab td div{
+	display:inline-block;
+	width:100%;
+	height:100%;
+	position:absolute;
+	left:0;
+	top:0;
+	overflow:hidden;
+}
+.monattab td span{
+	display: inline-block;
+    width: 100%;
+    height: 4px;
+    float: left;
+    opacity: 0.25;
+	background-color:#666666;
+}
+
 /*--allgemein----*/
 .tabgrau{
 		background-color:#c0c0c0;
@@ -1230,13 +1299,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	float:left;
 }
 	
-.tag_Mo{}
-.tag_Di{}
-.tag_Mi{}
-.tag_Do{}
-.tag_Fr{}
-.tag_Sa{}
-.tag_So{}
+
 	
 .booleanswitch{
 	display:none;/**/
