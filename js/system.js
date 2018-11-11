@@ -32,6 +32,9 @@ var pro_stunden_app=function(){
 		settings_projektliste:{sortby:"projekte", updown:"up"}		
 	};
 	
+	var defaultfarben={
+		"urlaub":"rgb(94,156,201)"
+	};
 	
 //TODO:	
 //		-Ausertung: "alle" canvas über alle Jahre
@@ -57,6 +60,9 @@ var pro_stunden_app=function(){
 			if(projekt.info.farbe==undefined){//neue Option
 				projekt.info.farbe="";
 			}
+		}
+		if(projekt.id=="urlaub" || projekt.id=="feiertage"){
+			if(projekt.info.farbe==undefined)projekt.info.farbe="";
 		}
 	}
 		
@@ -1481,9 +1487,19 @@ var pro_stunden_app=function(){
 					span=cE(ziel.node.div,"span");
 					ziel.node.div.spans.push(span);	
 					
-					if(projekt.data.info.farbe!=undefined){
+					if(projekt.data.id=="urlaub"){
+						
+						span.style.backgroundColor=defaultfarben.urlaub.split('rgb').join("rgba").split(')').join(",1)");
+						
+						if(projekt.data.info.farbe!=undefined && projekt.data.info.farbe!="")
+							span.parentNode.style.borderBottom="2px solid "+projekt.data.info.farbe;
+							else
+							span.parentNode.style.borderBottom="2px solid "+defaultfarben.urlaub;
+					}
+					if(projekt.data.info.farbe!=undefined && projekt.data.info.farbe!=""){
 						span.style.backgroundColor=projekt.data.info.farbe;
 					}
+					
 					if(ziel.node.div.title.length>0)ziel.node.div.title+=", ";
 					ziel.node.div.title+=projekt.data.titel;
 					
@@ -1502,11 +1518,10 @@ var pro_stunden_app=function(){
 					stunden=data.stunden;
 				for(i=0;i<stunden.length;i++){
 					s=stunden[i];
-					if(s.stunden>0){
-						dat=s.dat.split('-');//"2017-06-08"
-						if(parseInt(dat[0])==jahr){
-							addto(parseInt(dat[1]),parseInt(dat[2]),projektdata);
-						}
+					
+					dat=s.dat.split('-');//"2017-06-08"
+					if(parseInt(dat[0])==jahr){
+						addto(parseInt(dat[1]),parseInt(dat[2]),projektdata);
 					}
 				}
 				
@@ -1652,7 +1667,7 @@ var pro_stunden_app=function(){
 			
 			//Tagesstunden zeichnen
 			var farbe="rgba(127,202,93,0.7)";
-			if(dat.id=="urlaub")farbe="rgba(94,156,201,0.7)";
+			if(dat.id=="urlaub")farbe=defaultfarben.urlaub.split('rgb').join("rgba").split(')').join(",0.7)");//"rgba(94,156,201,0.7)";
 			for(i=0;i<stundenliste.length;i++){
 				datumstd=stundenliste[i];
 				x=datumstd.x;
