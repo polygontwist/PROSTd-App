@@ -21,7 +21,8 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.21 die TODO-Liste ist nun per drag&drop zu sortieren, kleine CSS Optimierungen
 * 0.1.22 den Projekten kann eine Farbe zugewiesen werden, diese wird in der Monats- und Projektliste benutzt
 * 0.1.23 "mein Tag": Tag in der ganzen Zeile klickbar, direkter Link zum download-Ordner, bugfixes, Jahresübersicht in Überblick
-* 0.1.24 Urlauf kann auch eingefärbt werden, in Jahresübersicht haben Tage mit Urlaub einen unteren Strich. bugfixes.
+* 0.1.24 Urlaub kann auch eingefärbt werden, in Jahresübersicht haben Tage mit Urlaub einen unteren Strich. bugfixes.
+* 0.1.25 bugfixes (Übersicht: Sortierung, Textfehler), Farbdialogposition:fixed
 
 #### allgemeine Infos ####
 

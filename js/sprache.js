@@ -64,7 +64,7 @@ var sprachen=[
 		 "monatsauswertung":"Monatsauswertung",
 		 "stundengesammt":"Arbeitsstunden im Monat: ",
 		 "stundengesammt2":" von ",
-		 "gesammtstunden":"Gesammtstunden",
+		 "gesammtstunden":"Gesamtstunden",
 		 "urlaub":"Urlaub",
 		 "aenderungsaved":"Änderung gespeichert.",
 		 "selectaday":"Wähle einen Tag!",

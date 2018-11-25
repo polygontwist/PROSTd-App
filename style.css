@@ -1001,7 +1001,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 
 /*--Farbwahldialog----*/
 .farbdialog{
-	position:absolute;
+	position:fixed;
 	background-color:#dddddd;
 	left:calc(50% - 195px);
 	top:calc(50% - 175px);
@@ -1211,7 +1211,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 
 .monattabH{}
 .monattab {margin-bottom: 30px;}
-.monattab table{
+.projektueberblick .monattab table,.monattab table{
 	display:inline-block; 
 	border-collapse: collapse;
 	width: auto;
@@ -1219,7 +1219,9 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	margin-right:5px;
 	margin-bottom:5px;
 	}
-.monattab tr,.monattab td,.monattab th{ 
+.projektueberblick .monattab tr,.projektueberblick .monattab td,.projektueberblick .monattab th,
+.monattab tr,.monattab td,.monattab th
+{ 
 	border: 1px solid #ddd;
     padding: 2px;
 	font-size: 10pt;
