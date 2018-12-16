@@ -33,12 +33,13 @@ var pro_stunden_app=function(){
 	};
 	
 	var defaultfarben={
-		"urlaub":"rgb(94,156,201)"
+		"urlaub":"rgb(94,156,201)",
+		"feiertage":"rgb(94,156,201)"
 	};
 	
 //TODO:	
 //		-Ausertung: "alle" canvas über alle Jahre
-//				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttiitel)
+//				canvas:alle Projekte untereinander?-versch. Farben mit Hint(Projekttitel)
 //		Passwort: new (www)
 	
 	//--"const"--
@@ -1430,7 +1431,6 @@ var pro_stunden_app=function(){
 						}
 					}
 				}
-
 				if(eintragen){
 					onew={id:o.id,pro:o.pro,data:o.data,divnode:undefined};
 					projekte.push(onew);
@@ -1442,8 +1442,17 @@ var pro_stunden_app=function(){
 					
 					showinfosonCanvas(onew);
 					jahresuebersicht.add(onew);
-				}		
+				}
+				if(!eintragen && o.id=="feiertage"){
+					onew={id:o.id,pro:o.pro,data:o.data,divnode:undefined};
+					jahresuebersicht.add(onew);
+				}
+				
 			}
+			
+			
+			
+			
 			
 			projekteliste2=cE(basis,"div");
 			showprojekteliste2();
@@ -1469,12 +1478,10 @@ var pro_stunden_app=function(){
 			}
 			var jahr=zeigezeit.getFullYear();
 			
-			//var montg=getTageimJahrList(jahr);
-			
-			var addto=function(monat,tag,projekt){
-				var i,span,
+			var addto=function(zjahr,monat,tag,projekt){
+				var i,span,t,titel="",dat,s,
 					ziel=tmonate[monat-1][tag-1];
-				if(ziel!=undefined){
+				if(ziel!=undefined){//Kalenderelement gefunden					
 					ziel.projekte.push(projekt);
 					ziel.node.className="hatdaten "+"anzahlP"+ziel.projekte.length;
 					if(ziel.node.div==undefined){
@@ -1484,6 +1491,15 @@ var pro_stunden_app=function(){
 					
 					span=cE(ziel.node.div,"span");
 					ziel.node.div.spans.push(span);	
+					
+					if(projekt.data.id=="feiertage"){
+						span.style.backgroundColor=defaultfarben.feiertage.split('rgb').join("rgba").split(')').join(",1)");
+						
+						if(projekt.data.info.farbe!=undefined && projekt.data.info.farbe!="")
+							span.parentNode.style.borderTop="2px solid "+projekt.data.info.farbe;
+							else
+							span.parentNode.style.borderTop="2px solid "+defaultfarben.feiertage;						
+					}
 					
 					if(projekt.data.id=="urlaub"){						
 						span.style.backgroundColor=defaultfarben.urlaub.split('rgb').join("rgba").split(')').join(",1)");
@@ -1498,27 +1514,48 @@ var pro_stunden_app=function(){
 					}
 					
 					if(ziel.node.div.title.length>0)ziel.node.div.title+=", ";
-					ziel.node.div.title+=projekt.data.titel;
+					titel=projekt.data.titel;
+					
+					if(projekt.data.id=="feiertage"){//bei Feuertagen, Kommentar als Titel nehmen
+						for(t=0;t<projekt.data.stunden.length;t++){
+							s=projekt.data.stunden[t];
+							dat=s.dat.split('-');
+							if(parseInt(dat[0])==zjahr && parseInt(dat[1])==monat && parseInt(dat[2])==tag)
+								titel=s.kommentar;
+						}
+					}
+					
+					ziel.node.div.title+=titel;
+					
 					
 					for(i=0;i<ziel.node.div.spans.length;i++){
 						ziel.node.div.spans[i].style.height=100/ziel.node.div.spans.length+'%';
 					}
-					
-					//console.log(projekt);
 				}	
 				
 			}
 			
 			this.add=function(projektdata){
-				var i,s,dat,
+				var i,t,s,dat,eintragen,
 					data=projektdata.data,
 					stunden=data.stunden;
+					
 				for(i=0;i<stunden.length;i++){
 					s=stunden[i];
-					
 					dat=s.dat.split('-');//"2017-06-08"
-					if(parseInt(dat[0])==jahr){
-						addto(parseInt(dat[1]),parseInt(dat[2]),projektdata);
+					
+					eintragen=parseInt(dat[0])==jahr;		//wenn aktuelles Jahr,
+					if(s.stunden<=0 && 						//keine stunden -> nicht aufnehmen
+						(projektdata.id!="urlaub"			//wenn Urlaub -> doch aufnhemen
+						 &&
+						 projektdata.id!="feiertage"
+						)			
+						)
+						eintragen=false;		
+					
+					
+					if(eintragen){//in Übersicht aufnehmen
+						addto(parseInt(dat[0]),parseInt(dat[1]),parseInt(dat[2]),projektdata);//monat,tag,data
 					}
 				}
 				
@@ -2722,15 +2759,16 @@ var pro_stunden_app=function(){
 			showoptions();
 		}
 		
-		var	showoptions=function(){
+		var	showoptions=function(zieldiv){
 			var o;
-			if(optionsplane==undefined)return;
-			optionsplane.innerHTML="";
-			if(options.showactions)o=new ListActions(optionsplane);
+			if(zieldiv==undefined)return;
+			zieldiv.innerHTML="";
+			if(options.showactions)o=new ListActions(zieldiv);
 		}
 		
 		var ListActions=function(ziel){
-			var basis=cE(ziel,"div",undefined,"listactions");
+			var basis=ziel;//
+			addClass(basis,"listactions");
 			
 			var ini=function(){
 				var HTMLnode,inp;
@@ -2860,7 +2898,7 @@ var pro_stunden_app=function(){
 			}
 			
 			optionsplane=cE(basis,"div");
-			showoptions();
+			showoptions(optionsplane);
 			//Ergebnis
 			table=cE(basis,"table");
 			addClass(table,"sortierbar");
@@ -3477,7 +3515,7 @@ var pro_stunden_app=function(){
 							}
 						}
 					}
-					if(!isNaN(std))tr.data.node_stdTag.innerHTML=std;
+					if(!isNaN(std))tr.data.node_stdTag.innerHTML=Math.round(std*10)/10;
 					gesstd+=std;
 				}
 				
