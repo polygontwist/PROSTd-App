@@ -3536,7 +3536,7 @@ var pro_stunden_app=function(){
 					HTMLnode.data={"zieldiv":divmi,"tabellendata":tabellendata[itd]};
 					
 					HTMLnode=cE(div,"span",undefined,"moninfotext");
-					HTMLnode.innerHTML=getWort("stundengesammt")+gesstd+getWort("stundengesammt2")+stundensoll;
+					HTMLnode.innerHTML=getWort("stundengesammt")+(Math.floor(gesstd*100)/100)+getWort("stundengesammt2")+stundensoll;
 				}
 			}
 			
