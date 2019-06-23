@@ -24,6 +24,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.24 Urlaub kann auch eingefärbt werden, in Jahresübersicht haben Tage mit Urlaub einen unteren Strich. bugfixes.
 * 0.1.25 bugfixes (Übersicht: Sortierung, Textfehler), Farbdialogposition:fixed
 * 0.1.26 bugfixes Tagesstundenberechnung, gerundet auf eine Stelle hinterm Komma, Jahresübersicht: keine 0-Stunden-Projekte außer Urlaub & Feiertage
+* 0.1.27 bugfix: Rundungsfehler "mein Tag" Monatsstunden (zu viele Nachkommastellen)
 
 #### allgemeine Infos ####
 
