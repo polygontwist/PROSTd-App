@@ -63,8 +63,8 @@ In der Eingabeaufforderung kann, im Verzeichnis des Projektes mit<br>
 > electron .
 
 das Programm gestartet werden (Entwicklungsversion).<br>
-Mit<br>
-> build
+Mit (Stand 25.8.2019)<br>
+> npm run dist --ia32
 
 kann ein Packet zur Installation erzeugt werden.
 Das kann dann wie jedes normale Programm von Nutzern installiert werden. 
