@@ -1248,10 +1248,9 @@ var pro_stunden_app=function(){
 				inhaltsobjekt=new Monatsliste(odata.content);
 				odata.inhalte.push(inhaltsobjekt);
 				//div->Projektliste
-				inhaltsobjekt=new Projektliste(odata.content);
+				inhaltsobjekt=new Projektliste(odata.content,{"namensfilter":true});
 				inhaltsobjekt.setfilter(["feiertage"]);
 				odata.inhalte.push(inhaltsobjekt);
-				inhaltsobjekt.showactions(false);
 				document.title=getWort("meinTag");
 			}
 			
@@ -1261,10 +1260,9 @@ var pro_stunden_app=function(){
 				inhaltsobjekt=new editorTODO(odata.content);
 				odata.inhalte.push(inhaltsobjekt);
 				//div->Projektliste
-				inhaltsobjekt=new Projektliste(odata.content);
+				inhaltsobjekt=new Projektliste(odata.content,{"namensfilter":true});
 				odata.inhalte.push(inhaltsobjekt);
-				inhaltsobjekt.showactions(true);
-				document.title=getWort("meinProj");
+				document.title=getWort("todo");
 				
 			}
 			
@@ -1274,9 +1272,8 @@ var pro_stunden_app=function(){
 				inhaltsobjekt=new editorProjekt(odata.content);
 				odata.inhalte.push(inhaltsobjekt);
 				//div->Projektliste
-				inhaltsobjekt=new Projektliste(odata.content);
+				inhaltsobjekt=new Projektliste(odata.content,{"namensfilter":true,"createprojektbutt":true});
 				odata.inhalte.push(inhaltsobjekt);
-				inhaltsobjekt.showactions(true);
 				document.title=getWort("meinProj");
 				
 			}
@@ -2690,7 +2687,7 @@ var pro_stunden_app=function(){
 		
 	}
 	
-	var Projektliste=function(zielnode){//Liste der Projekte
+	var Projektliste=function(zielnode,optionen){//Liste der Projekte
 		var ziel=zielnode;
 		var basis=undefined;
 		var selectedProjekt=undefined;
@@ -2699,12 +2696,8 @@ var pro_stunden_app=function(){
 		var connects=[];
 		var filter=[];//Projektnamen nicht anzeigen
 		
-		var options={
-			showactions:false
-		}
 		var projekte=undefined;
-		var lastfilter=undefined;
-		
+		var lastfilter=undefined;		
 		
 		this.ini=function(){//create
 			basis=cE(ziel,"div",undefined,"projektliste");
@@ -2753,60 +2746,23 @@ var pro_stunden_app=function(){
 			filter=arr;
 		}
 		
-		this.showactions=function(an){
-			options.showactions=an;
-			showoptions();
-		}
-		
-		var	showoptions=function(zieldiv){
-			var o;
-			if(zieldiv==undefined)return;
-			zieldiv.innerHTML="";
-			if(options.showactions)o=new ListActions(zieldiv);
-		}
-		
-		var ListActions=function(ziel){
-			var basis=ziel;//
-			addClass(basis,"listactions");
-			
+		var createNewProjektButt=function(ziel){
 			var ini=function(){
 				var HTMLnode,inp;
-				inp=cE(basis,"input",undefined,"inp_newpro");
+				var zeile=cE(ziel,"div");
+				inp=cE(zeile,"input",undefined,"inp_newpro");
 				inp.type="text";
 				inp.placeholder=getWort("inp_newProj");
 				inp.addEventListener('keydown',keydownnewPro);
 				
-				HTMLnode=cE(basis,"a",undefined,"button optbutt");
+				HTMLnode=cE(zeile,"a",undefined,"button optbutt");
 				HTMLnode.href="#";
 				HTMLnode.data={"inp":inp};
 				HTMLnode.innerHTML=getWort("butt_newProj");
 				HTMLnode.addEventListener('click',bklicknewPro);
-				
 			}
 			
-			var keydownnewPro=function(e){
-				if(e.keyCode==13){
-					var name=this.value;
-					if(name!=null){
-						if(name==""){
-							alert(getWort("mesage_inputnamenoinput"));
-						}
-						else
-						if(name.length<3){
-							alert(getWort("mesage_inputnamekurz"));
-						}
-						else{
-							name=clearNewDateiname(name);
-							//console.log("create",name);
-							sendMSG("createnewprojekt","newdata="+name);
-						}
-					}					
-				}
-				
-			}
-			
-			var bklicknewPro=function(e){
-				var name = this.data.inp.value; //prompt(getWort("getnewProName"), "");
+			var createNewProjekt=function(name){
 				if(name!=null){
 					if(name==""){
 						alert(getWort("mesage_inputnamenoinput"));
@@ -2816,11 +2772,83 @@ var pro_stunden_app=function(){
 						alert(getWort("mesage_inputnamekurz"));
 					}
 					else{
-						//console.log("create",name);
 						sendMSG("createnewprojekt","newdata="+name);
 					}
 				}
-				return false;
+			}
+			
+			var keydownnewPro=function(e){
+				if(e.keyCode==13)createNewProjekt(this.value);
+			}
+			
+			var bklicknewPro=function(e){
+				createNewProjekt(this.data.inp.value);
+				e.preventDefault()
+			}
+			
+			ini();
+		}
+		
+		var createNewNamensFilter=function(ziel,table){
+			var inpnode;
+			var ini=function(){
+				var zeile=cE(ziel,"div");
+				
+				inpnode=cE(zeile,"input",undefined,"inp_filternamen");
+				inpnode.type="text";
+				inpnode.placeholder=getWort("inp_filternamen");
+				inpnode.addEventListener('keyup',keydownfilter);
+			}
+			
+			var getinnerhtml=function(node){
+				var nl=node.children;
+				if(nl!=undefined && nl.length>0)
+					return getinnerhtml(nl[0]);
+				else
+					return node.innerHTML;
+			}
+			
+			var filtern=function(filtertext){
+				var tbody=table.getElementsByTagName("tbody")[0];
+				var anzahl=0;
+				filtertext=filtertext.toLowerCase();
+				
+				if(tbody){
+					var i,trCN,tds,tr,
+						projektname,kundenname,
+						trs=tbody.getElementsByTagName("tr"),
+						filtern=filtertext.length>0;
+					
+					for(i=0;i<trs.length;i++){
+						tr=trs[i];
+						tds=tr.getElementsByTagName("td");
+						projektname=getinnerhtml(tds[0]).toLowerCase();
+						kundenname=tds[1].innerHTML.toLowerCase();
+						
+						if(	projektname.indexOf(filtertext)>-1 
+							|| kundenname.indexOf(filtertext)>-1 
+							|| !filtern)
+						{
+							tr.style.display="";
+							anzahl++;
+						}else{
+							tr.style.display="none";
+						}
+					}
+					
+					if(anzahl==0){
+						addClass(inpnode,"notfound");
+					}
+					else{
+						subClass(inpnode,"notfound");
+					}
+					
+				}
+				//table->tbody->tr ->className
+			}
+			
+			var keydownfilter=function(e){
+				filtern(this.value);
 			}
 			
 			ini();
@@ -2896,10 +2924,17 @@ var pro_stunden_app=function(){
 				c3+="sortierbar"+sortrichtung;
 			}
 			
-			optionsplane=cE(basis,"div");
-			showoptions(optionsplane);
-			//Ergebnis
+			optionsplane=cE(basis,"div",undefined,"listactions");
 			table=cE(basis,"table");
+			
+			if(optionen.namensfilter===true)
+				new createNewNamensFilter(optionsplane,table);
+			
+			if(optionen.createprojektbutt===true)
+				new createNewProjektButt(optionsplane);
+			
+			
+			//Ergebnis
 			addClass(table,"sortierbar");
 			thead=cE(table,"thead");
 			tr=cE(thead,"tr");

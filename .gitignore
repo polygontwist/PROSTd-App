@@ -52,3 +52,5 @@ dist/PROSTd Setup 0.1.4.exe
 dist/latest.yml
 *.7z
 *.blockmap
+PROSTd-win32-ia32/*
+node_modules/*

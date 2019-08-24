@@ -769,11 +769,6 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	display:none;
 }
 
-
-.tab_editTodolist .listactions{
-	display:none;
-}
-
 .indavor{border-top:8px solid green !important;}
 .indanach{border-bottom:8px solid green !important;}
 .dragdropquelle{
@@ -874,7 +869,9 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	padding:2px;
 	white-space:nowrap;
 }
-
+.projektliste .listactions div{
+	margin-bottom:2px;
+}
 
 
 .tab_editProj .projektliste .p_aktiv{
@@ -917,13 +914,20 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .projektliste a.optbutt:after,.projektliste a.optbutt:hover:after{
 	display:none;
 }
-.inp_newpro{
+.inp_newpro,.inp_filternamen{
 	margin:0;
 	margin-left:10px;
 	height: 32px;
 	border: 1px solid #222;
 	vertical-align: top;
 	width:calc(100% - 155px);
+}
+.inp_filternamen{
+	width:calc(100% - 20px);
+}
+
+.notfound{
+	background-color:rgba(255,0,0,0.5);
 }
 
 
