@@ -200,9 +200,8 @@ var pro_stunden_app=function(){
 	}
 	
 	var isAppBridge=function(){
-		if(typeof(globaldata)!="undefined")
-		if(globaldata.modus!=undefined){
-			if(globaldata.modus=="app"){
+		if(typeof(globaldata)==="object"){
+			if(globaldata.modus==="app"){
 				if(typeof(AppBridge)!="undefined"){
 					return true;
 				}
