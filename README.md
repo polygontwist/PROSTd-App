@@ -26,6 +26,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.26 bugfixes Tagesstundenberechnung, gerundet auf eine Stelle hinterm Komma, Jahresübersicht: keine 0-Stunden-Projekte außer Urlaub & Feiertage
 * 0.1.27 bugfix: Rundungsfehler "mein Tag" Monatsstunden (zu viele Nachkommastellen)
 * 0.1.28 Suchleiste über Projektliste; Electron: v6.0.4
+* 0.1.29 Einstellungen: Auswahl der Arbeitstage pro Woche (in Zusammenspiel mit Arbeitsstunden pro Tag); Gültigkeit der Urlaubstageanzahl pro Jahr, Urlaub: neuer Tab zum einfachen verteilen des Jahresurlaubes, CSS: Darstellung der Einträge optimiert - Eintrag geht über ganze Zeile, bugfixes
 
 #### allgemeine Infos ####
 
