@@ -99,6 +99,9 @@ button.sortbut{
 .buttok:hover{
 	background-color:#78e27f;
 }
+.buttabr:hover{
+	background-color:#F48484;
+}
 
 .viewothermon{
 	margin: 2px auto;
@@ -432,7 +435,7 @@ nav #tabnav a.tabaktiv:after{
 
 
 
-.tab_editTag,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen,.tab_editTodolist{
+.tab_editTag,.tab_editUrlaub,.tab_editUeberblick,.tab_editProj,.tab_editEinstellungen,.tab_editTodolist{
 	position:absolute;
 	top:54px;
 	width:100%;
@@ -443,6 +446,8 @@ nav #tabnav a.tabaktiv:after{
 	top:0px;
 	height:100%;
 }
+
+
 /*--Monatsliste--*/
 
 .monatsliste{
@@ -784,9 +789,10 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 
 
 
-/*---Projektliste---*/
 
-.projektliste{
+/*---Projektliste, urlaubsliste---*/
+
+.projektliste,.stackliste{
 	border: 1px solid #000;
 	position:absolute;
 	right:1%;
@@ -925,10 +931,29 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .inp_filternamen{
 	width:calc(100% - 20px);
 }
+.projektliste .clearbutt{
+ 	-webkit-border-radius:15px;
+	-moz-border-radius:15px;
+	border-radius:15px;
+	position: absolute;
+	right:14px;
+	top:4px;
+	height: 28px;
+	width: 28px;
+	text-align: center;
+	text-transform: uppercase;
+    font-size: 10pt;
+    font-weight: bold;
+    padding: 0;
+    line-height: 30px;
+    background-color: #D17777;
+    color: #ffffff;
+}
 
 .notfound{
 	background-color:rgba(255,0,0,0.5);
 }
+
 
 
 @media screen and (max-width: 870px) {
@@ -945,6 +970,23 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 		width:32px;
 		font-size:13pt;
 	}
+	.projektliste .clearbutt{
+		color: #ffffff;
+		font-size: 10pt;
+	}
+	.clearbutt:before{
+		content:"";
+	}
+}
+
+
+/*---urlaubsliste---*/
+.tab_editUrlaub .editorProjekt{width:calc(100% - 290px);}
+.tab_editUrlaub .stackliste{width: 275px;right: 5px;}
+
+.stackliste .datum{
+	font-size:10pt;
+	margin-right: 6px;
 }
 
 /*--Projektdaten--*/
@@ -992,16 +1034,34 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	font-style: italic;
 }
 
+.tab_editUrlaub .editorProjekt{
+	padding:0 10px;
+}
+.tab_editUrlaub .editorProjekt h1{
+	text-align:center;
+}
+
 .stdtab{}
 .stdtab .inpdatdat{
-	width:80px;
+	width:73px;
 }
 .stdtab .inpdatstunden{
-	width:70px;
+	width:42px;
 }
 .stdtab .inpdattyp{
-	width:70px;
+	width:40px;
 }
+.stdtab .inpdatvonjahr{
+	width:60px;
+}
+
+.stdtab .inpdatuser{
+	width:73px;
+}
+.stdtab .inpdatkommentar{
+	width:130px;
+}
+
 
 /*--Farbwahldialog----*/
 .farbdialog{
@@ -1233,6 +1293,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .monattab td{
 	text-align: right;
 	position:relative;
+	min-width: 18px;
 }
 .monattab th{ 
 	text-align: center;
@@ -1268,6 +1329,21 @@ input[type=button].buttUP,input[type=button].buttDOWN{
     opacity: 0.25;
 	background-color:#666666;
 }
+.monattab .heute{
+	position:relative;
+}
+.monattab .heute:after{
+	content:"";
+	position:absolute;
+	left:0;
+	top:0;
+	width:0;
+	height:0;
+	border:6px solid transparent;
+	border-top-color:#000000;
+	border-left-color:#000000;
+	/*outline*/
+}
 
 /*--allgemein----*/
 .tabgrau{
@@ -1287,14 +1363,24 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .wochenende{
 	background-color:#99ccff;
 }
-.urlaub{
+.keinarbeitstag{
+	background-color:rgba(153, 204, 255, 0.25);
+}
+.urlaub,.monattab td.urlaubstack{
 	background-color:#ffcc99;
 }
+.monattab td.urlaubstack span{
+	display:none;
+}
+
 .urlaub .tddata,.feiertag .tddata{
 	text-align:center;
 }
 .feiertag{
 	background-color:#99ccff;
+}
+.tag5,.tag6{
+	background-color:#ebeefb;
 }
 
 .hatdata .tddata{
@@ -1305,7 +1391,12 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	float:left;
 }
 	
-
+.tagwahl td{
+	cursor:pointer;
+}
+.tagwahl td.leer{
+	cursor:default;
+}
 	
 .booleanswitch{
 	display:none;/**/
@@ -1380,6 +1471,13 @@ input.booleanswitch:checked ~ label:after{
 	text-align:center;
 }
 
+.progeinstellungen td{
+	padding-bottom: 20px;
+}
+
+.inputarr{
+  margin-right:16px;
+}
 
 /*-------------MSG-Dialog-------------*/
 #statusMSG{
@@ -1432,6 +1530,63 @@ input.booleanswitch:checked ~ label:after{
 	font-size:13pt;	
 }
 
+#inputDLG{
+	position:absolute;
+	left:0;
+	top:0;
+	right:0;
+	bottom:0;
+	background-color:rgba(0,0,0,0.125);
+	display:block;
+}
+#inputDLG.off{
+	display:none;
+}
+#dialogBox{
+	width: 400px;
+    min-height: 150px;
+    background-color: #ffffff;
+    padding: 10px;
+    position: absolute;
+    left: calc(50% - 200px);
+    top: 20%;
+	-webkit-box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
+	-moz-box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
+	box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
+}
+#dialogBox h1,#dialogBox p{
+	font-size: 12pt;
+    margin: 0;
+    margin-bottom: 10px;
+    display: block;
+}
+#dialogBox input{
+	font-size: 12pt;
+}
+#dialogBox input.off{
+	display:none;
+}
+
+#dialogBox .inputb{
+	margin-bottom: 50px;
+}
+#dialogBox div.buttons{
+	position: absolute;
+    bottom: 10px;
+    left: 10px;
+    right: 10px;
+    text-align: center;
+}
+#dialogBox .buttabr{
+	margin-right: 50px;
+	min-width: 100px;
+}
+#dialogBox .buttok{
+	min-width: 100px;
+}
+
+
+
 #debugdiv{
 	position:absolute;
 	right:0;
@@ -1441,10 +1596,122 @@ input.booleanswitch:checked ~ label:after{
 	padding:3px;
 }
 
+.stackliste ul{
+	 margin: 0;
+    padding: 0;
+    list-style-type: none;
+}
+.stackliste ul li{
+	 min-height: 23px;
+	 padding:5px;
+}
+.stackliste li:nth-child(2n) {
+    background-color: #eee;
+}
+.stackliste ul li.verfallen{
+	display:none;
+}
+.stackliste .buttdel{
+	color:transparent;
+	height:25px;
+	width:25px;
+	line-height:22px;
+	overflow:hidden;
+	padding:5px;
+	border-radius:20px;
+	-webkit-border-radius:20px;
+	margin-right:5px;
+	position:relative;
+	top: 5px;
+}
+.stackliste .buttdel:before{
+	content:"x";
+	color:#000000;
+	position:absolute;
+	left:0;
+	top:0;
+	width:25px;
+	text-align:center;
+}
+.stackliste span{
+	display:inline-block;
+}
+.stackliste .newurlaubbutt{
+	width:100%;
+}
+
 /* responsive */
-@media screen and (max-width: 770px) {
+@media screen and (max-width: 968px) {
 	nav .logo{display:none;}
 }
 @media screen and (max-width: 700px) {
 	nav h1{display:none;}
 }
+
+
+/*Einträge generell breiter*/
+.monatsliste .projektitem{
+	width: calc(100% - 23px);
+	min-width: 300px;
+	display: table;
+	position: relative;
+	margin: 2px 10px;
+}
+/*  100px * 52px 52px*/
+
+.monatsliste .projektitem a{
+	display:table-cell;
+	width:100px;
+	overflow:hidden;
+}
+
+.monatsliste .projektitem input{
+	display:table-cell;
+	
+}
+.monatsliste .projektitem .inputKommentar{
+	width:calc(100% - 104px);
+}
+.monatsliste .projektitem .inputStunden{
+	position:absolute;
+	top: 0;
+	right:0;
+	width:52px;
+}
+.monatsliste .projektitem .inputArt{
+	position:absolute;
+	top: 0;
+	right:47px;
+	width:52px;
+}
+
+.monatsliste .feiertagtext a{
+	color:transparent;
+	display:none;
+}
+
+.urlaub a{
+	text-align:center;
+}
+.monatsliste .urlaubtext{
+	display:inline-block;
+}
+.monatsliste .urlaubtext a,
+.monatsliste .urlaubtext .inputKommentar{
+	position:relative;
+	display:inline-block;
+}
+
+.monatsliste .urlaubtext .inputKommentar {
+    width:calc(100% - 100px);
+    text-align: center;
+}
+
+div.krank{
+	background-color:#605d5d;
+}
+div.krank input.inputArt,
+div.krank input.inputStunden{
+	display:none;
+}
+

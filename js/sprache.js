@@ -16,12 +16,13 @@ var sprachen=[
 		 "Tag":"Tag",
 		 "Monat":"Monat",
 		 "letzte12mon":"die letzten 12 Monate",
-		 "filterby":"zeige Projekte mit Stunden von ",
+		 "filterby":"zeige Daten von ",
 		 "zeigebeendete":"zeige beendete Projekte",
 		 "datzeigebeendete":"zeige beendete Projekte",
 		 "reststunden":"geplante Reststunden",
 		 "circa":"ca.",
 		 "ok":"OK",
+		 "abbrechen":"abbrechen",
 		 
 		 "Januar":"Januar",
 		 "Februar":"Februar",
@@ -100,6 +101,8 @@ var sprachen=[
 		 "dattyp":"Typ",
 		 "datkommentar":"Kommentar",
 		 "datuser":"Benutzer",
+		 "datvonjahr":"von Jahr",
+		 "datverfallen":"verfallen",
 		 
 		 "version":"Version",
 		 "projektpage":"die Projektpage liegt auf",
@@ -128,6 +131,20 @@ var sprachen=[
 		 "datdefaulttyp":"Defaultstundentyp",
 		 "datshowscramblebutt":"Developertoolbutton anzeigen",
 		 "datstundenproArbeitstag":"Stunden pro Arbeitstag",
+		 "datwochenarbeitstage":"Arbeitstage in der Woche",
+		 "daturlabstageprojahr":"Urlaubstage pro Jahr",
+		 "daturlabstageprojahrabjahr":"Urlaubstage pro Jahr gültig ab",
+		 
+		 "zugehoerigesJahr":"Zu welchem Jahr gehört der Eintrag?",
+		 "inpukeinezahl":"Eingabe ist keine Zahl, bitte nochmal versuchen",
+		 
+		 "frei":"frei",
+		 "waehletagimkalender":"Wählen einen Tag im Kalender!",
+		 "tagsconbelegt":"Dieser Tag ist schon belegt, bitte wähle einen anderen.",
+		 "tagistfeiertag":"Dieser Tag ein Feiertag, bitte wähle einen anderen.",
+		 "tagistwochenende":"Urlaubstag am Wochenende setzen?",
+		 "hinweisurlaubtab":"Hier siehst Du Deine Urlaubsverteilung, rechts die noch verfügbaren Tage. Wähle rechts einen freien Tag.<br>Bearbeite Deinen Eintrag bei 'mein Tag'.",
+		 "sonderurlaub":"Sonderurlaub",
 		 
 		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
