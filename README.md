@@ -28,6 +28,10 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.28 Suchleiste über Projektliste; Electron: v6.0.4
 * 0.1.29 Einstellungen: Auswahl der Arbeitstage pro Woche (in Zusammenspiel mit Arbeitsstunden pro Tag); Gültigkeit der Urlaubstageanzahl pro Jahr, Urlaub: neuer Tab zum einfachen verteilen des Jahresurlaubes, CSS: Darstellung der Einträge optimiert - Eintrag geht über ganze Zeile, bugfixes
 
+#### Programm auf Windows 10 installieren ####
+Da ich momentan noch kein signiertes Installationsprogramm erzeugen kann, muss nach dem download und doppelklick im folgenden Dialog "Weitere Informationen" und dann "Trotzdem ausführen" geklickt werden.
+<img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/win10install.png" width="806" alt="win10 install">
+
 #### allgemeine Infos ####
 
 Ab Verison 0.1.14 gibt es eine Projektbasierende TODO-Liste (ab Version 0.1.16 Sortierung gefixt).
@@ -46,7 +50,6 @@ U = Urlaub<br>
 F = Feiertag<br>
 
 <img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-23.png" width="593" alt="Screenshot Übersicht">
-
 
 #### Projekt bearbeiten ####
 Für die Bearbeitung diese Projektes benötigt man:<br>
