@@ -634,6 +634,13 @@ var pro_stunden_app=function(){
 			else{
 				lokalData=data.dat;
 				
+				if(data.dat.urlabstageprojahr==undefined)
+					data.dat.urlabstageprojahr=20;
+				if(data.dat.urlabstageprojahrabjahr==undefined)
+					data.dat.urlabstageprojahrabjahr=2019;
+				if(data.dat.wochenarbeitstage==undefined)
+					data.dat.wochenarbeitstage=[true,true,true,true,true,false,false];					
+				
 				if(typ==="ini"){
 					if(data.dat.tabaktiv!=undefined && !isNaN(data.dat.tabaktiv) ){
 						lokalData.tabaktiv=parseInt(data.dat.tabaktiv);
@@ -4207,6 +4214,7 @@ var pro_stunden_app=function(){
 							tr.data.iswochenende=true;
 							}
 							
+					if(lokalData.wochenarbeitstage!=undefined)
 					if(lokalData.wochenarbeitstage[Start]==="true" || 
 						lokalData.wochenarbeitstage[Start]===true)
 						{
@@ -4280,6 +4288,7 @@ var pro_stunden_app=function(){
 						}
 					if(getScrollToNode){scrolltoviewNode=tr;}
 					
+					if(lokalData.wochenarbeitstage!=undefined)
 					if(lokalData.wochenarbeitstage[tr.data.wochentag]==="true" || 
 						lokalData.wochenarbeitstage[tr.data.wochentag]===true){
 						if(!istClass(tr,"urlaub"))	
