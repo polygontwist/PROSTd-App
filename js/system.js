@@ -3845,8 +3845,8 @@ var pro_stunden_app=function(){
 				if(data.id=="urlaub"){
 //TODO: urlaub im Tab urlaub händeln!					
 					
-					var datum=new Date();//getdatumsObj(data.pro.dat),
-						 jahr=datum.getFullYear();
+					var datum=new Date(),			//getdatumsObj(data.pro.dat),
+						jahr=datum.getFullYear();
 					
 						 				
 					stagstundeneintrag.typ="U";
