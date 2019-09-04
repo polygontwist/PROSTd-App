@@ -25,19 +25,22 @@ var pro_stunden_app=function(){
 	var MonatsnameID = ["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"];
 	var wochentagID=["Mo","Di","Mi","Do","Fr","Sa","So"];
 	
-	
-	var lokalData={//als Einstellungen gespeichert
+	var dateheute=new Date();
+	var lokalDataVorlage={//als Einstellungen gespeichert
 		//projektlistfilter:undefined,
 		tabaktiv:0,
 		stundenproArbeitstag:8,
 		urlabstageprojahr:20,
-		urlabstageprojahrabjahr:2019,
+		urlabstageprojahrabjahr:dateheute.getFullYear(),
 		wochenarbeitstage:[true,true,true,true,true,false,false],//mo,di,...
 				
 		windowsize:{x:0,y:0,width:0,height:0},
 		zeigebeendete:false,
 		settings_projektliste:{sortby:"projekte", updown:"up"}		
 	};
+	
+	
+	var lokalData=lokalDataVorlage;
 	
 	var defaultfarben={
 		"urlaub":"rgb(94,156,201)",
@@ -619,6 +622,7 @@ var pro_stunden_app=function(){
 	}
 	
 	var parseoptiondata=function(sdata,typ){
+		var prop;
 		sdata=sdata.split("%7B").join("{");
 		sdata=sdata.split("%7D").join("}");
 		sdata=sdata.split("%22").join('"');
@@ -633,25 +637,16 @@ var pro_stunden_app=function(){
 				}
 			else{
 				lokalData=data.dat;
-				
-				if(data.dat.urlabstageprojahr==undefined)
-					data.dat.urlabstageprojahr=20;
-				if(data.dat.urlabstageprojahrabjahr==undefined)
-					data.dat.urlabstageprojahrabjahr=2019;
-				if(data.dat.wochenarbeitstage==undefined)
-					data.dat.wochenarbeitstage=[true,true,true,true,true,false,false];					
-				
-				if(typ==="ini"){
-					if(data.dat.tabaktiv!=undefined && !isNaN(data.dat.tabaktiv) ){
-						lokalData.tabaktiv=parseInt(data.dat.tabaktiv);
-						setTabaktiv(tabs[lokalData.tabaktiv].id);
-					}
-					else{
-						setTabaktiv(tabs[lokalData.tabaktiv].id);
+								
+				for(prop in lokalDataVorlage) {
+					if(lokalData[prop]==undefined){
+						lokalData[prop]=JSON.parse( JSON.stringify(lokalDataVorlage[prop]));
+						console.log("create",prop,lokalData[prop]);
 					}
 				}
-				if(typ==="opteinstellungen"){
-					
+								
+				if(typ==="ini"){
+					setTabaktiv(tabs[lokalData.tabaktiv].id);
 				}
 			}
 		}		
@@ -3850,10 +3845,9 @@ var pro_stunden_app=function(){
 				if(data.id=="urlaub"){
 //TODO: urlaub im Tab urlaub händeln!					
 					
-					//					
+					var datum=new Date();//getdatumsObj(data.pro.dat),
+						 jahr=datum.getFullYear();
 					
-					var datum=getdatumsObj(data.pro.dat),
-						 jahr=datum.getFullYear();	
 						 				
 					stagstundeneintrag.typ="U";
 					
@@ -3864,8 +3858,8 @@ var pro_stunden_app=function(){
 					
 					stagstundeneintrag.kommentar=getresturlaubstage(data)
 										+" von "
-										+lokalData.urlabstageprojahr
-										+' ('+jahr+')';
+										+lokalData.urlabstageprojahr;
+										//+' ('+jahr+')';
 								
 					}
 				if(data.id=="feiertage"){
@@ -3885,11 +3879,10 @@ var pro_stunden_app=function(){
 		var getresturlaubstage=function (dat) {
 			var i,st,y,kom,
 				gesetzt=0,utpj=lokalData.urlabstageprojahr,
-				datum=getdatumsObj(dat.pro.dat),
-				jahr=datum.getFullYear();
+				jahr=dateheute.getFullYear();
+				
 //Problem: halbe Urlaubstage
 //Resturlaub
-
 			
 			for(i=0;i<dat.data.stunden.length;i++){
 				st=dat.data.stunden[i];
@@ -3905,13 +3898,15 @@ var pro_stunden_app=function(){
 					if(jahr==yy)gesetzt++;
 					console.log(kom)
 				}
+				else
+				if(st.vonjahr!=undefined){
+					if(jahr==st.vonjahr)gesetzt++;
+				}
 			}
 			
 			if(gesetzt>0){
 				return gesetzt+1;	
 			}
-		//	console.log(gesetzt,dat)	
-		
 		
 			return "";
 		}
