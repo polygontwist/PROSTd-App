@@ -1061,6 +1061,9 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 .stdtab .inpdatkommentar{
 	width:130px;
 }
+.stdtab .inpdatutagteiler{
+	width:45px;
+}
 
 
 /*--Farbwahldialog----*/

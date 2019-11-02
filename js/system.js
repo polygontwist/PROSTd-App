@@ -1491,7 +1491,7 @@ var pro_stunden_app=function(){
 				"typ":"U",
 				"user":"andreas",
 				"vonjahr":2019,
-				"verfallen":false,
+				"utagteiler":1,
 				"deleting":true							<!!
 				}
 	*/
@@ -1503,6 +1503,7 @@ var pro_stunden_app=function(){
 			projektedata=undefined,
 			urlaubsstack=[],
 			ojahresuebersicht,
+			ojahresuebersichten=[],			
 			naechstefreienummer=0,
 			freeurlaubsitemselect=undefined;
 		
@@ -1544,16 +1545,16 @@ var pro_stunden_app=function(){
 			}
 		}
 		
-		var stdisinfilter=function(data){
+		var stdisinfilter=function(data,jahresfilter){
 			var i,re=false,s;
-			if(lastfilter==="alle")return true;
+			if(jahresfilter==="alle")return true;
 			if(data.vonjahr!=undefined){
-				if(data.vonjahr===lastfilter)re=true;
+				if(data.vonjahr===jahresfilter)re=true;
 			}
 			else{
 				s=data.dat;			
 				if(typeof s=="string")
-					if(s.indexOf(lastfilter)==0)re=true;
+					if(s.indexOf(jahresfilter)==0)re=true;
 			}
 			return re;
 		}
@@ -1565,16 +1566,20 @@ var pro_stunden_app=function(){
 		}
 
 		var createnewUrlaub=function(data){
+			
+			//
+			
 			if(data.tag<10)data.tag='0'+data.tag;
 			if(data.monat<10)data.monat='0'+data.monat;
+			
 			var senddatatemp={
 					dat: data.jahr+'-'+data.monat+'-'+data.tag,
 					kommentar: naechstefreienummer+getWort("stundengesammt2")+lokalData.urlabstageprojahr,
 					stunden: 0,
 					typ: "U",
 					user: globaldata.user,
-					//verfallen: false,
-					vonjahr: data.jahr
+					vonjahr: data.jahr,
+					utagteiler:1
 			}
 			
 			if(freeurlaubsitemselect!=undefined){
@@ -1582,6 +1587,11 @@ var pro_stunden_app=function(){
 				senddatatemp.kommentar=dat.titel;
 				if(dat.sonderurlaub===true)
 					senddatatemp.sonderurlaub=true;
+				
+				if(dat["stackjahr"]!=undefined){
+					senddatatemp.vonjahr=dat["stackjahr"]
+				}
+				
 				subClass(dat.node,"select");
 			}
 			freeurlaubsitemselect=undefined;
@@ -1592,17 +1602,19 @@ var pro_stunden_app=function(){
 		}
 		
 		var parsedata=function(data,jahrfilter){
-			var i,o,t,t2,d,eintragen,property,anzges,onew,u2dat,
+			var i,o,t,t2,tj,d,eintragen,property,anzges,onew,u2dat,teiler,utag,
 				heute= new Date(),utitel;
 			
 			if(data==undefined)return;	
-			
+		
+	
 			usdlul.innerHTML="";
 			urlaubsstack=[];
 			
-			if(ojahresuebersicht!=undefined){
-				ojahresuebersicht.destroy();
+			for(i=0;i<ojahresuebersichten.length;i++){
+				ojahresuebersichten[i].destroy();
 			}
+			ojahresuebersichten=[];
 			
 			kalenderdiv.innerHTML="";
 			o=cE(kalenderdiv,"p");
@@ -1610,8 +1622,14 @@ var pro_stunden_app=function(){
 			
 			ojahresuebersicht=new aktuellesJahr(kalenderdiv,lastfilter);
 			ojahresuebersicht.setparentModul(_this);
+			ojahresuebersichten.push(ojahresuebersicht);
 			
-			var getNextfreeNumber=function(jahr,startnum){
+			ojahresuebersicht=new aktuellesJahr(kalenderdiv,ojahresuebersicht.getjahr()+1);
+			ojahresuebersicht.setparentModul(_this);
+			ojahresuebersichten.push(ojahresuebersicht);
+			
+			
+			var getNextfreeNumber=function(jahr,startnum,anzbelegt){
 				var re=startnum,i,t,dat,s;
 				s=re+getWort("stundengesammt2");//" von "
 				
@@ -1624,8 +1642,12 @@ var pro_stunden_app=function(){
 						}
 					}
 				}
+				if(re<anzbelegt)re=anzbelegt+1;
+				
+				
 				return re;
 			}
+			
 			
 			
 			for(i=0;i<data.length;i++){
@@ -1633,7 +1655,9 @@ var pro_stunden_app=function(){
 				
 				if(o.id=="feiertage"){//feiertage im kalender anzeigen
 					onew={id:o.id,pro:o.pro,data:o.data,divnode:undefined ,mod:"ustack"};
-					ojahresuebersicht.add(onew);
+					for(tj=0;tj<ojahresuebersichten.length;tj++){
+						ojahresuebersichten[tj].add(onew);
+					}
 				}
 				
 				if(o.id=="urlaub"){
@@ -1641,12 +1665,30 @@ var pro_stunden_app=function(){
 					o.data.stunden=o.data.stunden.sort(sortbyDate);
 					
 					//onew={id:o.id,pro:o.pro,data:o.data,divnode:undefined ,mod:"ustack"};
-					//ojahresuebersicht.add(onew);
-					
+					var ufreejear={};
+					//gesammten Urlaub durchgehen
 					for(t=0;t<o.data.stunden.length;t++){
-							if(stdisinfilter(o.data.stunden[t])){
-								if(!(o.data.stunden[t].deleting===true) ){
-									urlaubsstack.push(new ustack(usdlul,o.data.stunden[t]));
+						utag=o.data.stunden[t];
+
+						if(utag.vonjahr!=undefined){
+							if(ufreejear[""+utag.vonjahr]==undefined){//neues Jahr
+								ufreejear[""+utag.vonjahr]=0;
+							}
+							// anfügen
+							//console.log(utag);
+							if(!(utag.sonderurlaub===true)){
+								teiler=1;
+								if(utag["utagteiler"]!=undefined){
+									teiler=utag["utagteiler"];
+								}
+								ufreejear[""+utag.vonjahr]=ufreejear[""+utag.vonjahr]+teiler;
+							}
+						}
+						
+						if(stdisinfilter(utag,lastfilter)){
+								
+								if(!(utag.deleting===true) ){
+									urlaubsstack.push(new ustack(usdlul,utag));//aktuelles Jahr
 									
 									onew={
 										id:o.id,
@@ -1654,40 +1696,34 @@ var pro_stunden_app=function(){
 											stack:urlaubsstack[urlaubsstack.length-1],
 											data:o.data
 											},
-										std:o.data.stunden[t]
+										std:utag
 									};
 									
-									ojahresuebersicht.addSingel(onew);
+									//Kalender zuordnen
+									for(tj=0;tj<ojahresuebersichten.length;tj++){
+										ojahresuebersichten[tj].addSingel(onew);
+									}
 								}
-							}else{
+						}else{
 								onew={
 										id:o.id,
 										proj:{
 											stack:1,
 											data:o.data
 											},
-										std:o.data.stunden[t]
+										std:utag
 									};
-								ojahresuebersicht.addSingel(onew);
-							}
-					}					
-				
-					//noch freie Tage
-					var ufreejear={};
-					for(t=0;t<urlaubsstack.length;t++){
-						d=(urlaubsstack[t].getdata());
-						
-						if(d.vonjahr!=undefined){
-							if(ufreejear[""+d.vonjahr]==undefined)
-								ufreejear[""+d.vonjahr]=1;
-							else{
-								//console.log(d);
-								if(!(d.sonderurlaub===true))
-									ufreejear[""+d.vonjahr]=ufreejear[""+d.vonjahr]+1;
-							}
+									
+								//Kalender zuordnen
+								for(tj=0;tj<ojahresuebersichten.length;tj++){
+									ojahresuebersichten[tj].addSingel(onew);
+								}
 						}
-					}
+					}					
+			
+					//belegte Tage zusammenzählen Tage ermiteln
 					
+//console.log('-->',ufreejear);					
 					if(ufreejear[heute.getFullYear()]==undefined)
 						ufreejear[heute.getFullYear()]=0;
 					
@@ -1695,12 +1731,14 @@ var pro_stunden_app=function(){
 						if(ufreejear[lastfilter]==undefined)
 							ufreejear[lastfilter]=0;
 					}
-//console.log(ufreejear);					
 						
 					for(property in ufreejear){
 						if(	(
-							lastfilter=="alle" ||  
-							parseInt(lastfilter)==parseInt(property)	//Filter
+								lastfilter=="alle" 
+								||  
+								parseInt(lastfilter)==parseInt(property)
+								||
+								parseInt(lastfilter-1)==parseInt(property)
 							)
 							&&
 							(
@@ -1717,16 +1755,19 @@ var pro_stunden_app=function(){
 							
 							var anzahlfreie=lokalData.urlabstageprojahr-ufreejear[property];
 							var nextnum=1;
-														
+
 							for(t=0;t<anzahlfreie;t++){
-								nextnum=getNextfreeNumber(property,nextnum);
+								nextnum=getNextfreeNumber(property,nextnum,lokalData.urlabstageprojahr-anzahlfreie);
 								utitel=nextnum+getWort("stundengesammt2")+lokalData.urlabstageprojahr;
 								
 								urlaubsstack.push(
 									new freeUrlaubitem(usdlul,
 										getWort("frei")+': '+utitel+' ('+property+')',
-										{"titel":utitel,
-										 "nr":nextnum}
+											{
+												"titel":utitel,
+												"nr":nextnum,
+												"stackjahr":parseInt(property)
+											}
 										)
 									)
 								nextnum++;
@@ -1735,8 +1776,9 @@ var pro_stunden_app=function(){
 					}
 					
 					urlaubsstack.push(new freeUrlaubitem(usdlul,getWort("sonderurlaub"),
-											{"titel":getWort("sonderurlaub"),
-											 "sonderurlaub":true
+											{
+												"titel":getWort("sonderurlaub"),
+												"sonderurlaub":true
 											}
 										))
 					
@@ -1750,7 +1792,7 @@ var pro_stunden_app=function(){
 						user: "andreas"}
 					neu:	
 						.vonjahr:"2019"
-						.teilung=["1"]		//2 halbe -> ["1","1"]
+						.utagteiler=1		//2 halbe -> 0.5
 						
 						
 					*/
@@ -1762,6 +1804,7 @@ var pro_stunden_app=function(){
 		
 		var saveurlaubdataTag=function(tagdata,reload){
 			var returnFdata=function(data){
+				var tj;
 				data=JSON.parse(data);
 				//check error
 				if(data.status!=undefined){
@@ -1771,10 +1814,12 @@ var pro_stunden_app=function(){
 						statusDlg.show("",getWort("aenderungsaved"),"statok");
 						if(data.lastaction!=undefined && data.lastaction=="projektstundenlisteupdate"){
 							if(reload===true){
-								if(ojahresuebersicht!=undefined){
-									ojahresuebersicht.destroy();
-									ojahresuebersicht=undefined;
+								
+								for(tj=0;tj<ojahresuebersichten.length;tj++){
+									ojahresuebersichten[tj].destroy();
 								}
+								ojahresuebersichten=[];
+								
 								sendMSG("reloadprojektlist",undefined);
 							}
 							else
@@ -1798,34 +1843,6 @@ var pro_stunden_app=function(){
 			
 			this.getdata=function(){return data}
 			
-			var auswertung=function(val){
-				data.vonjahr=parseInt(val);
-				saveurlaubdataTag(eintragsdata);
-			}
-			
-			var clickkonvert=function(e){
-				var i=null;//jahrvermutlich;
-								
-				if(isAppBridge()){
-						//electron...
-						inputDlg.show("prompt",getWort("zugehoerigesJahr"),"",jahrvermutlich ,auswertung);
-					}
-					else{
-						//browser
-						i=prompt(getWort("zugehoerigesJahr"), jahrvermutlich);
-					
-						if(i!=null){
-							if(!isNaN(i)){
-								auswertung(parseInt(i));
-								}
-							else
-								statusDlg.show("Fehler",getWort('inpukeinezahl'));
-								//alert(getWort('inpukeinezahl'));
-						}
-					}
-				e.preventDefault();
-			}
-			
 			var clickdelStunde=function(e){//Button:Stundeneintrag löschen
 				//web+electron
 				if(confirm(getWort("deleteeintrag"))){
@@ -1847,8 +1864,19 @@ var pro_stunden_app=function(){
 				node.innerHTML=convertToDatum(data.dat);
 				node=cE(li,"span",undefined,"kommentar");
 				node.innerHTML=data.kommentar;
+				
+				//utagteiler
+				
+				/*node=cE(li,"span",undefined,"halbtag");
+				node.innerHTML=getWort("halbertag");
+				node=cE(li,"input");
+				node.type="checkbox";
+				node.titel=getWort("datutagteiler");
+				if(data["utagteiler"]!=undefined){
+					if(data["utagteiler"]==0.5)node.checked=true;
+				}*/
+				
 				if(data.vonjahr==undefined){
-					
 					if(data.kommentar.indexOf('von')>-1 
 						&& data.kommentar.indexOf('(')>-1
 						&& data.kommentar.indexOf(')')>-1){
@@ -1857,10 +1885,6 @@ var pro_stunden_app=function(){
 						else{
 							jahrvermutlich=data.dat.split('-')[0];
 						}
-					//button konvert
-					node=cE(li,"a",undefined,"button");
-					node.innerHTML="convert";
-					node.addEventListener("click",clickkonvert);
 				}
 			}
 			
@@ -1872,9 +1896,14 @@ var pro_stunden_app=function(){
 			var _this=this,anode,itemdata={};
 			
 			var addUrlaubclick=function(e){
+				var tj;
 				freeurlaubsitemselect=_this;
 				statusDlg.show("",getWort("waehletagimkalender"),"statok");
-				ojahresuebersicht.setMode("tagwahl");
+				
+				for(tj=0;tj<ojahresuebersichten.length;tj++){
+					ojahresuebersichten[tj].setMode("tagwahl");
+				}
+				
 				addClass(anode,"select");
 				e.preventDefault();
 			}
@@ -1929,6 +1958,7 @@ var pro_stunden_app=function(){
 		this.destroy=function(){
 			div.innerHTML="";
 		}
+		this.getjahr=function(){return jahr;}
 		
 		var addto=function(zjahr,monat,tag,projekt,stundendat){
 			var i,span,t,titel="",dat,s,
@@ -3110,6 +3140,16 @@ var pro_stunden_app=function(){
 			for(i=0;i<templiste.length;i++){
 				std=templiste[i];
 				
+				//console.log(">>",std);
+				if(projektaktiv.id=="urlaub"){
+					if(std["vonjahr"]==undefined){
+						std["vonjahr"]=0;
+					}
+					if(std["utagteiler"]==undefined){
+						std["utagteiler"]=1;
+					}
+				}
+				
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
 				td.colSpan=2;
@@ -3131,6 +3171,7 @@ var pro_stunden_app=function(){
 					elemente:[]
 				}
 				
+				
 				for( property in std ) { 
 					td2=cE(tr2,"td");
 					inp=cE(td2,"input");
@@ -3151,6 +3192,12 @@ var pro_stunden_app=function(){
 							inp.step=1;
 							inp.min=0;
 						}
+					if(property=="utagteiler"){
+							inp.type="number";//
+							inp.step=0.5;
+							inp.min=0.5;
+							inp.max=1;
+						}
 					
 					if(typeof(std[property])=='boolean'){
 							inp.type="checkbox";
@@ -3163,7 +3210,10 @@ var pro_stunden_app=function(){
 					if(projektaktiv.id=="urlaub" && (property=="stunden" || property=="typ")){
 						td2.style.display="none";
 					}
-				}		 
+				}	
+
+
+				
 				td2=cE(tr2,"th");
 				htmlNode=cE(td2,"a",undefined,"button buttdel");
 				htmlNode.innerHTML=getWort("buttdel");
@@ -3234,19 +3284,18 @@ var pro_stunden_app=function(){
 				this.data.node[this.data.nodeid]=decodeString(val); //String
 			}
 			
-			if(this.data.o_sibling.timer!=undefined){
+			if(this.data.o_sibling.timer!=undefined){console.log("clear timer ");
 				clearTimeout(this.data.o_sibling.timer);
 				this.data.o_sibling.timer=undefined;
 			}
 			addClass(this,"isedit");
-			//if(e.type=="change")
-		
+			
 			if(this.data.typ=="stunde"){//stundeneintrag wurde geändert
 				if(e.type=="keyup" && e.keyCode==13){
 					sendstundendatatimer(this);				
 				}
 				else{
-					//sonst etwas warten pb noch weitere Eingaben kommen
+					//sonst etwas warten fals noch weitere Eingaben kommen
 					//send projektdate/stundendata
 					this.data.o_sibling.timer=setTimeout(sendstundendatatimer,2000,this);//2 sec warten, dann senden, es sei vorher kommen neue daten
 				}
@@ -3299,7 +3348,8 @@ var pro_stunden_app=function(){
 			//editmarker entfernen
 			for(i=0;i<input.data.o_sibling.elemente.length;i++){
 				subClass(input.data.o_sibling.elemente[i],"isedit");
-			}			
+			}	
+			//nur der Eintrag wird gesendet, bzw. geändert! Nicht alle Daten werden gespeichert!
 			postNewData("projektstundenlisteupdate",{"projektdata": input.data.projektdata, "daten": input.data.datstunde});
 		}
 		
@@ -3331,8 +3381,8 @@ var pro_stunden_app=function(){
 		}
 		
 		var postNewData=function(befehl,data){
-			//console.log("postNewData:",data);//.typ .data .id
-			var sdata="id="					+data.projektdata.id
+			//console.log("postNewData:",befehl,data.projektdata.id);//id=dateiname
+			var sdata="id="+data.projektdata.id
 					+"&data="+JSON.stringify(data.daten);
 
 			loadData(befehl,parseNewdataRE,"POST",encodeURI(sdata));//befehl="projektstundenlisteupdate"
@@ -3340,7 +3390,6 @@ var pro_stunden_app=function(){
 		
 		var parseNewdataRE=function(data){
 			data=JSON.parse(data);
-			
 			//check error
 			if(data.status!=undefined){
 				if(data.status!=msg_OK)
@@ -3855,6 +3904,7 @@ var pro_stunden_app=function(){
 					stagstundeneintrag.vonjahr=jahr;
 					//stagstundeneintrag.tag=getresturlaubstage(data);//halbe tage "2.5" "2.5" = "2" 
 			
+					//utagteiler
 					
 					stagstundeneintrag.kommentar=getresturlaubstage(data)
 										+" von "
@@ -4286,7 +4336,7 @@ var pro_stunden_app=function(){
 					if(lokalData.wochenarbeitstage!=undefined)
 					if(lokalData.wochenarbeitstage[tr.data.wochentag]==="true" || 
 						lokalData.wochenarbeitstage[tr.data.wochentag]===true){
-						if(!istClass(tr,"urlaub"))	
+						if(!istClass(tr,"urlaub") && !istClass(tr,"feiertag"))	
 							stundensoll+=stundenprotag;					
 						}
 						
@@ -4559,7 +4609,6 @@ var pro_stunden_app=function(){
 					stunden: 0
 					typ: "U"
 					user: "andreas"
-					verfallen: false
 					vonjahr: 2019
 				
 				

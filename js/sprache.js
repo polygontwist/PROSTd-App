@@ -102,8 +102,8 @@ var sprachen=[
 		 "datkommentar":"Kommentar",
 		 "datuser":"Benutzer",
 		 "datvonjahr":"von Jahr",
-		 "datverfallen":"verfallen",
-		 
+		  "datutagteiler":"Teiler",
+		
 		 "version":"Version",
 		 "projektpage":"die Projektpage liegt auf",
 		 "speicherort":"Deine Daten liegen in",
@@ -135,15 +135,12 @@ var sprachen=[
 		 "daturlabstageprojahr":"Urlaubstage pro Jahr",
 		 "daturlabstageprojahrabjahr":"Urlaubstage pro Jahr gültig ab",
 		 
-		 "zugehoerigesJahr":"Zu welchem Jahr gehört der Eintrag?",
-		 "inpukeinezahl":"Eingabe ist keine Zahl, bitte nochmal versuchen",
-		 
 		 "frei":"frei",
 		 "waehletagimkalender":"Wählen einen Tag im Kalender!",
 		 "tagsconbelegt":"Dieser Tag ist schon belegt, bitte wähle einen anderen.",
 		 "tagistfeiertag":"Dieser Tag ein Feiertag, bitte wähle einen anderen.",
 		 "tagistwochenende":"Urlaubstag am Wochenende setzen?",
-		 "hinweisurlaubtab":"Hier siehst Du Deine Urlaubsverteilung, rechts die noch verfügbaren Tage. Wähle rechts einen freien Tag.<br>Bearbeite Deinen Eintrag bei 'mein Tag'.",
+		 "hinweisurlaubtab":"Hier siehst Du Deine Urlaubsverteilung, rechts die noch verfügbaren Tage. Wähle rechts einen freien Tag.<br>Bearbeite Deinen Eintrag bei 'meine Projekte'.",
 		 "sonderurlaub":"Sonderurlaub",
 		 
 		 "neueVersion":"Es gibt eine neue Version :-)"

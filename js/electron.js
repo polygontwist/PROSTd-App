@@ -153,7 +153,7 @@ var AppBridge=function(){
 			var stundenlisteneu=[];
 			for(i=0;i<stundenliste.length;i++){
 				st=stundenliste[i];
-				if(st.dat==stddata.dat){
+				if(st.dat==stddata.dat){//Datum gefunden
 					eintragen=false;
 					if(stddata.deleting==true){
 						redat.handlingstatus="deleting";
@@ -467,7 +467,7 @@ var AppBridge=function(){
 			);
 		}
 		else
-		if(url=="maindata"){//alive //OK
+		if(url=="maindata"){//alive 
 			data={"user":"lokal",
 			"dat":"maindata",
 			"lastaction":"maindata",
@@ -476,24 +476,24 @@ var AppBridge=function(){
 			auswertfunc(JSON.stringify(data));
 		}
 		else
-		if(url=="projektdata"){//OK
+		if(url=="projektdata"){
 			var filename=pd.name;
 			readFile(basepathDATA+filename+datafileendung);
 		}
 		else
-		if(url=="newprojekt"){//OK
+		if(url=="newprojekt"){
 			createnewProjektfile(pd);
 		}
 		else
-		if(url=="projektstundenlisteupdate"){//OK
-			addStundeneintrag(pd.id,pd.data);
+		if(url=="projektstundenlisteupdate"){
+			addStundeneintrag(pd.id,pd.data);//nur ein Entrag wird aktualisiert!
 		}
 		else
-		if(url=="projekttitelupdate"){//OK
+		if(url=="projekttitelupdate"){
 			refreshTitel(pd.id,pd.data);
 		}
 		else
-		if(url=="projektinfoupdate"){//OK
+		if(url=="projektinfoupdate"){
 			refreshInfo(pd.id,pd.data);
 		}
 		else

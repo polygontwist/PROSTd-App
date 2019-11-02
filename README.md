@@ -29,6 +29,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.29 Einstellungen: Auswahl der Arbeitstage pro Woche (in Zusammenspiel mit Arbeitsstunden pro Tag); Gültigkeit der Urlaubstageanzahl pro Jahr, Urlaub: neuer Tab zum einfachen verteilen des Jahresurlaubes, CSS: Darstellung der Einträge optimiert - Eintrag geht über ganze Zeile, bugfixes
 * 0.1.30 Fehler (fehlende Variabelninitialisierung) von 0.1.29 beseitigt
 * 0.1.31 Fehler (fehlende Variabelninitialisierung bei Neuinstallation) von 0.1.30 beseitigt
+* 0.1.32 bugfix (Monatsgesammtzählung); Urlaub mit halben Tagen (in "meine Projekte"); Urlaubs-Konvertbutton für alte Daten entfernt
 
 
 #### Programm auf Windows 10 installieren ####
