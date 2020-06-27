@@ -216,6 +216,29 @@ var pro_stunden_app=function(){
 		return false;
 	}
 	
+	var parseJSON=function(s){
+		var re={};
+		if(s=="undefined")s="{}";
+		if(s==undefined)s="{}";
+		if(s==null)s="{}";
+		s=s.split("\n").join('').split("\r").join('').split("\t").join('');	
+		s=s.split("'").join('"');	//passend formatieren ' -> "
+		try{
+			re=JSON.parse(s);
+		}
+		catch(err) {
+			console.log("JSONfehler",err.message,{"s":s});
+			re={};
+		}
+		return re;
+	}
+	 
+	var JSONistemty=function(obj){
+		for(var key in obj){
+			return false; // not empty
+		}
+		return true; // empty
+	}
 	
 	var loadData=function(url, auswertfunc,getorpost,daten){
 		
@@ -3759,15 +3782,16 @@ var pro_stunden_app=function(){
 			new JB_Table(table);
 			
 			htmlNode=th1.getElementsByTagName('button')[0];
-			htmlNode.addEventListener('click',clicksortButt);
-			htmlNode.id="sort_projekte";
-			htmlNode=th2.getElementsByTagName('button')[0];
-			htmlNode.addEventListener('click',clicksortButt);
-			htmlNode.id="sort_kunde";
-			htmlNode=th3.getElementsByTagName('button')[0];
-			htmlNode.addEventListener('click',clicksortButt);
-			htmlNode.id="sort_datum";
-			
+			if(htmlNode!=undefined){
+				htmlNode.addEventListener('click',clicksortButt);
+				htmlNode.id="sort_projekte";
+				htmlNode=th2.getElementsByTagName('button')[0];
+				htmlNode.addEventListener('click',clicksortButt);
+				htmlNode.id="sort_kunde";
+				htmlNode=th3.getElementsByTagName('button')[0];
+				htmlNode.addEventListener('click',clicksortButt);
+				htmlNode.id="sort_datum";
+			}
 			if(filterobj!=undefined)filterobj.filterInit();
 		}
 		
@@ -4647,7 +4671,8 @@ var pro_stunden_app=function(){
 		}
 		var parseNewStundendata=function(data){
 			var i,o,s,HTMLnode,newdata;
-			data=JSON.parse(data);
+			//data=JSON.parse(data);
+			data=parseJSON(data);
 			//console.log("-->",data);
 			
 			//check error
