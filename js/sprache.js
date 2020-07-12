@@ -143,6 +143,9 @@ var sprachen=[
 		 "hinweisurlaubtab":"Hier siehst Du Deine Urlaubsverteilung, rechts die noch verfügbaren Tage. Wähle rechts einen freien Tag.<br>Bearbeite Deinen Eintrag bei 'meine Projekte'.",
 		 "sonderurlaub":"Sonderurlaub",
 		 
+		 "zeige":"zeige",
+		 "verberge":"verberge",
+		 
 		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
 	},

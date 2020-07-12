@@ -3048,6 +3048,7 @@ var pro_stunden_app=function(){
 			var tab2,tr2,td2,th2;
 			var o_sibling;
 			var stundengesammt=0;
+			var datum=new Date();
 			
 			projektaktiv=projekt;
 			var datumeditable=false;
@@ -3161,11 +3162,14 @@ var pro_stunden_app=function(){
 			
 			//sort by date
 			var templiste=projekt.stunden.sort(sortbyDate);
-						
+			var ujahr="0000",ujahralt="0000";	
+			var aktuell=datum.getFullYear()+"";
+			
+			
 			for(i=0;i<templiste.length;i++){
-				std=templiste[i];
+				std=templiste[i];				
+				ujahr=std.dat.split('-')[0];
 				
-				//console.log(">>",std);
 				if(projektaktiv.id=="urlaub"){
 					if(std["vonjahr"]==undefined){
 						std["vonjahr"]=0;
@@ -3175,9 +3179,29 @@ var pro_stunden_app=function(){
 					}
 				}
 				
-				tr=cE(tab,"tr");
+				if(ujahralt!=ujahr){
+					tr=cE(tab,"tr",undefined,"tr_schalter");
+					td=cE(tr,"td");
+					td.colSpan=2;
+					
+					htmlNode=cE(td,"a",undefined,"button jahrschalter");
+					htmlNode.innerHTML=""+ujahr;
+					htmlNode.data={j:ujahr,tab:tab,t1:getWort("zeige"),t2:getWort("verberge")};
+					if(aktuell==ujahr)
+						htmlNode.innerHTML=htmlNode.data.t2+" "+ujahr;
+					else
+						htmlNode.innerHTML=htmlNode.data.t1+" "+ujahr;
+					htmlNode.href="#";
+					htmlNode.addEventListener("click",clickJahrschalter);
+				}
+				
+				if(aktuell!=ujahr)
+					tr=cE(tab,"tr",undefined,"tr_"+ujahr+" ausgeblendet");
+				else
+					tr=cE(tab,"tr",undefined,"tr_"+ujahr);
 				td=cE(tr,"td");
 				td.colSpan=2;
+				
 				
 				tab2=cE(td,"table",undefined,"stdtab");
 				tr2=cE(tab2,"tr");
@@ -3245,6 +3269,8 @@ var pro_stunden_app=function(){
 				htmlNode.href="#";
 				htmlNode.data={"typ":"stunde","datstunde":std ,"projektdata":projekt,"zeilenode":td};
 				htmlNode.onclick=delStunde;
+				
+				ujahralt=ujahr;
 			};
 			
 			
@@ -3378,6 +3404,27 @@ var pro_stunden_app=function(){
 			postNewData("projektstundenlisteupdate",{"projektdata": input.data.projektdata, "daten": input.data.datstunde});
 		}
 		
+		var clickJahrschalter=function(e){
+			var i,node,modezeigen=false,
+				liste=this.data.tab.getElementsByClassName("tr_"+this.data.j);
+				
+			for(i=0;i<liste.length;i++){
+				node=liste[i];
+				if(istClass(node,"ausgeblendet"))
+					subClass(node,"ausgeblendet");
+				else{
+					addClass(node,"ausgeblendet");
+					modezeigen=true;
+				}
+			}
+			
+			if(modezeigen)
+				this.innerHTML=this.data.t1+" "+this.data.j;
+			else
+				this.innerHTML=this.data.t2+" "+this.data.j;
+			
+			e.preventDefault() ;
+		}
 		
 		var delStunde=function(e){//Button:Stundeneintrag löschen
 			//console.log("delStunde",this.data);

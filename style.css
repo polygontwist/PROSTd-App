@@ -950,6 +950,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
     color: #ffffff;
 }
 
+
 .notfound{
 	background-color:rgba(255,0,0,0.5);
 }
@@ -1039,6 +1040,11 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 }
 .tab_editUrlaub .editorProjekt h1{
 	text-align:center;
+}
+
+
+.editorProjekt .ausgeblendet{
+	display:none;
 }
 
 .stdtab{}

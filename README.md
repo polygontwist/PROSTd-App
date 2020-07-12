@@ -31,8 +31,8 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.31 Fehler (fehlende Variabelninitialisierung bei Neuinstallation) von 0.1.30 beseitigt
 * 0.1.32 bugfix (Monatsgesammtzählung); Urlaub mit halben Tagen (in "meine Projekte"); Urlaubs-Konvertbutton für alte Daten entfernt
 * 0.1.33 Projektsuchfilter bleibt bei Wechsel der Ansichten erhalten
-* 0.1.34 JSON-Parse-Fix;  create fix wenn keine Daten vorhanden (für PHP Version)
-
+* 0.1.34 JSON-Parse-Fix; create fix wenn keine Daten vorhanden (für PHP Version)
+* 0.1.35 Projekt zeigt das aktuelle Jahr, vergangene Jahre können per Schalter ein- oder ausgeblended werden
 
 #### Programm auf Windows 10 installieren ####
 Da ich momentan noch kein signiertes Installationsprogramm erzeugen kann, muss nach dem download und doppelklick im folgenden Dialog "Weitere Informationen" und dann "Trotzdem ausführen" geklickt werden.
