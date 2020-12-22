@@ -1453,6 +1453,8 @@ var pro_stunden_app=function(){
 				inhaltsobjekt.setfilter(["feiertage"]);//,"urlaub"
 				odata.inhalte.push(inhaltsobjekt);
 				document.title=getWort("ueberblick");
+				
+				if(optionsleiste!=undefined)optionsleiste.showoptionen(["jahr"]);//,"beendete"
 			}
 			
 			if(id=="tab_editEinstellungen"){
@@ -1959,7 +1961,10 @@ var pro_stunden_app=function(){
 			_this=this,
 			heute = new Date(),
 			zeigezeit = new Date(),
-			parentModul=undefined;
+			parentModul=undefined,
+			monatsinfonodes=[],
+			jahresinfo,
+			monatstabellen=[];
 			
 		zeigezeit.setMilliseconds(1);
 		zeigezeit.setHours(12);		//default 12, falls Zeitverschiebung...	
@@ -1995,6 +2000,11 @@ var pro_stunden_app=function(){
 					subClass(ziel.node,"anzahlP"+i);
 				addClass(ziel.node,"anzahlP"+ziel.projekte.length);
 			
+				if(ziel.node.data["typ"]==undefined)ziel.node.data.typ="";
+				if(ziel.node.data["projekte"]==undefined)ziel.node.data.projekte=[];
+				
+				ziel.node.data.projekte.push(stundendat);
+			
 				if(ziel.node.div==undefined){
 					ziel.node.div=cE(ziel.node,"div");
 					ziel.node.div.spans=[];
@@ -2004,7 +2014,11 @@ var pro_stunden_app=function(){
 				ziel.node.div.spans.push(span);	
 				titel=projekt.data.titel;
 				
-				if(projekt.data.id=="feiertage"){
+				var id=projekt.data.id.toLowerCase();
+				
+				if(id=="feiertage"){
+					ziel.node.data.typ="feiertage";
+					
 					span.style.backgroundColor=defaultfarben.feiertage.split('rgb').join("rgba").split(')').join(",1)");
 					
 					if(projekt.mod==="ustack"){
@@ -2018,7 +2032,8 @@ var pro_stunden_app=function(){
 					}
 				}
 				
-				if(projekt.data.id=="urlaub"){						
+				if(id=="urlaub"){	
+					ziel.node.data.typ="urlaub";
 					span.style.backgroundColor=defaultfarben.urlaub.split('rgb').join("rgba").split(')').join(",1)");
 					
 					
@@ -2040,12 +2055,19 @@ var pro_stunden_app=function(){
 					}
 					
 				}
+				
+				if(id.indexOf("krank")>-1){
+					ziel.node.data.typ="urlaub";
+					addClass(ziel.node,"tagkrank");
+					titel=projekt.data.titel;
+				}
+				
+				
 				if(projekt.data.info.farbe!=undefined && projekt.data.info.farbe!=""){
 					span.style.backgroundColor=projekt.data.info.farbe;
 				}
 				
-				
-				if(projekt.data.id=="feiertage"){//bei Feuertagen, Kommentar als Titel nehmen
+				if(id=="feiertage"){//bei Feiertagen, Kommentar als Titel nehmen
 					for(t=0;t<projekt.data.stunden.length;t++){
 						s=projekt.data.stunden[t];
 						dat=s.dat.split('-');
@@ -2096,15 +2118,67 @@ var pro_stunden_app=function(){
 					 &&
 					 projektdata.id!="feiertage"
 					)			
-					)
-					eintragen=false;		
-				
+					){
+					eintragen=false;
+				}
+				if(projektdata.id.indexOf("krank")>-1 && parseInt(dat[0])==jahr){
+					eintragen=true;
+				}
 				
 				if(eintragen){//in Übersicht aufnehmen
 					addto(parseInt(dat[0]),parseInt(dat[1]),parseInt(dat[2]),projektdata,s);//monat,tag,data
 				}
 			}
 			
+		}
+		
+		this.setMonatsinfo=function(monat,jahr,stext){
+			var i,o;
+			for(i=0;i<monatsinfonodes.length;i++){
+				o=monatsinfonodes[i];
+				if(o["monat"]==monat && o["jahr"]==jahr){
+					o.node.innerHTML=stext;
+				}
+			}
+		}
+		this.getMonatsinfo=function(monat,jahr){
+			var i,t,td,node;
+			
+			for(i=0;i<monatstabellen.length;i++){
+				if(monatstabellen[i].mid==jahr+'-'+monat){
+					node=monatstabellen[i].node;//tabelle
+				}
+			}
+
+			
+			var re={"node":node,"arbeitstage":0,"arbeitsstunden":0};
+			//tag0...tag6
+			
+			if(node!=undefined){
+				var liste=node.getElementsByTagName("td");
+				for(i=0;i<liste.length;i++){
+					td=liste[i];
+					if(td["data"]!=undefined){
+						if(!(
+							td.data.typ=="feiertage" 
+							|| td.data.typ=="urlaub" 
+							|| td.data.wochentag>4
+							)){
+							re.arbeitstage++;
+						}
+						if(td.data["projekte"]!=undefined){
+							for(t=0;t<td.data.projekte.length;t++){
+								re.arbeitsstunden+=td.data.projekte[t].stunden;
+							}
+						}
+					}
+				}
+			}
+			return re;
+		}
+		
+		this.setjahresinfo=function(stext){
+			jahresinfo.innerHTML=stext;
 		}
 		
 		var clicktag=function(e){
@@ -2142,7 +2216,7 @@ var pro_stunden_app=function(){
 					else 
 						Start = 6;
 			
-			table=cE(zielnode,"table");
+			table=cE(zielnode,"table");//
 			tr=cE(table,"tr");
 			th=cE(tr,"th");
 			th.innerHTML=MonatsnameID[Monat];
@@ -2160,7 +2234,7 @@ var pro_stunden_app=function(){
 				td.innerHTML=i+1;
 				
 				td.addEventListener("click",clicktag);
-				td.data={"tag":i+1,"jahr":Jahr,"monat":Monat+1};
+				td.data={"tag":i+1,"jahr":Jahr,"monat":Monat+1,"wochentag":(Start % 7)};
 				
 				td.className="tag"+(Start % 7);
 				Start++;
@@ -2178,6 +2252,13 @@ var pro_stunden_app=function(){
 				td=cE(tr,"td",undefined,"leer");
 				td.innerHTML="&nbsp;";
 			}
+			
+			tr=cE(table,"tr",undefined,"monatsinfos");
+			td=cE(tr,"td");
+			td.colSpan=7;
+			monatsinfonodes.push({"node":td,"monat":Monat+1,"jahr":Jahr});
+			
+			monatstabellen.push({"node":table,"mid":Jahr+'-'+(Monat+1)});
 		}
 		
 		var create=function(){
@@ -2199,6 +2280,8 @@ var pro_stunden_app=function(){
 					addClass(zieltag.node,"heute");
 				}
 			}
+		
+			jahresinfo=cE(div,"p");
 		}
 		
 		create();
@@ -2238,9 +2321,9 @@ var pro_stunden_app=function(){
 				lastfilter=data;
 				parsedata(projektedata,data);
 			}
-			if(s=="selectFilterBeendet"){
+			if(s=="selectFilterBeendet"){//beendete immer einschließen
 				//data=true|false
-				parsedata(projektedata,lastfilter);
+				//parsedata(projektedata,lastfilter);
 			}
 		}
 		
@@ -2256,19 +2339,6 @@ var pro_stunden_app=function(){
 			for(i=0;i<filter.length;i++){
 				if(data.id==filter[i])re=true;
 			}
-			
-			if(lokalData.zeigebeendete!=undefined){
-				if(lokalData.zeigebeendete===false){
-					if(	data.data!=undefined && 
-						data.data.info!=undefined &&						
-						data.data.info.isended!=undefined)
-					{
-						if(data.data.info.isended==true)
-							re=true;
-					}
-				}
-			}
-			
 			return re;
 		}
 		this.setfilter=function(arr){//bestimmte Projekte nicht anzeigen 
@@ -2322,7 +2392,35 @@ var pro_stunden_app=function(){
 			
 			
 			
+			//Überstunden im Monat anzeigen
+			var mdat,ueberstunden,jahresdiff=0,
+				jahr=jahresuebersicht.getjahr();
+			for(i=1;i<13;i++){
+				mdat=jahresuebersicht.getMonatsinfo(i,jahr);
+				ueberstunden=mdat.arbeitsstunden-lokalDataVorlage.stundenproArbeitstag*mdat.arbeitstage
+				jahresdiff+=ueberstunden;
+				if(ueberstunden>0){
+					jahresuebersicht.setMonatsinfo(i,jahr,
+						"<span class='ueberstunden'>"+
+						getWort("Überstunden")+
+						": "+parseInt(ueberstunden*10)/10)+"</span>";
+				}else
+				if(ueberstunden<0)
+				{
+					jahresuebersicht.setMonatsinfo(i,jahr,"<span class='reststunden'>"+
+						getWort("Reststunden")+": "+parseInt(-ueberstunden*10)/10)+"</span>";
+				}else{
+					//tundengenau!
+				}
+			}
 			
+			//stundenproArbeitstag
+			if(jahresdiff<0)
+				jahresuebersicht.setjahresinfo(
+						getWort("Jahresreststunden")+": "+parseInt(jahresdiff/10)*10);
+			else
+				jahresuebersicht.setjahresinfo(
+						getWort("Jahresüberstunden")+": "+parseInt(jahresdiff/10)*10);
 			
 			projekteliste2=cE(basis,"div");
 			showprojekteliste2();
@@ -2478,8 +2576,8 @@ var pro_stunden_app=function(){
 			label.htmlFor=inp.id;					
 			inp.addEventListener("change",changelocaloptionprojektliste);
 			
-			div2=cE(projekteliste2,"p",undefined,"hinweis");
-			div2.innerHTML=getWort("hinweis_beendete_projekte");
+			//div2=cE(projekteliste2,"p",undefined,"hinweis");
+			//div2.innerHTML=getWort("hinweis_beendete_projekte");
 
 			var tempprojektliste=[];
 			var tempprojekte={};
@@ -4523,7 +4621,8 @@ var pro_stunden_app=function(){
 					HTMLnode.innerHTML=getWort("monatsauswertung");
 					
 					HTMLnode.addEventListener("click",klickMonAuswertung);
-					HTMLnode.data={"zieldiv":divmi,"tabellendata":tabellendata[itd]};
+					HTMLnode.data={"zieldiv":divmi,"tabellendata":tabellendata[itd],
+								"stundendgesammt":gesstd,"stundensoll":stundensoll};
 					
 					HTMLnode=cE(div,"span",undefined,"moninfotext");
 					HTMLnode.innerHTML=getWort("stundengesammt")+(Math.floor(gesstd*100)/100)+getWort("stundengesammt2")+stundensoll;
@@ -4585,7 +4684,17 @@ var pro_stunden_app=function(){
 							td=cE(tab,"td",undefined,"center");
 							td.innerHTML=monprojekte[property].stunden;
 						}
-					};					
+					};
+
+					if(this.data.stundensoll<this.data.stundendgesammt){
+							tr=cE(tab,"tr");
+							td=cE(tab,"td");
+							td.innerHTML='<b>'+getWort("Überstunden")+'</b>';
+							td=cE(tab,"td",undefined,"center");
+							td.innerHTML='<b>'+(this.data.stundendgesammt-this.data.stundensoll)+'</b>';
+						
+					}
+					
 				}
 				else{
 					addClass(this.data.zieldiv,"off");

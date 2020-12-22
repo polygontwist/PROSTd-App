@@ -1368,6 +1368,26 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 	/*outline*/
 }
 
+.monatsinfos,.monatsinfos td{
+	border:0 !important;
+	text-align:left;
+}
+.monattab td span.ueberstunden{
+	color:#289a00;
+	background-color:transparent;
+	opacity:1;
+	height:auto;
+}
+.monattab td span.reststunden{
+	color:#9a0700;
+	background-color:transparent;
+	opacity:1;
+	height:auto;
+}
+.monattab td.tagkrank{
+	background-color:#ffff77;
+}
+
 /*--allgemein----*/
 .tabgrau{
 		background-color:#c0c0c0;

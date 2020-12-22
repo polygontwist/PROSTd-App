@@ -147,7 +147,10 @@ var sprachen=[
 		 "verberge":"verberge",
 		 
 		 "Autraggeber_zusammenfassen":"gleiche Auftraggeber zusammenfassen",
-		 "hinweis_beendete_projekte":"Bitte oben 'Zeige beendete Projekte' einschalten, um alles zu sehen!",
+		 "Überstunden":"Überstunden",
+		 "Reststunden":"Reststunden",
+		 "Jahresüberstunden":"Jahresüberstunden",
+		 "Jahresreststunden":"Jahresreststunden",
 		 
 		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
