@@ -146,6 +146,9 @@ var sprachen=[
 		 "zeige":"zeige",
 		 "verberge":"verberge",
 		 
+		 "Autraggeber_zusammenfassen":"gleiche Auftraggeber zusammenfassen",
+		 "hinweis_beendete_projekte":"Bitte oben 'Zeige beendete Projekte' einschalten, um alles zu sehen!",
+		 
 		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
 	},

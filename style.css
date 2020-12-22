@@ -431,6 +431,20 @@ nav #tabnav a.tabaktiv:after{
 	margin-left:10px;
 }
 
+
+.localoptionen{
+	display: flex;
+    margin-bottom: 10px;
+}
+.localoptionen span{
+	margin-right:5px;
+}
+.hinweis{
+	font-style:italic;
+	background-color: #e4e4dc;
+    padding: 5px;
+    margin: 5px;
+}
 /*------------- s-------------*/
 
 
