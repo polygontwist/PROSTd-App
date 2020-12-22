@@ -2181,7 +2181,6 @@ var pro_stunden_app=function(){
 					}
 				}
 			}
-			console.log(re);
 			return re;
 		}
 		
