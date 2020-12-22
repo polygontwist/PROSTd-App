@@ -2397,7 +2397,7 @@ var pro_stunden_app=function(){
 				jahr=jahresuebersicht.getjahr();
 			for(i=1;i<13;i++){
 				mdat=jahresuebersicht.getMonatsinfo(i,jahr);
-				ueberstunden=mdat.arbeitsstunden-lokalDataVorlage.stundenproArbeitstag*mdat.arbeitstage
+				ueberstunden=mdat.arbeitsstunden-lokalData.stundenproArbeitstag*mdat.arbeitstage
 				jahresdiff+=ueberstunden;
 				if(ueberstunden>0){
 					jahresuebersicht.setMonatsinfo(i,jahr,
