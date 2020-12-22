@@ -2160,10 +2160,17 @@ var pro_stunden_app=function(){
 					td=liste[i];
 					if(td["data"]!=undefined){
 						if(!(
-							td.data.typ=="feiertage" 
-							|| td.data.typ=="urlaub" 
-							|| td.data.wochentag>4
-							)){
+							td.data["typ"]=="feiertage" 
+							|| 
+							td.data["typ"]=="urlaub" 
+							)
+							&&
+							(
+							lokalData.wochenarbeitstage[td.data.wochentag]==="true"
+							||
+							lokalData.wochenarbeitstage[td.data.wochentag]===true
+							)
+							){
 							re.arbeitstage++;
 						}
 						if(td.data["projekte"]!=undefined){
@@ -2174,6 +2181,7 @@ var pro_stunden_app=function(){
 					}
 				}
 			}
+			console.log(re);
 			return re;
 		}
 		
