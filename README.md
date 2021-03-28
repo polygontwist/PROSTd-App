@@ -37,6 +37,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.37 Überstundenanzeige, Fix 0.1.36
 * 0.1.38 Überstundenanzeige Fix, Feiertage bis 2025 (feiertage.json löschen um sie zu erhalten)
 * 0.1.39 Überstundenanzeige Fix Arbeitstagberechnung
+* 0.1.40 Bugfix bei Überblick
 
 #### Programm auf Windows 10 installieren ####
 Da ich momentan noch kein signiertes Installationsprogramm erzeugen kann, muss nach dem download und doppelklick im folgenden Dialog "Weitere Informationen" und dann "Trotzdem ausführen" geklickt werden.

@@ -2370,6 +2370,7 @@ var pro_stunden_app=function(){
 				if(eintragen && jahrfilter!=undefined && jahrfilter!="alle"){
 					eintragen=false;
 					//gucken ob Stunden passend zum Filter da sind, dann Eintrag zeigen
+					if(o.data!=undefined)
 					for(t=0;t<o.data.stunden.length;t++){
 						std=o.data.stunden[t];						
 						a=parseInt(std.dat.split('-')[0]);		
@@ -3938,9 +3939,9 @@ var pro_stunden_app=function(){
 				}
 				else{						
 					if(eintragen && jahrfilter!=undefined && jahrfilter!="alle"){
-						
 						eintragen=o.data.stunden.length>0;
 						//gucken ob Stunden passend zum Filter da sind, dann Eintrag zeigen
+						if(o.data!=undefined)
 						for(t=0;t<o.data.stunden.length;t++){
 							std=o.data.stunden[t];
 							a=parseInt(std.dat.split('-')[0]);
@@ -3948,7 +3949,8 @@ var pro_stunden_app=function(){
 								if(jahrfilter==a)eintragen=true;
 							}
 						}
-					}						
+					}
+					if(o.data!=undefined)
 					if(o.data.stunden.length==0)eintragen=true;
 				}
 				
