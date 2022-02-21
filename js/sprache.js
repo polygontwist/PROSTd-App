@@ -106,6 +106,7 @@ var sprachen=[
 		
 		 "version":"Version",
 		 "projektpage":"die Projektpage liegt auf",
+		 "progdownload":"Download der aktuellen Version",
 		 "speicherort":"Deine Daten liegen in",
 		 
 		 "wahleprojekt":"Wähle das zu bearbeitende Projekt aus!",

@@ -641,14 +641,20 @@ var pro_stunden_app=function(){
 	}
 	
 	var parseoptiondata=function(sdata,typ){
-		var prop;
+		var prop,data;
 		sdata=sdata.split("%7B").join("{");
 		sdata=sdata.split("%7D").join("}");
 		sdata=sdata.split("%22").join('"');
 		sdata=sdata.split("%5B").join('[');
 		sdata=sdata.split("%5D").join(']');
 			
-		var data=JSON.parse(sdata);
+		try{
+			data=JSON.parse(sdata);
+		}
+		catch (e) {
+			data={};
+		}
+		
 		//check error
 		if(data.status!=undefined){
 			if(data.status!=msg_OK){
@@ -5030,8 +5036,23 @@ var pro_stunden_app=function(){
 					a.target="_blank";
 				}
 				
-				
 			if(isAppBridge()){
+				tr=cE(tab,"tr");
+				td=cE(tr,"td");
+				td.innerHTML=getWort("progdownload")+':';
+				td=cE(tr,"td");
+				a=cE(td,"a");
+				a.href="#";
+				a.innerHTML="https://github.com/polygontwist/PROSTd-App/tree/master/dist";
+				a.target="_blank";			
+				if(isAppBridge()){
+						a.addEventListener('click',function(e){
+							var shell = remote.shell;
+							shell.openExternal("https://github.com/polygontwist/PROSTd-App/tree/master/dist");
+							e.preventDefault();
+						});
+					}
+				
 				var userdokumente=app.getPath('documents');
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");

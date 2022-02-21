@@ -7,7 +7,7 @@
 
 const electron = require('electron');
 const {remote} = electron;
-const {dialog, BrowserWindow} = remote;
+const {dialog, BrowserWindow, screen} = remote;
 const fs = require('fs');
 
 
@@ -32,10 +32,12 @@ var	basepathTEMPLATES=basepath+"/templates/";
 var datafileendung='.json';
 
 var eleWin;
+var issaving=false,lasttime=Date.now();
 
 var AppBridge=function(){
 	//var path = dialog.showOpenDialog({properties: ['openDirectory']});
 	//console.log("elect",electron,fs);
+	//console.log("elect",remote);
 	//console.log("elect",remote.systemPreferences);
 	///console.log("elect",remote.process.resourcesPath);
 	//console.log("basepath:",basepath);//"D:\elektron\PROSTd_lokal"
@@ -96,9 +98,23 @@ var AppBridge=function(){
 							redata.dat="{\"tabaktiv\":0}";
 							sstatus="OK";
 						}
+						
+						var redat={};
+						if(data.length>0){
+							try{
+								redat=JSON.parse(data);
+							}
+							catch (e) {
+								console.log("ParseError",e);
+								redat={}
+							}
+						}else{
+							console.log("no Parsedatas",filepath);
+						}
+						
 						redata={
 							"user":"lokal",
-							"dat":JSON.parse(data) ,
+							"dat":redat ,
 							"lastaction":zurl,
 							"status":sstatus
 						};
@@ -423,6 +439,41 @@ var AppBridge=function(){
 		);	
 	};
 	
+	
+	
+	
+	var saveoptionen=function(savedata,refunction){
+		var timediff=Date.now()-lasttime;
+		//app.app.getLocale()//"de"
+		
+		//console.log(">>",timediff,Date.now());
+		
+		if(issaving){
+			//console.log("RETU issaving");
+			return;
+		}
+		if(timediff<10){
+			console.log("RETU badtime",timediff);
+			return;
+		}
+		
+		issaving=true;
+		fs.writeFile(basepathDATA+"optionen.txt", decodeURI(savedata),'utf-8',
+				function(err) {
+					if(err){
+						console.log(">>",err);
+						savedata.status="404:notwrite";
+					}
+					else{
+						console.log("optionen.txt was saved!");
+					}
+					lasttime=Date.now();
+					issaving=false;
+					if(refunction!=undefined)refunction(JSON.stringify(savedata));
+				}
+			);
+	}
+	
 	//system (loadDataAPP)<->elektron 
 	this.DataIO=function(url, auswertfunc,getorpost,daten){
 		//console.log("DataIO",globaldata.user,url,getorpost,daten,fs);
@@ -453,18 +504,9 @@ var AppBridge=function(){
 				console.log(":-(");
 			}
 			
-			fs.writeFile(basepathDATA+"optionen.txt", decodeURI(pd.data),'utf-8',
-				function(err) {
-					if(err){
-						console.log(">>",err);
-						data.status="404:notwrite";
-					}
-					else{
-						//console.log("The file was saved!",redat);
-					}
-					if(refunction!=undefined)refunction(JSON.stringify(data));
-				}
-			);
+			if(pd.data.length>0){
+				saveoptionen(pd.data,refunction)
+			}
 		}
 		else
 		if(url=="maindata"){//alive 
@@ -598,12 +640,61 @@ var AppeleWin=function(){
 		
 		if(fs.existsSync(basepathDATA+"optionen.txt")){
 			var r=fs.readFileSync(basepathDATA+"optionen.txt",'utf-8',"a");
-			if(r!=""){
-				var optionen=JSON.parse(r);
+			
+			//console.log(">read>",r.length);
+			
+			if(r!="" && r.length>0){
+				var optionen={};
+				try{
+					optionen=JSON.parse(r);
+				}
+				catch (e) {
+					console.log("parseERR",e);
+				}
+				
 				if(optionen.windowsize!=undefined){
-					win.setPosition(optionen.windowsize.x,optionen.windowsize.y);
-					if(optionen.windowsize.width>0 && optionen.windowsize.height>0)
-						win.setSize(optionen.windowsize.width,optionen.windowsize.height);
+					
+					//console.log(screen);
+					const primaryDisplay = screen.getPrimaryDisplay();						
+					console.log("primaryDisplay",primaryDisplay);
+					var { width, height } = primaryDisplay.workAreaSize;
+					//console.log(width, height);
+							
+					var x=optionen.windowsize.x;
+					var y=optionen.windowsize.y;
+					var b=optionen.windowsize.width;
+					var h=optionen.windowsize.height;
+					
+					//check ob auf einem der Monitore passen ist:
+					var i,bounds,allScreens = screen.getAllDisplays(),
+						zielscreen=-1;
+					console.log("check Monitore");
+					console.log("allScreens",allScreens);
+					
+					for(i=0;i<allScreens.length;i++){
+						bounds=allScreens[i].bounds;
+						if(
+								x>bounds.x 
+							&& 	y>bounds.y
+							&& 	x<bounds.x+bounds.width 
+							&& 	y<bounds.y+bounds.height
+						){
+							zielscreen=i;
+							width=bounds.width;
+							height=bounds.height;
+							console.log("ON[]",i);
+						}
+					}
+					
+					if(zielscreen>-1)
+						win.setPosition(x,y);
+					else
+						console.log("wrong pos");
+					
+					if(b>0 && b<width && h>0 && h<height)
+						win.setSize(b,h);
+					else
+						console.log("wrong size");
 				}
 			}
 		}
@@ -617,9 +708,10 @@ var AppeleWin=function(){
 	}
 	
 	var resizer=function(event){
-		//var win=remote.getCurrentWindow();
+		var win=remote.getCurrentWindow();//
 		var bereich=win.getBounds();// x: 279, y: 84, width: 1250, height: 640
-		
+		//console.log(win);
+		//console.log(bereich);
 		if(typeof(o_sysPROST)!="undefined")
 			if(o_sysPROST!=undefined){
 				o_sysPROST.Message("resize",bereich)
