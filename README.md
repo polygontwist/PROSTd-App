@@ -39,6 +39,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.39 Überstundenanzeige Fix Arbeitstagberechnung
 * 0.1.40 Bugfix bei Überblick
 * 0.1.41 Bugfix bei: speichern der Optionen, Fensterpositionierung bei Mehrmonitorbetrieb; Downlodlink bei "Einstellungen" 
+* 0.1.42 Bugfix; Export der Projektdaten als CSV - z.B. für Exel; Erweiterung Feiertage bis 2028 für MV
 
 #### Programm auf Windows 10 installieren ####
 Da ich momentan noch kein signiertes Installationsprogramm erzeugen kann, muss nach dem download und doppelklick im folgenden Dialog "Weitere Informationen" und dann "Trotzdem ausführen" geklickt werden.
@@ -87,4 +88,11 @@ Das kann dann wie jedes normale Programm von Nutzern installiert werden.
 Das Installationsprogramm ist dann im Verzeichnis `dist` zu finden.
 
 siehe auch https://github.com/polygontwist/PROSTd/
+
+#### Projekt exportieren ####
+
+Im Tab "Meine Projekte" gibt es seit Version 0.1.42 die Option, die Daten als csv zu exportieren. Z.B. für die Weiterverarbeitung in Exel, Calc oder andere.
+Die Trennung der Datenfelder ist mit einem ";" umgesetzt.
+
+<img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-42.png" width="593" alt="Screenshot Übersicht">
 

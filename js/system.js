@@ -2112,8 +2112,11 @@ var pro_stunden_app=function(){
 		this.add=function(projektdata){//komplettes Projekt
 			var i,t,s,dat,eintragen,
 				data=projektdata.data,
+				stunden=[];
+			
+			if(data!=undefined)
 				stunden=data.stunden;
-				
+			
 			for(i=0;i<stunden.length;i++){
 				s=stunden[i];
 				dat=s.dat.split('-');//"2017-06-08"
@@ -2390,7 +2393,8 @@ var pro_stunden_app=function(){
 					projekte.push(onew);
 					
 					HTMLnode=cE(basis,"div");
-					HTMLnode.innerHTML=encodeString(o.data.titel);
+					if(o.data!=undefined)
+						HTMLnode.innerHTML=encodeString(o.data.titel);
 					//sendMSG("scramble",HTMLnode);
 					onew.divnode=HTMLnode;
 					
@@ -2457,6 +2461,7 @@ var pro_stunden_app=function(){
 			}
 			
 			dat.divnode.innerHTML="";
+			if(dat.data==undefined)return;
 			if(dat.data.stunden.length==0)return;//keine Stunden zum anzeigen vorhanden
 			
 			HTMLnode=cE(dat.divnode,"h1");
@@ -2640,6 +2645,7 @@ var pro_stunden_app=function(){
 				
 				tempprojektliste[i].stundenimJahr={};
 				stundenproproj=0;
+				if(o!=undefined)
 				for(t=0;t<o.stunden.length;t++){					
 					if(lastfilter=="alle"){
 						stundenproproj+=o.stunden[t].stunden;
@@ -2672,12 +2678,14 @@ var pro_stunden_app=function(){
 				if(o.id!="urlaub"){
 					tr=cE(tabelle,"tr");
 					th=cE(tr,"th");
-					th.innerHTML=encodeString(o.data.titel);
+					if(o.data!=undefined)
+						th.innerHTML=encodeString(o.data.titel);
 					//sendMSG("scramble",th);
 					td=cE(tr,"td");
 					div=cE(td,"div",undefined,"balkenstunden");
 					div.style.width=(100/maxstd*o.stundenges)+"%";
 					
+					if(o.data!=undefined)
 					if(o.data.info.isended!=undefined){
 						if(o.data.info.isended===true)addClass(div,"proisended");
 					}
@@ -3471,6 +3479,17 @@ var pro_stunden_app=function(){
 				
 			}
 			
+			//Projektexport
+			htmlNode=cE(basis,"p");
+			butt=cE(htmlNode,"a",undefined,"button buttexport");
+			butt.innerHTML=getWort("projektexportierenCSV");
+			//butt.data={"projektdata":projekt};
+			//butt.onclick=exportStunden;
+			butt.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(createExport(projekt)));
+			butt.setAttribute('download', "projekt_"+projekt.titel+".csv");
+			
+			
+			
 			for(i=0;i<projinputs.length;i++){
 				if(projinputs[i].readOnly!=true){
 					projinputs[i].addEventListener('keyup' ,changeActivityInput);
@@ -3482,6 +3501,87 @@ var pro_stunden_app=function(){
 			
 			
 		}
+		
+		var createExport=function(projektdaten){
+			var i,t,t2,prop,re="",propliste=[],stunde,datum,str,
+				z1="",z2="";
+			
+			
+			for(prop in projektdaten.info){
+				console.log(typeof projektdaten.info[prop]);
+				if(
+					typeof projektdaten.info[prop]==="string"
+					||
+					typeof projektdaten.info[prop]==="number"
+				){
+					z1+=prop+';';
+					z2+=projektdaten.info[prop]+';';
+				}
+				else
+				if(typeof projektdaten.info[prop]==="object"){
+					if(Array.isArray(projektdaten.info[prop])){
+						z1+=prop+';';
+						z2+=projektdaten.info[prop].join(' ')+';';
+						
+					}
+				}
+				else
+				if(typeof projektdaten.info[prop]==="boolean"){
+					z1+=prop+';';
+					z2+=projektdaten.info[prop]+';';
+				}
+			}
+			
+			re+=z1+"\r";
+			re+=z2+"\r";
+			re+="\r";
+			
+			/*
+				dat: "2017-06-04"​​​
+				kommentar: ""​​​
+				stunden: 6​​​
+				typ: "K"​​​
+				user: "andreas"
+			*/
+			for(i=0;i<projektdaten.stunden.length;i++){
+				stunde=projektdaten.stunden[i];
+				if(i==0){
+					//Titelzeile
+					for(prop in stunde){
+						re+=prop+";";
+						propliste.push(prop);
+					}
+					re+="\r";
+				}
+				for(t=0;t<propliste.length;t++){
+					if(stunde[propliste[t]]!=undefined){
+						if(propliste[t]=="dat"){
+							datum=stunde[propliste[t]].split('-');
+							str="";
+							for(t2=0;t2<datum.length;t2++){
+								if(t2>0)str+='.';
+								str+=datum[datum.length-t2-1];
+							}
+							re+=str+";"
+						}
+						else{
+							str=""+stunde[propliste[t]];
+							re+=str.split(';').join(',')+";"
+						}
+					}
+					else{
+						re+=";"
+					}
+				}
+				re+="\r";
+			}
+			
+			console.log(projektdaten);
+			
+			// wert;wert;...
+			return re;
+		}			
+
 		
 		var changeActivityInput=function(e){//'keyup'/'change'
 			var val=this.value;
@@ -3600,7 +3700,7 @@ var pro_stunden_app=function(){
 			else
 				this.innerHTML=this.data.t2+" "+this.data.j;
 			
-			e.preventDefault() ;
+			e.preventDefault();
 		}
 		
 		var delStunde=function(e){//Button:Stundeneintrag löschen
@@ -5036,6 +5136,7 @@ var pro_stunden_app=function(){
 					a.target="_blank";
 				}
 				
+				
 			if(isAppBridge()){
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");
@@ -5052,7 +5153,7 @@ var pro_stunden_app=function(){
 							e.preventDefault();
 						});
 					}
-				
+
 				var userdokumente=app.getPath('documents');
 				tr=cE(tab,"tr");
 				td=cE(tr,"td");

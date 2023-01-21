@@ -77,6 +77,7 @@ var sprachen=[
 		 "Infos":"Infos",
 		 "projid":"ProjektID / Dateiname",
 		 "keinestunden":"Noch keine Stunden vorhanden.",
+		 "projektexportierenCSV":"Projekt als CSV exportieren",
 		 
 		 "datisended":"Ist Projekt beendet?",
 		 "datauftraggeber":"Auftraggeber",
@@ -106,8 +107,8 @@ var sprachen=[
 		
 		 "version":"Version",
 		 "projektpage":"die Projektpage liegt auf",
-		 "progdownload":"Download der aktuellen Version",
 		 "speicherort":"Deine Daten liegen in",
+		 "progdownload":"Download der aktuellen Version",
 		 
 		 "wahleprojekt":"Wähle das zu bearbeitende Projekt aus!",
 		 "buttdel":"löschen",
