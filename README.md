@@ -52,7 +52,7 @@ Ab Verison 0.1.14 gibt es eine Projektbasierende TODO-Liste (ab Version 0.1.16 S
 <img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-14.png" width="593" alt="Screenshot TODO">
 
 Screenshot (Version 0.1.5. mit userstyles):<br>
-![prostd_app](https://cloud.githubusercontent.com/assets/3751286/21822205/9107aa04-d776-11e6-99c3-75c97c9160c6.png)
+<img src="https://github.com/polygontwist/PROSTd-App/blob/master/screenshots/prost0-1-05.png" width="593" alt="Screenshot Übersicht">
 
 Auf dem Screenshot sieht man ein Feld mit einem "R", hier trage ich die Art der Stunden:<br>
 R = Realisation<br>
