@@ -37,9 +37,10 @@ var pro_stunden_app=function(){
 				
 		windowsize:{x:0,y:0,width:0,height:0},
 		zeigebeendete:false,
-		settings_projektliste:{sortby:"projekte", updown:"up"}	
+		settings_projektliste:{sortby:"projekte", updown:"up"},
+		
+		sprache:spracheaktiv
 	};
-	
 	
 	var lokalData=lokalDataVorlage;
 	
@@ -641,7 +642,7 @@ var pro_stunden_app=function(){
 	}
 	
 	var parseoptiondata=function(sdata,typ){
-		var prop,data;
+		var prop,data,i,changesprache=false,strlist;
 		sdata=sdata.split("%7B").join("{");
 		sdata=sdata.split("%7D").join("}");
 		sdata=sdata.split("%22").join('"');
@@ -669,12 +670,38 @@ var pro_stunden_app=function(){
 						console.log("create",prop,lokalData[prop]);
 					}
 				}
-								
+				
+				if(lokalData["sprache"]){
+					for(i=0;i<sprachen.length;i++){
+						if(lokalData["sprache"]===sprachen[i]["language"]){
+							if(spracheaktiv!=lokalData["sprache"])changesprache=true;
+							spracheaktiv=lokalData["sprache"];
+						}
+					}
+				}
 				if(typ==="ini"){
 					setTabaktiv(tabs[lokalData.tabaktiv].id);
 				}
 			}
-		}		
+		}
+
+		if(changesprache){
+			//reload all
+			//tabnav
+			for(i=0;i<tabs.length;i++){
+				if(tabs[i]["d_objekt"]!=undefined);
+					tabs[i].d_objekt.changeSprache();
+			}
+			
+			//Webversion Login-H1
+			var h1=document.getElementById("loginout");
+			if(h1){
+				strlist=h1.innerHTML.split(' ');
+				strlist[0]=getWort("hallo");
+				h1.innerHTML=strlist.join(' ');
+			}
+			setTabaktiv(tabs[lokalData.tabaktiv].id);
+		}	
 	}
 
 	var sessionaliver=function(){
@@ -1385,6 +1412,11 @@ var pro_stunden_app=function(){
 			for(i=0;i<odata.inhalte.length;i++){
 				odata.inhalte[i].Message(s,data);
 			}
+		}
+		
+		this.changeSprache=function(){
+			if(odata.tabbutt)
+				odata.tabbutt.innerHTML=getWort(odata.data.butttitel);
 		}
 		
 		//--actions--
@@ -3505,7 +3537,7 @@ var pro_stunden_app=function(){
 		var createExport=function(projektdaten){
 			var i,t,t2,prop,re="",propliste=[],stunde,datum,str,
 				z1="",z2="";
-			
+			var trenner=";",trennerreplacestr=',';
 			
 			for(prop in projektdaten.info){
 				console.log(typeof projektdaten.info[prop]);
@@ -3514,21 +3546,21 @@ var pro_stunden_app=function(){
 					||
 					typeof projektdaten.info[prop]==="number"
 				){
-					z1+=prop+';';
-					z2+=projektdaten.info[prop]+';';
+					z1+=prop+trenner;
+					z2+=projektdaten.info[prop]+trenner;
 				}
 				else
 				if(typeof projektdaten.info[prop]==="object"){
 					if(Array.isArray(projektdaten.info[prop])){
-						z1+=prop+';';
-						z2+=projektdaten.info[prop].join(' ')+';';
+						z1+=prop+trenner;
+						z2+=projektdaten.info[prop].join(' ')+trenner;
 						
 					}
 				}
 				else
 				if(typeof projektdaten.info[prop]==="boolean"){
-					z1+=prop+';';
-					z2+=projektdaten.info[prop]+';';
+					z1+=prop+trenner;
+					z2+=projektdaten.info[prop]+trenner;
 				}
 			}
 			
@@ -3537,10 +3569,10 @@ var pro_stunden_app=function(){
 			re+="\r";
 			
 			/*
-				dat: "2017-06-04"​​​
-				kommentar: ""​​​
-				stunden: 6​​​
-				typ: "K"​​​
+				dat: "2017-06-04"
+				kommentar: ""
+				stunden: 6
+				typ: "K"
 				user: "andreas"
 			*/
 			for(i=0;i<projektdaten.stunden.length;i++){
@@ -3548,7 +3580,7 @@ var pro_stunden_app=function(){
 				if(i==0){
 					//Titelzeile
 					for(prop in stunde){
-						re+=prop+";";
+						re+=prop+trenner;
 						propliste.push(prop);
 					}
 					re+="\r";
@@ -3562,15 +3594,28 @@ var pro_stunden_app=function(){
 								if(t2>0)str+='.';
 								str+=datum[datum.length-t2-1];
 							}
-							re+=str+";"
+							re+=str+trenner;
 						}
-						else{
+						else 
+						if(propliste[t]=="stunden"){
+							//3.5->"3,5" in DE sonst keine Zahlen
+							if(spracheaktiv=="DE"){
+								str=(""+stunde[propliste[t]]).split('.').join(',');
+								re+=str+trenner;
+							}
+							else{//3.5 EN 
+								str=stunde[propliste[t]];
+								re+=str+trenner;
+							}
+						}
+						else
+						{
 							str=""+stunde[propliste[t]];
-							re+=str.split(';').join(',')+";"
+							re+=str.split(trenner).join(trennerreplacestr)+trenner;
 						}
 					}
 					else{
-						re+=";"
+						re+=trenner
 					}
 				}
 				re+="\r";
@@ -5062,7 +5107,7 @@ var pro_stunden_app=function(){
 		
 		//"user":"lokal","dat":{"tabaktiv":3},"lastaction":"getoptionen","status":"OK"
 		var showOptionen=function(){
-			var i,tab,th,tr,td,anzeigen,inp,property,label,a;
+			var i,isp,tab,th,tr,td,anzeigen,inp,property,label,a,node;
 			var speichern=false;
 			var o_sibling={
 					timer:undefined,
@@ -5132,6 +5177,7 @@ var pro_stunden_app=function(){
 					});
 				}
 				else{
+					a.innerHTML="https://github.com/polygontwist/PROSTd";
 					a.href="https://github.com/polygontwist/PROSTd";
 					a.target="_blank";
 				}
@@ -5146,13 +5192,11 @@ var pro_stunden_app=function(){
 				a.href="#";
 				a.innerHTML="https://github.com/polygontwist/PROSTd-App/tree/master/dist";
 				a.target="_blank";			
-				if(isAppBridge()){
-						a.addEventListener('click',function(e){
-							var shell = remote.shell;
-							shell.openExternal("https://github.com/polygontwist/PROSTd-App/tree/master/dist");
-							e.preventDefault();
-						});
-					}
+				a.addEventListener('click',function(e){
+					var shell = remote.shell;
+					shell.openExternal("https://github.com/polygontwist/PROSTd-App/tree/master/dist");
+					e.preventDefault();
+				});					
 
 				var userdokumente=app.getPath('documents');
 				tr=cE(tab,"tr");
@@ -5177,7 +5221,7 @@ var pro_stunden_app=function(){
 			}
 			
 			var optionen=lokalData;
-			//console.log("lokalData>",lokalData);
+//console.log("lokalData>",lokalData);
 			
 			for( property in optionen ) {
 				anzeigen=true;
@@ -5194,11 +5238,32 @@ var pro_stunden_app=function(){
 					td=cE(tr,"td");
 					td.innerHTML=getWort("dat"+property)+':';
 					td=cE(tr,"td");
-					inp=cE(td,"input");
-					inp.value=encodeString(optionen[property]);
-					inp.data={"property":property,"node":optionen ,"nodeid":property,"o_sibling":o_sibling};
-
-
+					
+					if(property=="sprache"){
+						inp=cE(td,"select");
+						inp.data={
+							"property":property,
+							"node":optionen ,
+							"nodeid":property,
+							"o_sibling":o_sibling};
+						for(isp=0;isp<sprachen.length;isp++){
+							node=cE(inp,"option");
+							node.innerHTML=sprachen[isp].language;							
+							if(sprachen[isp].language===optionen[property]){
+								node.selected =true;
+								node.setAttribute("selected",true);
+							}
+						}
+					}
+					else{
+						//String
+						inp=cE(td,"input");
+						inp.value=encodeString(optionen[property]);
+						inp.data={"property":property,"node":optionen ,"nodeid":property,"o_sibling":o_sibling};
+					}
+					
+					//if(getDataTyp(optionen[property])=='[object String]'){}
+					
 					if(getDataTyp(optionen[property])=='[object Boolean]'){
 						inp.type="checkbox";
 						inp.id='cb_'+property;
@@ -5207,18 +5272,21 @@ var pro_stunden_app=function(){
 						label=cE(td,"label");
 						label.htmlFor=inp.id;					
 					}
+					else
 					if(getDataTyp(optionen[property])=='[object Number]'){
 						inp.type="number";
 						inp.step=1;
 					}
+					else
 					if(getDataTyp(optionen[property])=='[object Array]'){
 						new createArrayInputs(td,inp,optionen[property],property);
 					}
+					
 					proginputs.push(inp);
 				}
 				
 			}
-			
+						
 			for(i=0;i<proginputs.length;i++){
 				if(proginputs[i].readOnly!=true){
 					proginputs[i].addEventListener('keyup' ,changeActivityInput);
@@ -5254,18 +5322,19 @@ var pro_stunden_app=function(){
 					if(liste[i]=="true")liste[i]=true;
 					if(liste[i]=="false")liste[i]=false;
 				}
-				
+			
 				for (i=0;i<liste.length;i++) {
-					if(typeof(liste[i])=="boolean"){
-						if(art=="wochenarbeitstage"){
-							span=cE(ziel,"span");
+					if(art=="wochenarbeitstage"){
+						if(typeof(liste[i])==="boolean"){
+							span=cE(ziel,"label");
 							span.innerHTML=getWort(wochentagID[i]);						
+							
+							inp=cE(span,"input",undefined,"inputarr");
+							inp.type="checkbox";
+							inp.checked=liste[i];
+							inp.addEventListener('change',clickCB);
+							inputs.push(inp);
 						}
-						inp=cE(ziel,"input",undefined,"inputarr");
-						inp.type="checkbox";
-						inp.checked=liste[i];
-						inp.addEventListener('change',clickCB);
-						inputs.push(inp)
 					}
 				}
 			}
@@ -5282,7 +5351,7 @@ var pro_stunden_app=function(){
 			if(this.type=="checkbox")istanders=true;
 			if(e.type=="keyup" && e.keyCode==13)istanders=true;
 			if(!istanders)return;
-			
+						
 			//'[object Array]' '[object String]'  '[object Number]' 
 			//neu abspeichern
 			var dtyp=getDataTyp(this.data.node[this.data.nodeid]);
@@ -5307,6 +5376,12 @@ var pro_stunden_app=function(){
 				this.data.o_sibling.timer=undefined;
 			}
 			addClass(this,"isedit");
+			
+			if(this.type=="select-one"){
+				senddatatimer(this);
+				setTabaktiv(tabs[lokalData.tabaktiv].id);
+				return;
+			}
 			
 			if(dtyp!= '[object Boolean]'){
 				if(e.type=="keyup" && e.keyCode==13){
