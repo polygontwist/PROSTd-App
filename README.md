@@ -1,5 +1,5 @@
 Offline Version von PROSTd - ein Tool zum einfachen erfassen von Projektstunden.
-Erstellt mit elektron.
+Erstellt mit electron (v6.1.12).
 Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://electron.atom.io/
 
 
