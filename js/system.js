@@ -241,17 +241,17 @@ var pro_stunden_app=function(){
 		return true; // empty
 	}
 	
-	var loadData=function(url, auswertfunc,getorpost,daten){
+	var loadData=function(befehl, auswertfunc,getorpost,daten){
 		
 		if(isAppBridge()){
 			var AB=new AppBridge();
-			AB.DataIO(url, auswertfunc,getorpost,daten);
+			AB.DataIO(befehl, auswertfunc,getorpost,daten);
 			return;
 		}
 		
 		
 		var loObj=new Object();
-		loObj.url=url;    
+		loObj.url=befehl;    
 		try {
 			// Mozilla, Opera, Safari sowie Internet Explorer (ab v7)
 			loObj.xmlloader = new XMLHttpRequest();
@@ -489,8 +489,12 @@ var pro_stunden_app=function(){
 	};
 	
 	var o_inputDialog=function(zielnode){
-		var dlgbasis,buttAbr,buttConfirm,nodetext,nodeinput,nodetitel,
-			Fauswertfunc;
+		var dlgbasis,buttAbr,buttConfirm,nodetext,nodeinputbereich,nodetitel,
+			inputlistenode,
+			Fauswertfunc;//nodeinputb
+		var _this=this;
+		var inputdatas={};
+		var olddatas=[];
 		
 		var ini=function(){
 			var node,n;
@@ -503,9 +507,7 @@ var pro_stunden_app=function(){
 			
 			nodetext=cE(node,"p");
 			
-			n=cE(node,"div",undefined,"inputb center");
-			nodeinput=cE(n,"input",undefined,"center");
-			nodeinput.addEventListener("keyup",inputKeyUp);
+			nodeinputbereich=cE(node,"div",undefined,"inputb center");
 			
 			n=cE(node,"div",undefined,"buttons");
 			
@@ -516,58 +518,152 @@ var pro_stunden_app=function(){
 			buttConfirm=cE(n,"a",undefined,"button buttok");
 			buttConfirm.addEventListener("click",clickConfirm);
 			buttConfirm.innerHTML=getWort("OK");
-			
 		}
-		var dlgclose=function(){
+		var dlginpclose=function(){
 			dlgbasis.className="off";
+			inputlistenode=undefined;
 		}
 		
 		var clickAbbr=function(e){
-			dlgclose();
+			inputdatas.datstunde["subinfo"]=olddatas;
+				
+			dlginpclose();
 		}
 		var clickConfirm=function(e){
 			sendvalue();
-			dlgclose();
-			//remessage
-		}
-		var inputKeyUp=function(e){
-			if(e.key=="Enter"){
-				sendvalue();
-				dlgclose();
-			}
+			dlginpclose();
 		}
 		var dlgKeyUP=function(e){
-			if(e.key=="Escape")dlgclose();
+			/*if(e.key=="Escape")dlginpclose();
 			if(e.key=="Enter" && !istClass(dlgbasis,"off") ){ 
 				sendvalue();
-				dlgclose();
-			}
+				dlginpclose();
+			}*/
 		}
 		var sendvalue=function(){
-			var val=nodeinput.value;
-			if(typeof Fauswertfunc=="function")Fauswertfunc(val);
+			if(typeof Fauswertfunc=="function")Fauswertfunc(inputdatas);
 		}
 		
 		this.destroy=function(){
-			dlgclose();
+			dlginpclose();
 		}
 		this.close=function(){
-			dlgclose();
+			dlginpclose();
 		}
 		
-		this.show=function(typ,sTitel,sMSG,defvalue,auswertfunc){//"prompt",.....
+		this.show=function(typ,sTitel,sMSG,defvalue,auswertfunc,datas){//"prompt",.....
 			//dlgbasis.innerHTML="";
 			dlgbasis.className="";
 			nodetitel.innerHTML=sTitel;
 			nodetext.innerHTML=sMSG;
-			if(defvalue==undefined)
-				addClass(nodeinput,"off");
-				else{
-				subClass(nodeinput,"off");
-				nodeinput.value=defvalue;
-				}
+			
+			inputdatas=datas;
+			
 			Fauswertfunc=auswertfunc;
+			
+			if(typ=="ProjektStundenSubinfos"){
+				if(inputdatas.datstunde["subinfo"]==undefined)
+					inputdatas.datstunde["subinfo"]=[];
+				
+				olddatas=JSON.parse( JSON.stringify(inputdatas.datstunde["subinfo"]));
+				
+				showStdSubInfoContent();
+			}
+			
 		}
+		
+		var showStdSubInfoContent=function(){
+			var i,osubinfo,p,li,butt;
+			nodeinputbereich.innerHTML="";
+			inputlistenode=cE(nodeinputbereich,"ul",undefined,"subinfolist");
+			for(i=0;i<inputdatas.datstunde.subinfo.length;i++){
+				osubinfo=inputdatas.datstunde.subinfo[i];
+				li=cE(inputlistenode,"li");
+				showsubinpzeile(li,osubinfo);
+			}
+			
+			//+: Texte, Links
+			p=cE(nodeinputbereich,"p");
+			butt=cE(p,"a",undefined,"button");
+			butt.innerHTML=getWort("addEintrag");
+			butt.addEventListener('click',clickaddnesubinfos);
+			
+			//-->inputlistenode ass li
+			
+		}
+		var inputcheckval=function(inputnode){
+			if(inputnode.value.indexOf('http')>-1){
+				addClass(inputnode,"inputislink");
+				subClass(inputnode.actionbutt,"noactionbutt");
+				addClass(inputnode.actionbutt,"link");
+				
+				actionbutt.href=inputnode.value;
+				actionbutt.setAttribute("target","_blank");
+				
+				
+			}else{
+				subClass(inputnode,"inputislink");
+				addClass(inputnode.actionbutt,"noactionbutt");
+			}
+		}
+		var deleteeintrag=function(e){
+			this.data.li.style.display="none";
+			var i,o,newlist=[];
+			this.data.data.isdel=true;
+			
+			for(i=0;i<inputdatas.datstunde.subinfo.length;i++){
+				o=inputdatas.datstunde.subinfo[i];
+				if(o["isdel"]==undefined)
+					newlist.push(o);
+			}
+			inputdatas.datstunde.subinfo=newlist;
+		}
+		var showsubinpzeile=function(li,data){
+			//li.innerHTML="[sort][..Eintrag..][del]";
+			var butt;
+			
+			butt=cE(li,"a",undefined,"button buttdel");
+			butt.innerHTML=getWort("buttdel");
+			butt.addEventListener("click",deleteeintrag);
+			butt.data={"li":li,"data":data};
+			
+			inp=cE(li,"input");
+			inp.value=data.val;
+			inp.addEventListener("click",function(e){data.val=this.value;inputcheckval(this);});
+			inp.addEventListener("change",function(e){data.val=this.value;inputcheckval(this);});
+			inp.addEventListener("keyup",function(e){
+				data.val=this.value;inputcheckval(this);
+				e.preventDefault();
+				});
+			
+			
+			actionbutt=cE(li,"a",undefined,"button noactionbutt");
+			actionbutt.innerHTML="";
+			inp.actionbutt=actionbutt;
+			
+			if(isAppBridge()){
+				actionbutt.addEventListener('click',function(e){
+					var shell = remote.shell;
+					shell.openExternal(this.href);
+					e.preventDefault();
+				});
+			}
+			inputcheckval(inp);
+		}
+		var clickaddnesubinfos=function(e){
+			var li,inp,butt;
+			
+			if(inputlistenode!=undefined){
+				var newdata={"typ":"s","val":""};
+				inputdatas.datstunde.subinfo.push(newdata);
+				
+				li=cE(inputlistenode,"li");
+				showsubinpzeile(li,newdata);
+			}
+			e.preventDefault();
+		}
+		
+		
 		
 		ini();
 	}
@@ -598,6 +694,7 @@ var pro_stunden_app=function(){
 		optionsleiste=new o_optionsleiste(basis);
 		statusDlg=new o_statusDialog(basis);
 		inputDlg=new o_inputDialog(basis);
+		
 		geladeneprojekte=new o_ProjektDataIOHandler(basis);
 
 		loadData("getoptionen",iniLoadOptionen,"GET");
@@ -999,7 +1096,7 @@ var pro_stunden_app=function(){
 		
 		var parsedata=function(data){
 			var i,o,onew;
-			data=JSON.parse(data);
+			data=JSON.parse(data);//console.log("*",data); projektistbeendet ?
 
 			if(data.status!=msg_OK){
 				handleError(data.status);
@@ -3338,7 +3435,7 @@ var pro_stunden_app=function(){
 						"o_sibling":o_sibling};
 				projinputs.push(inp);
 				
-				//console.log(getDataTyp(projekt.info[property]));
+//console.log(property,getDataTyp(projekt.info[property]));
 				if(getDataTyp(projekt.info[property])=='[object Boolean]'){
 					inp.type="checkbox";
 					inp.id='cb_'+property;
@@ -3425,9 +3522,13 @@ var pro_stunden_app=function(){
 				for( property in std ) { 
 					td2=cE(tr2,"th");
 					td2.innerHTML=getWort("dat"+property)+':';
-					if(projektaktiv.id=="urlaub" && (property=="stunden" || property=="typ")){
+					if(projektaktiv.id=="urlaub" && (property=="stunden" || property=="typ") ){
 						td2.style.display="none";
 					}
+					if(property=="subinfo"){
+						td2.innerHTML="";
+						//td2.style.display="none";
+					}					
 				}
 				td2=cE(tr2,"th");
 				
@@ -3472,8 +3573,17 @@ var pro_stunden_app=function(){
 					
 					if(property=="dat" && !datumeditable) inp.readOnly=true;//außer Feiertage!
 					if(property=="user")inp.readOnly=true;
+					
+					if(property=="subinfo"){
+						inp.readOnly=true;
+						inp.style.display="none";
+						td2.innerHTML="[...]";//TODO SubinfoDLG
+						//td2.style.display="none";
+					}
+					console.log(">>",property);
+					
 					projinputs.push(inp);
-					if(projektaktiv.id=="urlaub" && (property=="stunden" || property=="typ")){
+					if(projektaktiv.id=="urlaub" && (property=="stunden" || property=="typ") ){
 						td2.style.display="none";
 					}
 				}	
@@ -3540,7 +3650,7 @@ var pro_stunden_app=function(){
 			var trenner=";",trennerreplacestr=',';
 			
 			for(prop in projektdaten.info){
-				console.log(typeof projektdaten.info[prop]);
+				//console.log(typeof projektdaten.info[prop]);
 				if(
 					typeof projektdaten.info[prop]==="string"
 					||
@@ -4403,6 +4513,13 @@ var pro_stunden_app=function(){
 			tmp=data.data.projektdata.id;//.split('_')[0];
 			addClass(HTMLnode,tmp);//console.log("classe>",tmp);//projektitem
 			
+			a=cE(HTMLnode,"a",undefined,"stundenmenue");
+			a.innerHTML="…";
+			a.data={"typ":"a","projektdata":data.data.projektdata,"datstunde":data.datstd};
+			a.onclick=klickProjektStundenSubinfos;
+			a.addEventListener('click',blockclick);
+			
+			
 			a=cE(HTMLnode,"a");
 			a.innerHTML=encodeString(data.titel);//.titel			
 			
@@ -5017,6 +5134,31 @@ var pro_stunden_app=function(){
 			refreshTab();
 		}
 		
+		var klickProjektStundenSubinfos=function(e){
+			//Dialog mit Möglichkeiten Links zu hinterlegen, bzw. aufzurufen
+			
+			//typ,sTitel,sMSG,defvalue,auswertfunc)
+			inputDlg.show(
+				"ProjektStundenSubinfos"
+				,"Stundeninfos "+this.data.projektdata.titel
+				,"Infos zu diesem Eintrag ("+this.data.datstunde.dat+"):"
+				,""
+				,function(redata){
+					console.log("editetddatas",redata);
+					//console.log(">>>",{projektdata:redata.projektdata,datstunde:redata.datstunde});
+					//.o_sibling
+					postNewStundenData(redata);
+					
+				}
+				,this.data
+				);
+			
+			console.log(this.data);
+			
+			return false;
+		}
+		
+		
 		var sendstundendatatimer=function(input){
 			var i;
 			//editmarker entfernen
@@ -5035,7 +5177,7 @@ var pro_stunden_app=function(){
 					typ: "U"
 					user: "andreas"
 					vonjahr: 2019
-				
+					subinfo:[]
 				
 				projektdata:
 					id: "urlaub"

@@ -1089,6 +1089,7 @@ input[type=button].buttUP,input[type=button].buttDOWN{
 /*--Farbwahldialog----*/
 .farbdialog{
 	position:fixed;
+	z-index: 1000;
 	background-color:#dddddd;
 	left:calc(50% - 195px);
 	top:calc(50% - 175px);
@@ -1573,6 +1574,33 @@ input.booleanswitch:checked ~ label:after{
 	font-size:13pt;	
 }
 
+
+
+.subinfolist{
+	padding: 0;
+}
+.subinfolist li{
+	list-style-type: none;
+	text-align: left;
+	margin-bottom: 10px;
+	display: flex;
+}
+.subinfolist li *{
+	margin-right:5px;
+}
+.inputislink{
+	text-decoration:underline;
+}
+.subinfolist a.link{
+	background-color: #6ed0e4;
+}
+.subinfolist a.link:before{
+	content:"www";
+}
+.noactionbutt{
+	display:none;
+}
+
 #inputDLG{
 	position:absolute;
 	left:0;
@@ -1581,18 +1609,23 @@ input.booleanswitch:checked ~ label:after{
 	bottom:0;
 	background-color:rgba(0,0,0,0.125);
 	display:block;
+	text-align:center;
 }
 #inputDLG.off{
 	display:none;
 }
+
 #dialogBox{
-	width: 400px;
+	width: 90%;
+	max-width:720px;
     min-height: 150px;
     background-color: #ffffff;
     padding: 10px;
-    position: absolute;
-    left: calc(50% - 200px);
+    position: relative;
+    /*left: calc(50% - 320px);*/
+	margin:auto;
     top: 20%;
+	z-index:1000;
 	-webkit-box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
 	-moz-box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
 	box-shadow: 0px 1px 28px 0px rgba(0,0,0,0.75);
@@ -1627,7 +1660,9 @@ input.booleanswitch:checked ~ label:after{
 #dialogBox .buttok{
 	min-width: 100px;
 }
-
+#dialogBox li input{
+	width: calc(100% - 100px);
+}
 
 
 #debugdiv{
@@ -1706,6 +1741,11 @@ input.booleanswitch:checked ~ label:after{
 	display:table-cell;
 	width:100px;
 	overflow:hidden;
+}
+.monatsliste .projektitem a.stundenmenue{
+	width: 20px;
+	text-align:center;
+	background-color: rgba(0,0,0,0.6);
 }
 
 .monatsliste .projektitem input{

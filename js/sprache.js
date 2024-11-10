@@ -23,6 +23,7 @@ var sprachen=[
 		 "circa":"ca.",
 		 "ok":"OK",
 		 "abbrechen":"abbrechen",
+		 "addEintrag":"neuer Eintrag",
 		 
 		 "Januar":"Januar",
 		 "Februar":"Februar",
@@ -183,6 +184,7 @@ var sprachen=[
 		 "circa":"approx.",
 		 "ok":"OK",
 		 "abbrechen":"cancel",
+		 "addEintrag":"new entry",
 		 
 		 "Januar":"January",
 		 "Februar":"Februrary",

@@ -55,7 +55,7 @@ var AppBridge=function(){
 			"titel":"$TITEL",
 			"isnew":true,
 			"info":{
-				"isended":false,
+				"isended":false,		// to archiv ?
 				"auftraggeber":"",
 				"projektleiter":"",
 				"startdatum":"$HEUTE",
@@ -255,6 +255,13 @@ var AppBridge=function(){
 					"status":"OK"};
 		
 		ddata=JSON.parse( decodeURI(ddata));
+		
+		console.log("refreshInfo isended",ddata.isended);//Dateiname->"name.json" ->"name.jsonArchiv" ?
+		console.log(fs);
+		//.isended: true 	datafileendung
+		//fs.rename	->asynchron !!
+		//fs.renameSync ->blokiert ->nehmen
+		
 		if(fs.existsSync(filepath)){
 			var datei=fs.readFileSync(filepath, 'utf-8');
 			datei=JSON.parse(datei);
@@ -298,7 +305,7 @@ var AppBridge=function(){
 		return re;
 	}
 	
-	var getFiles=function(myDir,filterend){
+	var getFiles=function(myDir,filterend,auswertfunc){
 		var relist=[];
 		var fdirectory=myDir;
 		
@@ -333,7 +340,7 @@ var AppBridge=function(){
 				"dat":relist	//"name":"test","dat":"2017-12-11 11:11:11"	
 			}
 			//
-			if(refunction!=undefined)refunction(JSON.stringify(data));
+			if(auswertfunc!=undefined)auswertfunc(JSON.stringify(data));
 			else{
 				console.log("no refunction",relist);
 			}
@@ -475,26 +482,26 @@ var AppBridge=function(){
 	}
 	
 	//system (loadDataAPP)<->elektron 
-	this.DataIO=function(url, auswertfunc,getorpost,daten){
-		//console.log("DataIO",globaldata.user,url,getorpost,daten,fs);
+	this.DataIO=function(befehl, auswertfunc,getorpost,daten){
+		//console.log("DataIO",globaldata.user,befehl,getorpost,daten,fs);
 		var pd=getSentvar(daten);
 		var data={};
 
 		if(basepathDATA=="")return;
 		
 		refunction=auswertfunc;
-		zurl=url;
-		if(url=="getoptionen"){//OK:Optionen laden
+		zurl=befehl;
+		if(befehl=="getoptionen"){//OK:Optionen laden
 			readFile(basepathDATA+"optionen.txt");//id=lokal&data=%7B%22tabaktiv%22:0,%22showscramblebutt%22:false%7D
 			//auswertfunc(JSON.stringify(data));
 		}
 		else
-		if(url=="projektliste"){//OK:Liste der Projekte als Dateinamen + Dateiänerungsdatum
+		if(befehl=="projektliste"){//OK:Liste der Projekte als Dateinamen + Dateiänerungsdatum
 			//auswertfunc(JSON.stringify(data));
-			getFiles(basepathDATA,datafileendung);
+			getFiles(basepathDATA,datafileendung,auswertfunc);
 		}
 		else
-		if(url=="setoptionen"){//OK:Optionen speichern
+		if(befehl=="setoptionen"){//OK:Optionen speichern
 			data={"user":"lokal",
 				"lastaction":"",
 				"status":"OK"
@@ -509,7 +516,7 @@ var AppBridge=function(){
 			}
 		}
 		else
-		if(url=="maindata"){//alive 
+		if(befehl=="maindata"){//alive 
 			data={"user":"lokal",
 			"dat":"maindata",
 			"lastaction":"maindata",
@@ -518,28 +525,28 @@ var AppBridge=function(){
 			auswertfunc(JSON.stringify(data));
 		}
 		else
-		if(url=="projektdata"){
+		if(befehl=="projektdata"){
 			var filename=pd.name;
 			readFile(basepathDATA+filename+datafileendung);
 		}
 		else
-		if(url=="newprojekt"){
+		if(befehl=="newprojekt"){
 			createnewProjektfile(pd);
 		}
 		else
-		if(url=="projektstundenlisteupdate"){
+		if(befehl=="projektstundenlisteupdate"){
 			addStundeneintrag(pd.id,pd.data);//nur ein Entrag wird aktualisiert!
 		}
 		else
-		if(url=="projekttitelupdate"){
+		if(befehl=="projekttitelupdate"){
 			refreshTitel(pd.id,pd.data);
 		}
 		else
-		if(url=="projektinfoupdate"){
+		if(befehl=="projektinfoupdate"){
 			refreshInfo(pd.id,pd.data);
 		}
 		else
-			alert("load\n"+globaldata.user+'\n'+url+'\n'+getorpost+'\n'+daten);
+			alert("load\n"+globaldata.user+'\n'+befehl+'\n'+getorpost+'\n'+daten);
 	}
 
 	this.Message=function(s,data){
@@ -623,7 +630,6 @@ var AppeleWin=function(){
 		//basepathDATA=basepath+"/userData/";
 		basepathDATA=userdokumente+"/PROSTd/userData/";
 		basepathDATA=path.normalize(basepathDATA);
-
 		
 		//console.log("!",fs.readFileSync(basepathDATA+"optionen.txt",'utf-8'));
 		
@@ -633,7 +639,7 @@ var AppeleWin=function(){
 		
 		
 		console.log(":Directory:",fs.readdirSync(basepath));
-		console.log(":Directory:",fs.readdirSync(basepathDATA));
+		console.log(":Dir-DATA",fs.readdirSync(basepathDATA));
 		//console.log(":Directory:",fs.readdirSync(basepath+'/userData'));
 		
 		//SetWindowSize
@@ -682,7 +688,7 @@ var AppeleWin=function(){
 							zielscreen=i;
 							width=bounds.width;
 							height=bounds.height;
-							console.log("ON[]",i);
+							console.log("ONSCREEN=",i);
 						}
 					}
 					
