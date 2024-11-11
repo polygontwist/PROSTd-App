@@ -157,6 +157,9 @@ var sprachen=[
 		 
 		 "datsprache":"Sprache",
 		 "hallo":"Hallo",
+		 "togleConsole":"Console zeigen/verbergen",
+		 "Stundeninfos":"Stundeninfos von",
+		 "eintraginfos":"Infos zu diesem Eintrag",
 		
 		 "neueVersion":"Es gibt eine neue Version :-)"
 		}
@@ -318,6 +321,9 @@ var sprachen=[
 		 
 		 "datsprache":"Language",
 		 "hallo":"hello",
+		 "togleConsole":"togle Console",		 
+		 "Stundeninfos":"Hourly information from",
+		 "eintraginfos":"Info about this entry",
 		
 		 "neueVersion":"A new version is available :-)"	 }
 	}

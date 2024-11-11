@@ -159,7 +159,7 @@ var AppBridge=function(){
 					"status":"OK"};
 		
 		stddata=JSON.parse( decodeURI(stddata));
-//console.log(stddata);		
+		//console.log(">>>",stddata);		
 		if(fs.existsSync(filepath)){
 			var datei=fs.readFileSync(filepath, 'utf-8');
 			datei=JSON.parse(datei);
@@ -349,16 +349,17 @@ var AppBridge=function(){
 		fs.readdir(fdirectory, redata );
 		
 	}
+
 	
 	var getSentvar=function(s){
-		var i,v,re={},
+		var i,v,re={},pos,part1,part2,
 			variabeln=(s+'').split('&');
-		//id=fairydustrocket&data=%7B
 		for(i=0;i<variabeln.length;i++){
-			v=variabeln[i].split('=');
-			re[v[0]]=v[1];
+			pos=variabeln[i].indexOf('=');
+			part1 = variabeln[i].slice(0, pos);
+			part2 = variabeln[i].slice(pos+1);//kann weitere "=" als parameter von Links enthalten!
+  			re[part1]=part2;
 		}
-		
 		return re;
 	}
 	

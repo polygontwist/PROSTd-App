@@ -42,6 +42,7 @@ Ausgespielt für Windows; Linux und mac ist auch möglich - siehe Doku http://el
 * 0.1.42 Bugfix; Export der Projektdaten als CSV - z.B. für Exel; Erweiterung Feiertage bis 2028 für MV
 * 0.1.43 CSV Zahlen Export abhängig von Sprache; Sprachumschalter DE/EN(experimentell)
 * 0.1.44 jeder Tageseintrag kann weitere Infos aufnehmen, z.B. ein Weblink
+* 0.1.45 Bugfix (Tageseintrag-URL); neue Tageseintrag-Infotypenbuttons: Pfad zu Ordner, Link auf Datei
 
 #### Programm auf Windows 10 installieren ####
 Da ich momentan noch kein signiertes Installationsprogramm erzeugen kann, muss nach dem download und doppelklick im folgenden Dialog "Weitere Informationen" und dann "Trotzdem ausführen" geklickt werden.

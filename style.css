@@ -1591,12 +1591,25 @@ input.booleanswitch:checked ~ label:after{
 .inputislink{
 	text-decoration:underline;
 }
-.subinfolist a.link{
+
+.wwwlink,.filelink,.pfadlink{
 	background-color: #6ed0e4;
+	min-width: 100px;
 }
-.subinfolist a.link:before{
+.wwwlink:before{
 	content:"www";
 }
+.filelink:before{
+	content:"[open]";
+}
+.pfadlink:before{
+	content:"[goto]";
+}
+
+.buttsubinfo{
+	font-size: 8pt;
+}
+
 .noactionbutt{
 	display:none;
 }
@@ -1744,8 +1757,11 @@ input.booleanswitch:checked ~ label:after{
 }
 .monatsliste .projektitem a.stundenmenue{
 	width: 20px;
-	text-align:center;
+	text-align:center;	
 	background-color: rgba(0,0,0,0.6);
+}
+.monatsliste .projektitem a.hatsubinfos{
+	background-color: rgba(0,0,0,0.8);
 }
 
 .monatsliste .projektitem input{
