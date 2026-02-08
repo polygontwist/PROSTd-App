@@ -77,6 +77,9 @@ wird electron global installiert.
 mit<br>
 > npm install electron-builder
 
+Version vom Projekt:
+> npm install --global electron@6.1.12
+
 kommt noch der builder zum packen des Projektes hinzu.
 
 In der Eingabeaufforderung kann, im Verzeichnis des Projektes mit<br>
